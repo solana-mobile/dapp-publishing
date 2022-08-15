@@ -1,11 +1,11 @@
 package com.solanamobile.cutekittens
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Alignment
@@ -26,8 +26,6 @@ class MainActivity : ComponentActivity() {
         val width = ceil(1920.0 * random).toInt()
         val height = ceil(1080.0 * random).toInt()
 
-        Log.v("Andrew", "Dim $width $height")
-
         setContent {
             CuteKittensTheme {
                 Surface(
@@ -39,7 +37,7 @@ class MainActivity : ComponentActivity() {
                         contentAlignment = Alignment.Center
                     ) {
                         AsyncImage(
-                            modifier = Modifier,
+                            modifier = Modifier.fillMaxWidth(),
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data("https://placekitten.com/$width/$height")
                                 .crossfade(true)
