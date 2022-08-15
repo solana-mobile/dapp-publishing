@@ -94,11 +94,11 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
                     "android.permission.LOCATION_HARDWARE",
                     "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
                 ],
-								"languages": [
-		                "en-US",
-		                "ja-JP",
-		                "it-IT"
-		            ]
+                "languages": [
+                    "en-US",
+                    "ja-JP",
+                    "it-IT"
+                ]
             }
         },
         "i18n": {
