@@ -1,0 +1,16 @@
+{
+  "name": "com.solanamobile.cutekittens - Collection NFT",
+  "description": "Collection NFT for com.solanamobile.cutekittens",
+  "image": "http://cdn.org/wallet_display.png",
+  "properties": {
+    "category": "dApp",
+    "creators": {
+      "address": ""
+    }
+  },
+  "extensions": {
+    "solana_dapp_store": {
+      "android_package": "com.company.dapp"
+    }
+  }
+}
