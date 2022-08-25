@@ -1,4 +1,4 @@
-# Release NFT Metadata Spec v0.1
+# Release NFT Metadata Spec v0.1.1
 
 This is the official spec of the off-chain metadata that will be created for the NFT release management system.
 
