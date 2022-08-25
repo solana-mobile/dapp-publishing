@@ -88,6 +88,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
             ],
             "android_details": {
                 "android_package": "com.company.dapp",
+                "google_store_package": "com.company.dapp.otherpkg",
                 "minSdk": 21,
                 "permissions": [
                     "android.permission.INTERNET",
