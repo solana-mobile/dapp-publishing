@@ -1,4 +1,4 @@
-# Release NFT Metadata Spec v0.1.1
+# Release NFT Metadata Spec v0.1.2
 
 This is the official spec of the off-chain metadata that will be created for the NFT release management system.
 
@@ -89,6 +89,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
             "android_details": {
                 "android_package": "com.company.dapp",
                 "google_store_package": "com.company.dapp.otherpkg",
+                "saga_features_localized": "4",
                 "minSdk": 21,
                 "permissions": [
                     "android.permission.INTERNET",
@@ -106,17 +107,20 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
             "en-US": {
                 "1": "[Short desc en]",
                 "2": "[Long desc en]",
-                "3": "[New in version en]"
+                "3": "[New in version en]",
+                "4": "[Saga features in en]"
             },
             "fr-FR": {
                 "1": "[Short desc fr]",
                 "2": "[Long desc fr]",
-                "3": "[New in version fr]"
+                "3": "[New in version fr]",
+                "4": "[Saga features in fr]"
             },
             "de": {
                 "1": "[Short desc de]",
                 "2": "[Long desc de]",
-                "3": "[New in version de]"
+                "3": "[New in version de]",
+                "4": "[Saga features in de]"
             }
         }
     }
