@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Fixed inconsistent field naming.
+
 ## 0.1.3
 
 - Added `versionCode` to the Android details section.
