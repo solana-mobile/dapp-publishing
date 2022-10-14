@@ -1,31 +1,37 @@
 {
-    "private": true,
-    "name": "@solana-mobile/dapp-store",
-    "version": "0.1.0",
-    "license": "Apache-2.0",
-    "type": "module",
-    "sideEffects": false,
-    "main": "./lib/cjs/index.js",
-    "module": "./lib/esm/index.js",
-    "types": "./lib/types/index.d.ts",
-    "exports": {
-        "import": "./lib/esm/index.js",
-        "require": "./lib/cjs/index.js",
-        "types": "./lib/types/index.d.ts"
-    },
-    "files": [
-        "lib",
-        "src",
-        "LICENSE"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "scripts": {
-        "clean": "shx mkdir -p lib && shx rm -rf lib",
-        "prebuild": "pnpm run clean"
-    },
-    "devDependencies": {
-        "shx": "^0.3.4"
-    }
+  "name": "@solana-mobile/dapp-store",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    "import": "./lib/esm/index.js",
+    "require": "./lib/cjs/index.js",
+    "types": "./lib/types/index.d.ts"
+  },
+  "files": [
+    "lib",
+    "src",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "shx mkdir -p lib && shx rm -rf lib",
+    "prebuild": "pnpm run clean"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/node-fetch": "^2.6.2",
+    "shx": "^0.3.4"
+  },
+  "dependencies": {
+    "@metaplex-foundation/js": "^0.17.1",
+    "@solana/web3.js": "^1.64.0",
+    "debug": "^4.3.4"
+  }
 }
