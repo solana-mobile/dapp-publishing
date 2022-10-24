@@ -1,7 +1,10 @@
 import { mintNft } from "./utils";
 import type { App, Context, Publisher } from "./types";
+import { Keypair } from "@solana/web3.js";
+import { Metaplex } from "@metaplex-foundation/js";
+import debugModule from "debug";
 
-const debug = require("debug")("RELEASE");
+const debug = debugModule("RELEASE");
 
 type CreateReleaseInput = {
   appNft: App;
@@ -10,7 +13,8 @@ type CreateReleaseInput = {
 
 export const createRelease = async (
   { appNft, publisherNft }: CreateReleaseInput,
-  { metaplex, publisher }: Context
+  // We're going to assume that the publisher is the signer
+  { publisher, connection }: Context
 ) => {
   debug(
     `Minting release NFT for: ${{
@@ -19,16 +23,33 @@ export const createRelease = async (
     }}`
   );
 
-  const { nft: releaseNft } = await mintNft(
+  const metaplex = new Metaplex(connection);
+  const releaseMintSigner = Keypair.generate();
+
+  const txBuilder = await mintNft(
     metaplex,
     // TODO(jon): Add more interesting stuff to this release
     { name: "My first great release!" },
     {
+      useNewMint: releaseMintSigner,
       collection: appNft.address,
       collectionAuthority: publisher,
+      creators: [
+        { address: publisher.publicKey, share: 0 },
+        // ...otherCreators
+      ],
       isMutable: false,
     }
   );
 
-  debug(`Successfully minted release NFT: ${releaseNft.address.toBase58()}`);
+  // TODO(jon): Enable a case where the signer is not the publisher
+  // TODO(jon): Allow this to be unverified and to verify later
+  txBuilder.append(
+    metaplex.nfts().builders().verifyCreator({
+      mintAddress: releaseMintSigner.publicKey,
+      creator: publisher,
+    })
+  );
+
+  return txBuilder;
 };

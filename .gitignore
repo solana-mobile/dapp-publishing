@@ -1,4 +1,4 @@
 node_modules/
 .env
-/lib/
+lib/
 tsconfig.buildinfo

@@ -1,9 +1,8 @@
-import { Metaplex, Signer } from "@metaplex-foundation/js";
-import { PublicKey } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 
 export type Context = {
-  metaplex: Metaplex;
-  publisher: Signer;
+  publisher: Keypair;
+  connection: Connection;
 };
 
 export type Publisher = {
