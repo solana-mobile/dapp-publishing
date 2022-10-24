@@ -1,41 +1,54 @@
-import type { Connection, PublicKey } from "@solana/web3.js";
-// import { createRelease } from "@solana-mobile/dapp-publishing-tools";
-import { validateMetadata } from "../validate";
+import { Command } from "commander";
+import { createRelease } from "@solana-mobile/dapp-publishing-tools";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import { parseKeypair } from "../../utils";
 
-// We need the application NFT to add to collection
-// Either the publisher needs to sign,
-// or needs to delegate the collection authority of the app to the burner
-// or we push it as unverified and follow-up with that afterwards
+const program = new Command();
 
-// We'll double-check the public key of the provided keypair
-// If its the publisher, we can verify the collection and sign the metadata of the release NFT
-// For now, probably okay to assume that the signer is the publisher
+program
+  .description("Creates an app")
+  .requiredOption(
+    "-a, --app-mint-address <app-mint-address>",
+    "The mint address of the app NFT"
+  )
+  .requiredOption(
+    "-k, --keypair <path-to-keypair-file>",
+    "Path to keypair file"
+  )
+  .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net/")
+  .action(async () => {
+    const { keypair, url, appMintAddress } = program.opts();
 
-// Core should probably return the transaction so we can handle in userland
-// Core should also handle schema validation of the metadata
-// CLI is only responsible for coordinating files / metadata
-// and submitting the transaction
+    // TODO(jon): Elevate this somehow
+    const connection = new Connection(url);
+    const signer = parseKeypair(keypair);
 
-type SemverString = string;
+    const releaseMintAddress = Keypair.generate();
+    const txBuilder = await createRelease(
+      {
+        appMintAddress: new PublicKey(appMintAddress),
+        releaseMintAddress,
+      },
+      { connection, publisher: signer }
+    );
 
-type CreateReleaseInput = {
-  appNftMintAddress: PublicKey;
-  version: SemverString;
-  isPreview?: boolean;
-};
+    const blockhash = await connection.getLatestBlockhash();
+    const tx = txBuilder.toTransaction(blockhash);
+    tx.sign(releaseMintAddress, signer);
 
-// TODO(jon): Allow some flexibility on fee payers
-// TODO(jon): Accept a `preview` flag to generate metadata and not persist anything
-export const createRelease = async (
-  { isPreview }: CreateReleaseInput,
-  { connection }: { connection: Connection }
-) => {
-  // Validate the file structure and prepare arguments to be validated in `core`
-  // Validate the input and finalized JSON, await for user input unless flagged
-  // await validateMetadata();
-  // const txBuilder = await createRelease();
-  // // TODO(jon): Abstract all of this behind the utility
-  // const { recentBlockHash, blockheight } = await connection.getRecentBlockHash;
-  // const tx = txBuilder.toTransaction({ recentBlockHash, blockheight });
-  // sendAndConfirmTransaction(tx);
-};
+    const txSig = await sendAndConfirmTransaction(connection, tx, [
+      signer,
+      releaseMintAddress,
+    ]);
+    console.info({
+      txSig,
+      releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+    });
+  });
+
+program.parse(process.argv);

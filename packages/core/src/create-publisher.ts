@@ -4,6 +4,7 @@ import {
   bundlrStorage,
   keypairIdentity,
   Metaplex,
+  TransactionBuilder,
 } from "@metaplex-foundation/js";
 import debugModule from "debug";
 import { Signer, Transaction } from "@solana/web3.js";
@@ -15,9 +16,10 @@ type CreatePublisherInput = { mintAddress: Signer };
 export const createPublisher = async (
   { mintAddress }: CreatePublisherInput,
   { connection, publisher }: Context
-): Promise<Transaction> => {
+): Promise<TransactionBuilder> => {
   debug(`Minting publisher NFT`);
 
+  // This is a little leaky
   const metaplex = Metaplex.make(connection)
     .use(keypairIdentity(publisher))
     .use(
@@ -39,8 +41,5 @@ export const createPublisher = async (
     }
   );
 
-  const blockhash = await connection.getLatestBlockhash();
-  const tx = txBuilder.toTransaction(blockhash);
-  tx.sign(mintAddress, publisher);
-  return tx;
+  return txBuilder;
 };

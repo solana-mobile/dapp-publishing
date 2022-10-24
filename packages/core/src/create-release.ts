@@ -1,43 +1,50 @@
 import { mintNft } from "./utils";
-import type { App, Context, Publisher } from "./types";
-import { Keypair } from "@solana/web3.js";
-import { Metaplex } from "@metaplex-foundation/js";
+import type { Context } from "./types";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
+import {
+  bundlrStorage,
+  keypairIdentity,
+  Metaplex,
+} from "@metaplex-foundation/js";
 
 const debug = debugModule("RELEASE");
 
 type CreateReleaseInput = {
-  appNft: App;
-  publisherNft: Publisher;
+  releaseMintAddress: Keypair;
+  appMintAddress: PublicKey;
 };
 
 export const createRelease = async (
-  { appNft, publisherNft }: CreateReleaseInput,
+  { appMintAddress, releaseMintAddress }: CreateReleaseInput,
   // We're going to assume that the publisher is the signer
   { publisher, connection }: Context
 ) => {
   debug(
     `Minting release NFT for: ${{
-      app: appNft.address.toBase58(),
-      publisher: publisherNft.address.toBase58(),
+      app: appMintAddress.toBase58(),
     }}`
   );
 
-  const metaplex = new Metaplex(connection);
-  const releaseMintSigner = Keypair.generate();
+  const metaplex = Metaplex.make(connection)
+    .use(keypairIdentity(publisher))
+    .use(
+      connection.rpcEndpoint.includes("devnet")
+        ? bundlrStorage({
+            address: "https://devnet.bundlr.network",
+          })
+        : bundlrStorage()
+    );
 
   const txBuilder = await mintNft(
     metaplex,
     // TODO(jon): Add more interesting stuff to this release
     { name: "My first great release!" },
     {
-      useNewMint: releaseMintSigner,
-      collection: appNft.address,
+      useNewMint: releaseMintAddress,
+      collection: appMintAddress,
       collectionAuthority: publisher,
-      creators: [
-        { address: publisher.publicKey, share: 0 },
-        // ...otherCreators
-      ],
+      creators: [{ address: publisher.publicKey, share: 100 }],
       isMutable: false,
     }
   );
@@ -46,7 +53,7 @@ export const createRelease = async (
   // TODO(jon): Allow this to be unverified and to verify later
   txBuilder.append(
     metaplex.nfts().builders().verifyCreator({
-      mintAddress: releaseMintSigner.publicKey,
+      mintAddress: releaseMintAddress.publicKey,
       creator: publisher,
     })
   );

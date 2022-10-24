@@ -1,49 +1,60 @@
 import { mintNft } from "./utils";
 import type { Publisher, Context } from "./types";
-import { Keypair } from "@solana/web3.js";
-import { Metaplex } from "@metaplex-foundation/js";
+import { Keypair, PublicKey, Signer } from "@solana/web3.js";
+import {
+  bundlrStorage,
+  keypairIdentity,
+  Metaplex,
+} from "@metaplex-foundation/js";
 import debugModule from "debug";
 
 const debug = debugModule("APP");
 
 type CreateAppInput = {
-  publisherNft: Publisher;
+  publisherMintAddress: PublicKey;
+  mintAddress: Signer;
 };
 
 // It is slightly confusing that we have the publisher as both the signer _and_ as a reference for the collection
 // export const prepareAppTx = async (
 export const createApp = async (
-  { publisherNft }: CreateAppInput,
+  { publisherMintAddress, mintAddress }: CreateAppInput,
   { connection, publisher }: Context
 ) => {
-  debug(`Minting app NFT for publisher: ${publisherNft.address.toBase58()}`);
+  debug(`Minting app NFT for publisher: ${publisherMintAddress.toBase58()}`);
 
-  const metaplex = new Metaplex(connection);
-  const appMintSigner = Keypair.generate();
+  const metaplex = Metaplex.make(connection)
+    .use(keypairIdentity(publisher))
+    .use(
+      connection.rpcEndpoint.includes("devnet")
+        ? bundlrStorage({
+            address: "https://devnet.bundlr.network",
+          })
+        : bundlrStorage()
+    );
 
   const txBuilder = await mintNft(
     metaplex,
     // Add more interesting stuff here
     { name: "My first great app!" },
     {
-      useNewMint: appMintSigner,
-      collection: publisherNft.address,
+      useNewMint: mintAddress,
+      collection: publisherMintAddress,
       collectionAuthority: publisher,
       isCollection: true,
       isMutable: true,
+      creators: [{ address: publisher.publicKey, share: 100 }],
     }
   );
 
-  // TODO(jon): Enable a case where the signer is not the publisher
-  // TODO(jon): Allow this to be unverified and to verify later
   txBuilder.append(
     metaplex.nfts().builders().verifyCreator({
-      mintAddress: appMintSigner.publicKey,
+      mintAddress: mintAddress.publicKey,
       creator: publisher,
     })
   );
 
-  debug({ appNft: appMintSigner.publicKey.toBase58() });
+  debug({ appNft: mintAddress.publicKey.toBase58() });
 
   return txBuilder;
 };

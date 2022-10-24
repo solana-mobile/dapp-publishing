@@ -1,6 +1,10 @@
 import { Command } from "commander";
 import { createPublisher } from "@solana-mobile/dapp-publishing-tools";
-import { Connection, VersionedTransaction } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
 import { parseKeypair } from "../../utils";
 
 const program = new Command();
@@ -19,21 +23,24 @@ program
     const connection = new Connection(url);
     const signer = parseKeypair(keypair);
 
+    const mintAddress = Keypair.generate();
+    console.info(
+      `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
+    );
     const txBuilder = await createPublisher(
-      {},
+      { mintAddress },
       { connection, publisher: signer }
     );
 
     const blockhash = await connection.getLatestBlockhash();
     const tx = txBuilder.toTransaction(blockhash);
-    tx.partialSign(signer);
-    // TODO(jon): Use a VersionedTransaction
-    const txSig = await connection.sendRawTransaction(tx.serialize());
-    console.info({ txSig });
-    await connection.confirmTransaction(
-      { signature: txSig, ...blockhash },
-      "confirmed"
-    );
+    tx.sign(mintAddress, signer);
+
+    const txSig = await sendAndConfirmTransaction(connection, tx, [
+      signer,
+      mintAddress,
+    ]);
+    console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
   });
 
 program.parse(process.argv);
