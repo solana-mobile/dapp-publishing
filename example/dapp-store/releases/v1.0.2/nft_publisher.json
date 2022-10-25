@@ -1,0 +1,23 @@
+{
+  "name": "Solana Mobile - Publisher NFT",
+  "description": "Publisher NFT for Solana Mobile",
+  "image": "https://placekitten.com/300/300",
+  "external_url": "https://solanamobile.com/",
+  "properties": {
+    "category": "dApp",
+    "creators": [
+      {
+        "address": ""
+      }
+    ]
+  },
+  "extensions": {
+    "solana_dapp_store": {
+      "publisher_details": {
+        "name": "Solana Mobile",
+        "website": "https://solanamobile.com/",
+        "contact": "contact@solanamobile.com"
+      }
+    }
+  }
+}
