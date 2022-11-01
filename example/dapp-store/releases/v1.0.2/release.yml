@@ -1,9 +1,0 @@
-release:
-  version: 1.0.2
-  apk: ./app-debug.apk
-  short_description:
-    en-US: >
-      Some wonderful release notes
-  long_description:
-    en-US: >
-      Some wonderful release notes

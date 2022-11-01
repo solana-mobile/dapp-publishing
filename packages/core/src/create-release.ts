@@ -85,9 +85,9 @@ export const createReleaseJson = (
       },
       i18n: {
         "en-US": {
-          "1": "A cute kitten pic wherever you go!",
-          "2": "Everyone knows the internet was made for cats, and now with CuteKittens you can have a cute kitten delivered right in front of your eyeballs whenever you want!",
-          "3": "First release!",
+          "1": release.localized_resources["en-US"].short_description,
+          "2": release.localized_resources["en-US"].long_description,
+          "3": release.localized_resources["en-US"].new_in_version,
         },
       },
     },

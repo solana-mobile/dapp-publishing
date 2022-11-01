@@ -11,14 +11,15 @@ import { load } from "js-yaml";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
+  version: string;
   signer: Keypair;
   url: string;
   dryRun?: boolean;
 };
 
-export const getReleaseDetails = async (): Promise<Release> => {
-  const configFile = `${process.cwd()}/dapp-store/config.yaml`;
-  console.info(`Pulling app details from ${configFile}`);
+export const getReleaseDetails = async (version: string): Promise<Release> => {
+  const configFile = `${process.cwd()}/dapp-store/releases/${version}/release.yaml`;
+  console.info(`Pulling release details from ${configFile}`);
 
   const { release } = load(
     // TODO(jon): Parameterize this
@@ -53,25 +54,28 @@ const createReleaseNft = async ({
   const tx = txBuilder.toTransaction(blockhash);
   tx.sign(releaseMintAddress, publisher);
 
-  const txSig = await sendAndConfirmTransaction(connection, tx, [
-    publisher,
-    releaseMintAddress,
-  ]);
-  console.info({
-    txSig,
-    releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
-  });
+  // const txSig = await sendAndConfirmTransaction(connection, tx, [
+  //   publisher,
+  //   releaseMintAddress,
+  // ]);
+  // console.info({
+  //   txSig,
+  //   releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+  // });
+
+  // return { releaseMintAddress };
 };
 
 export const createReleaseCommand = async ({
   appMintAddress,
+  version,
   signer,
   url,
   dryRun,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const releaseDetails = await getReleaseDetails();
+  const releaseDetails = await getReleaseDetails(version);
 
   if (!dryRun) {
     await createReleaseNft({
