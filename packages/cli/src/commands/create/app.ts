@@ -1,51 +1,80 @@
-import { Command } from "commander";
-import { createApp } from "@solana-mobile/dapp-publishing-tools";
+import fs from "fs";
+import { createApp, App } from "@solana-mobile/dapp-publishing-tools";
 import {
   Connection,
   Keypair,
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import { parseKeypair } from "../../utils";
 
-// const program = new Command();
+export const getAppDetails = async (): Promise<App> => {
+  const configFile = `${process.cwd()}/dapp-store/config.yaml`;
+  console.info(`Pulling app details from ${configFile}`);
 
-// program
-//   .description("Creates an app")
-//   .requiredOption(
-//     "-p, --publisher-mint-address <publisher-mint-address>",
-//     "The mint address of the publisher NFT"
-//   )
-//   .requiredOption(
-//     "-k, --keypair <path-to-keypair-file>",
-//     "Path to keypair file"
-//   )
-//   .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net/")
-//   .action(async () => {
-//     const { keypair, url, publisherMintAddress } = program.opts();
+  // @ts-ignore
+  const { app } = load(
+    // TODO(jon): Parameterize this
+    fs.readFileSync(configFile, "utf-8")
+  );
 
-//     // TODO(jon): Elevate this somehow
-//     const connection = new Connection(url);
-//     const signer = parseKeypair(keypair);
+  return app;
+};
 
-//     const mintAddress = Keypair.generate();
-//     const txBuilder = await createApp(
-//       {
-//         publisherMintAddress: new PublicKey(publisherMintAddress),
-//         mintAddress,
-//       },
-//       { connection, publisher: signer }
-//     );
+const createAppNft = async ({
+  appDetails,
+  connection,
+  publisherMintAddress,
+  publisher,
+}: {
+  appDetails: App;
+  connection: Connection;
+  publisherMintAddress: string;
+  publisher: Keypair;
+}) => {
+  const mintAddress = Keypair.generate();
+  const txBuilder = await createApp(
+    {
+      publisherMintAddress: new PublicKey(publisherMintAddress),
+      mintAddress,
+      appDetails,
+    },
+    { connection, publisher }
+  );
 
-//     const blockhash = await connection.getLatestBlockhash();
-//     const tx = txBuilder.toTransaction(blockhash);
-//     tx.sign(mintAddress, signer);
+  const blockhash = await connection.getLatestBlockhash();
+  const tx = txBuilder.toTransaction(blockhash);
+  tx.sign(mintAddress, publisher);
 
-//     const txSig = await sendAndConfirmTransaction(connection, tx, [
-//       signer,
-//       mintAddress,
-//     ]);
-//     console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
-//   });
+  const txSig = await sendAndConfirmTransaction(connection, tx, [
+    publisher,
+    mintAddress,
+  ]);
+  console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+};
 
-// program.parse(process.argv);
+type CreateAppCommandInput = {
+  publisherMintAddress: string;
+  signer: Keypair;
+  url: string;
+  dryRun?: boolean;
+};
+
+export const createAppCommand = async ({
+  signer,
+  url,
+  dryRun,
+  publisherMintAddress,
+}: CreateAppCommandInput) => {
+  const connection = new Connection(url);
+
+  const appDetails = await getAppDetails();
+
+  if (!dryRun) {
+    await createAppNft({
+      connection,
+      publisher: signer,
+      publisherMintAddress,
+      appDetails,
+    });
+  }
+};

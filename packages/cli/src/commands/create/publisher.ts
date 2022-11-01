@@ -1,5 +1,4 @@
 import fs from "fs";
-import { Command } from "commander";
 import {
   createPublisher,
   Publisher,
@@ -39,7 +38,6 @@ const createPublisherNft = async ({
   publisherDetails: Publisher;
 }) => {
   const mintAddress = Keypair.generate();
-  console.trace();
   console.info(
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
   );
