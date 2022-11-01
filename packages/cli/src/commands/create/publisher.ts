@@ -1,5 +1,4 @@
 import fs from "fs";
-import { Command } from "commander";
 import {
   createPublisher,
   Publisher,
@@ -20,11 +19,10 @@ export const getPublisherDetails = async ({
   const configFile = `${process.cwd()}/dapp-store/config.yaml`;
   console.info(`Pulling publisher details from ${configFile}`);
 
-  // @ts-ignore
   const { publisher } = load(
     // TODO(jon): Parameterize this
     fs.readFileSync(configFile, "utf-8")
-  );
+  ) as { publisher: Publisher };
 
   return publisher;
 };
@@ -39,7 +37,6 @@ const createPublisherNft = async ({
   publisherDetails: Publisher;
 }) => {
   const mintAddress = Keypair.generate();
-  console.trace();
   console.info(
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
   );

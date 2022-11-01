@@ -2,4 +2,5 @@ export * from "./create-publisher";
 export * from "./create-app";
 export * from "./create-release";
 
-export * from "./validate/publisher";
+export * from "./validate";
+export * from "./types";

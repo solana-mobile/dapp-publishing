@@ -22,11 +22,13 @@
   },
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
-    "prebuild": "pnpm run clean"
+    "prebuild": "pnpm run clean",
+    "generate-types": "json2ts -i src/validate/schemas -o src/validate/generated"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/node-fetch": "^2.6.2",
+    "json-schema-to-typescript": "^11.0.2",
     "shx": "^0.3.4"
   },
   "dependencies": {

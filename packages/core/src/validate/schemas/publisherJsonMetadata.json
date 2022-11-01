@@ -21,17 +21,15 @@
         },
         "creators": {
           "type": "array",
-          "items": [
-            {
-              "type": "object",
-              "properties": {
-                "address": {
-                  "type": "string"
-                }
-              },
-              "required": ["address"]
-            }
-          ]
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              }
+            },
+            "required": ["address"]
+          }
         }
       },
       "required": ["category", "creators"]

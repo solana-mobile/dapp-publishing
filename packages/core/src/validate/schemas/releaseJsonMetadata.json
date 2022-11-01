@@ -1,0 +1,219 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "creators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              }
+            },
+            "required": ["address"]
+          }
+        }
+      },
+      "required": ["category", "creators"]
+    },
+    "extensions": {
+      "type": "object",
+      "properties": {
+        "solana_dapp_store": {
+          "type": "object",
+          "properties": {
+            "publisher_details": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "website": {
+                  "type": "string"
+                },
+                "contact": {
+                  "type": "string"
+                }
+              },
+              "required": ["name", "website", "contact"]
+            },
+            "release_details": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "updated_on": {
+                  "type": "string"
+                },
+                "license_url": {
+                  "type": "string"
+                },
+                "copyright_url": {
+                  "type": "string"
+                },
+                "privacy_policy_url": {
+                  "type": "string"
+                },
+                "age_rating": {
+                  "type": "string"
+                },
+                "localized_resources": {
+                  "type": "object",
+                  "properties": {
+                    "short_description": {
+                      "type": "integer"
+                    },
+                    "long_description": {
+                      "type": "integer"
+                    },
+                    "new_in_version": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "short_description",
+                    "long_description",
+                    "new_in_version"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "version",
+                "updated_on",
+                "license_url",
+                "copyright_url",
+                "privacy_policy_url",
+                "age_rating",
+                "localized_resources"
+              ]
+            },
+            "media": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "mime": {
+                    "type": "string"
+                  },
+                  "purpose": {
+                    "type": "string"
+                  },
+                  "uri": {
+                    "type": "string"
+                  },
+                  "sha256": {
+                    "type": "string"
+                  }
+                },
+                "required": ["mime", "purpose", "uri", "sha256"]
+              }
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "mime": {
+                    "type": "string"
+                  },
+                  "purpose": {
+                    "type": "string"
+                  },
+                  "uri": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "string"
+                  },
+                  "sha256": {
+                    "type": "string"
+                  }
+                },
+                "required": ["mime", "purpose", "uri", "size", "sha256"]
+              }
+            },
+            "android_details": {
+              "type": "object",
+              "properties": {
+                "android_package": {
+                  "type": "string"
+                },
+                "minSdk": {
+                  "type": "integer"
+                },
+                "permissions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "languages": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "android_package",
+                "minSdk",
+                "permissions",
+                "languages"
+              ]
+            }
+          },
+          "required": [
+            "publisher_details",
+            "release_details",
+            "media",
+            "files",
+            "android_details"
+          ]
+        },
+        "i18n": {
+          "type": "object",
+          "properties": {
+            "en-US": {
+              "type": "object",
+              "properties": {
+                "1": {
+                  "type": "string"
+                },
+                "2": {
+                  "type": "string"
+                },
+                "3": {
+                  "type": "string"
+                }
+              },
+              "required": ["1", "2", "3"]
+            }
+          },
+          "required": ["en-US"]
+        }
+      },
+      "required": ["solana_dapp_store", "i18n"]
+    }
+  },
+  "required": ["name", "description", "image", "properties", "extensions"]
+}

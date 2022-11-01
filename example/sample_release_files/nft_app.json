@@ -4,9 +4,12 @@
   "image": "http://cdn.org/wallet_display.png",
   "properties": {
     "category": "dApp",
-    "creators": {
-      "address": ""
-    }
+    "creators": [
+      {
+        "address": "",
+        "share": 100
+      }
+    ]
   },
   "extensions": {
     "solana_dapp_store": {
