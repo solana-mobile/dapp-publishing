@@ -1,5 +1,6 @@
 import fs from "fs";
-import { createApp, App } from "@solana-mobile/dapp-publishing-tools";
+import type { App } from "@solana-mobile/dapp-publishing-tools";
+import { createApp } from "@solana-mobile/dapp-publishing-tools";
 import {
   Connection,
   Keypair,
@@ -50,6 +51,8 @@ const createAppNft = async ({
     mintAddress,
   ]);
   console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+
+  return { appAddress: mintAddress.publicKey.toBase58() };
 };
 
 type CreateAppCommandInput = {
@@ -70,11 +73,12 @@ export const createAppCommand = async ({
   const appDetails = await getAppDetails();
 
   if (!dryRun) {
-    await createAppNft({
+    const { appAddress } = await createAppNft({
       connection,
       publisher: signer,
       publisherMintAddress,
       appDetails,
     });
+    return { appAddress };
   }
 };

@@ -1,12 +1,16 @@
 import Ajv from "ajv";
+// eslint-disable-next-line require-extensions/require-extensions
 import publisherSchema from "./schemas/publisherJsonMetadata.json";
+// eslint-disable-next-line require-extensions/require-extensions
 import appSchema from "./schemas/appJsonMetadata.json";
+// eslint-disable-next-line require-extensions/require-extensions
 import releaseSchema from "./schemas/releaseJsonMetadata.json";
+
 import type {
   AppJsonMetadata,
   PublisherJsonMetadata,
   ReleaseJsonMetadata,
-} from "../types";
+} from "../types.js";
 
 export const validatePublisher = (publisherJson: PublisherJsonMetadata) => {
   const ajv = new Ajv({ strictTuples: false });

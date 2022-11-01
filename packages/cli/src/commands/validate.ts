@@ -6,10 +6,10 @@ import {
   createReleaseJson,
   validateRelease,
 } from "@solana-mobile/dapp-publishing-tools";
-import { getPublisherDetails } from "./create/publisher";
+import { getPublisherDetails } from "./create/publisher.js";
 import type { Keypair } from "@solana/web3.js";
-import { debug } from "../utils";
-import { getAppDetails, getReleaseDetails } from "./create";
+import { debug } from "../utils.js";
+import { getAppDetails, getReleaseDetails } from "./create/index.js";
 
 export const validateCommand = async ({ signer }: { signer: Keypair }) => {
   const publisherDetails = await getPublisherDetails({

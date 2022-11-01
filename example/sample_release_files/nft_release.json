@@ -4,9 +4,11 @@
   "image": "https://placekitten.com/300/300",
   "properties": {
     "category": "dApp",
-    "creators": [{
-      "address": ""
-    }]
+    "creators": [
+      {
+        "address": ""
+      }
+    ]
   },
   "extensions": {
     "solana_dapp_store": {
@@ -49,12 +51,8 @@
       "android_details": {
         "android_package": "com.solanamobile.cutekittens",
         "minSdk": 24,
-        "permissions": [
-          "android.permission.INTERNET"
-        ],
-        "languages": [
-          "en-US"
-        ]
+        "permissions": ["android.permission.INTERNET"],
+        "languages": ["en-US"]
       }
     },
     "i18n": {

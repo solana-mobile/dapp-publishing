@@ -1,14 +1,15 @@
-import { mintNft } from "./utils";
-import type { Context, Publisher, PublisherJsonMetadata } from "./types";
+import type { TransactionBuilder } from "@metaplex-foundation/js";
 import {
   bundlrStorage,
   keypairIdentity,
   Metaplex,
-  TransactionBuilder,
 } from "@metaplex-foundation/js";
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
-import { validatePublisher } from "./validate";
+
+import { validatePublisher } from "./validate/index.js";
+import { mintNft } from "./utils.js";
+import type { Context, Publisher, PublisherJsonMetadata } from "./types.js";
 
 const debug = debugModule("PUBLISHER");
 

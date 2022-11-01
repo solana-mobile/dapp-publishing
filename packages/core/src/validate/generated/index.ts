@@ -1,3 +1,3 @@
-export * from "./publisherJsonMetadata";
-export * from "./appJsonMetadata";
-export * from "./releaseJsonMetadata";
+export * from "./publisherJsonMetadata.js";
+export * from "./appJsonMetadata.js";
+export * from "./releaseJsonMetadata.js";

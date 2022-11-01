@@ -58,7 +58,7 @@ export interface ReleaseJsonMetadata {
       }[];
       android_details: {
         android_package: string;
-        minSdk: number;
+        min_sdk: number;
         permissions: string[];
         languages: string[];
         [k: string]: unknown;

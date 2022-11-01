@@ -1,6 +1,6 @@
-export * from "./create-publisher";
-export * from "./create-app";
-export * from "./create-release";
+export * from "./create-publisher.js";
+export * from "./create-app.js";
+export * from "./create-release.js";
 
-export * from "./validate";
-export * from "./types";
+export * from "./validate/index.js";
+export * from "./types.js";

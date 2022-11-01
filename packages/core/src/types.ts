@@ -1,5 +1,5 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-export * from "./validate/generated";
+import type { Connection, Keypair, PublicKey } from "@solana/web3.js";
+export * from "./validate/generated/index.js";
 
 export type Context = {
   publisher: Keypair;
