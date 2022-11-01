@@ -11,7 +11,10 @@ import { validateRelease } from "./validate";
 
 const debug = debugModule("RELEASE");
 
-export const createReleaseJson = (release: Release): ReleaseJsonMetadata => {
+export const createReleaseJson = (
+  release: Release,
+  publisherAddress: PublicKey
+): ReleaseJsonMetadata => {
   const releaseMetadata = {
     // TODO(jon): Auto-generate this release name
     name: "",
@@ -25,7 +28,7 @@ export const createReleaseJson = (release: Release): ReleaseJsonMetadata => {
       category: "dApp",
       creators: [
         {
-          address: release.address.toBase58(),
+          address: publisherAddress.toBase58(),
           share: 100,
         },
       ],
@@ -119,7 +122,7 @@ export const createRelease = async (
         : bundlrStorage()
     );
 
-  const releaseJson = createReleaseJson(releaseDetails);
+  const releaseJson = createReleaseJson(releaseDetails, publisher.publicKey);
   validateRelease(releaseJson);
 
   const txBuilder = await mintNft(

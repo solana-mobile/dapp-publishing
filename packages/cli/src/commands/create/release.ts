@@ -7,6 +7,7 @@ import {
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
+import { load } from "js-yaml";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -19,11 +20,10 @@ export const getReleaseDetails = async (): Promise<Release> => {
   const configFile = `${process.cwd()}/dapp-store/config.yaml`;
   console.info(`Pulling app details from ${configFile}`);
 
-  // @ts-ignore
   const { release } = load(
     // TODO(jon): Parameterize this
     fs.readFileSync(configFile, "utf-8")
-  );
+  ) as { release: Release };
 
   return release;
 };

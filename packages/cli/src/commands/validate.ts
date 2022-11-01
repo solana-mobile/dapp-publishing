@@ -43,13 +43,12 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
   const releaseDetails = await getReleaseDetails();
   debug({ releaseDetails });
 
-  // TODO(jon): Pass the publisher
-  const releaseJson = createReleaseJson(releaseDetails);
+  const releaseJson = createReleaseJson(releaseDetails, signer.publicKey);
   debug(JSON.stringify({ releaseJson }, null, 2));
 
   try {
     validateRelease(releaseJson);
-    console.info(`App JSON valid!`);
+    console.info(`Release JSON valid!`);
   } catch (e) {
     console.error(e);
   }
