@@ -1,6 +1,6 @@
 publisher:
   name: My new publisher name
-  address: 8BQBWBzbaj6KxJBJB3bfZiiorSP6mNXpxb79kB5nBZFh
+  address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
   description:
     en-US: >
       A lot of extra information about my wonderful publisher
@@ -9,6 +9,7 @@ publisher:
 
 app:
   name: My new app name
+  address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
   description:
     en-US: >
       My new app description

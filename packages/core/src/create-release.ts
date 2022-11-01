@@ -77,7 +77,7 @@ export const createReleaseJson = (
         ],
         android_details: {
           android_package: "com.solanamobile.cutekittens",
-          minSdk: 24,
+          min_sdk: 24,
           permissions: ["android.permission.INTERNET"],
           languages: ["en-US"],
         },
@@ -125,18 +125,13 @@ export const createRelease = async (
   const releaseJson = createReleaseJson(releaseDetails, publisher.publicKey);
   validateRelease(releaseJson);
 
-  const txBuilder = await mintNft(
-    metaplex,
-    // TODO(jon): Add more interesting stuff to this release
-    { name: "My first great release!" },
-    {
-      useNewMint: releaseMintAddress,
-      collection: appMintAddress,
-      collectionAuthority: publisher,
-      creators: [{ address: publisher.publicKey, share: 100 }],
-      isMutable: false,
-    }
-  );
+  const txBuilder = await mintNft(metaplex, releaseJson, {
+    useNewMint: releaseMintAddress,
+    collection: appMintAddress,
+    collectionAuthority: publisher,
+    creators: [{ address: publisher.publicKey, share: 100 }],
+    isMutable: false,
+  });
 
   // TODO(jon): Enable a case where the signer is not the publisher
   // TODO(jon): Allow this to be unverified and to verify later

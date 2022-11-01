@@ -54,6 +54,8 @@ const createPublisherNft = async ({
     mintAddress,
   ]);
   console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+
+  return { publisherAddress: mintAddress.publicKey.toBase58() };
 };
 
 export const createPublisherCommand = async ({
@@ -65,7 +67,6 @@ export const createPublisherCommand = async ({
   url: string;
   dryRun: boolean;
 }) => {
-  // TODO(jon): Elevate this somehow
   const connection = new Connection(url);
 
   const publisherDetails = await getPublisherDetails({
@@ -73,11 +74,12 @@ export const createPublisherCommand = async ({
   });
 
   if (!dryRun) {
-    // TODO(jon): Pass the JSON
-    await createPublisherNft({
+    const { publisherAddress } = await createPublisherNft({
       connection,
       publisher: signer,
       publisherDetails,
     });
+
+    return { publisherAddress };
   }
 };

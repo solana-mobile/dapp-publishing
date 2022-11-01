@@ -39,8 +39,10 @@
     "@solana-mobile/dapp-publishing-tools": "workspace:^0.1.0",
     "@solana/web3.js": "^1.66.2",
     "commander": "^9.4.1",
+    "conf": "^10.2.0",
     "debug": "^4.3.4",
     "esm": "^3.2.25",
+    "inquirer": "^9.1.4",
     "js-yaml": "^4.1.0"
   }
 }

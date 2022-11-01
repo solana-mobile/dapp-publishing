@@ -50,6 +50,8 @@ const createAppNft = async ({
     mintAddress,
   ]);
   console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+
+  return { appAddress: mintAddress.publicKey.toBase58() };
 };
 
 type CreateAppCommandInput = {
@@ -70,11 +72,12 @@ export const createAppCommand = async ({
   const appDetails = await getAppDetails();
 
   if (!dryRun) {
-    await createAppNft({
+    const { appAddress } = await createAppNft({
       connection,
       publisher: signer,
       publisherMintAddress,
       appDetails,
     });
+    return { appAddress };
   }
 };
