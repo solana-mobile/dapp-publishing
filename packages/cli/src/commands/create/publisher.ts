@@ -1,12 +1,10 @@
 import fs from "fs";
-import {
-  createPublisher,
-  Publisher,
-} from "@solana-mobile/dapp-publishing-tools";
+import type { Publisher } from "@solana-mobile/dapp-publishing-tools";
+import { createPublisher } from "@solana-mobile/dapp-publishing-tools";
+import type { PublicKey } from "@solana/web3.js";
 import {
   Connection,
   Keypair,
-  PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import { load } from "js-yaml";

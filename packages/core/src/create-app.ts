@@ -1,13 +1,13 @@
-import { mintNft } from "./utils";
-import type { Context, App, AppJsonMetadata } from "./types";
-import { PublicKey, Signer } from "@solana/web3.js";
+import { mintNft } from "./utils.js";
+import type { Context, App, AppJsonMetadata } from "./types.js";
+import type { PublicKey, Signer } from "@solana/web3.js";
 import {
   bundlrStorage,
   keypairIdentity,
   Metaplex,
 } from "@metaplex-foundation/js";
 import debugModule from "debug";
-import { validateApp } from "./validate";
+import { validateApp } from "./validate/index.js";
 
 const debug = debugModule("APP");
 

@@ -1,13 +1,14 @@
-import { mintNft } from "./utils";
-import type { Context, Release, ReleaseJsonMetadata } from "./types";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import type { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
 import {
   bundlrStorage,
   keypairIdentity,
   Metaplex,
 } from "@metaplex-foundation/js";
-import { validateRelease } from "./validate";
+import { mintNft } from "./utils.js";
+import { validateRelease } from "./validate/index.js";
+
+import type { Context, Release, ReleaseJsonMetadata } from "./types.js";
 
 const debug = debugModule("RELEASE");
 
