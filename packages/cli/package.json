@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "@solana-mobile/dapp-cli",
+  "name": "@solana-mobile/dapp-store-cli",
   "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
@@ -14,7 +14,7 @@
     "types": "./lib/types/index.d.ts"
   },
   "bin": {
-    "@solana-mobile/dapp-cli": "./lib/index.js"
+    "dapp-store": "./lib/esm/index.js"
   },
   "files": [
     "lib",

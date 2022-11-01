@@ -3,7 +3,7 @@ import { Command } from "commander";
 async function main() {
   const program = new Command();
   program
-    .name("@solana-mobile/dapp-store-cli")
+    .name("dapp-store")
     .version("0.1.0")
     .description("CLI to assist with publishing to the Saga Dapp Store")
     // For some reason i can't retrieve these global options in subcommands
