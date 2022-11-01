@@ -9,22 +9,40 @@ import {
 import debugModule from "debug";
 import type { JsonMetadata } from "@metaplex-foundation/js";
 import type { PublicKey, Signer } from "@solana/web3.js";
+import { validatePublisher } from "./validate/publisher";
 
 const debug = debugModule("PUBLISHER");
 
 export type Publisher = {
-  address: PublicKey;
+  address: string;
   name: string;
-  description: string;
+  description: {
+    "en-US": string;
+  };
   website: string;
   email: string;
 };
 
-export const createPublisherJson = (publisher: Publisher): JsonMetadata => {
+export type PublisherJsonMetadata = JsonMetadata & {
+  name: string;
+  extensions: {
+    solana_dapp_store: {
+      publisher_details: {
+        name: string;
+        website: string;
+        contact: string;
+      };
+    };
+  };
+};
+
+export const createPublisherJson = (
+  publisher: Publisher
+): PublisherJsonMetadata => {
   const publisherMetadata = {
     name: publisher.name,
     // TODO(jon): Handle locale resources
-    description: publisher.description,
+    description: publisher.description["en-US"],
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: publisher.website,
@@ -32,7 +50,7 @@ export const createPublisherJson = (publisher: Publisher): JsonMetadata => {
       category: "dApp",
       creators: [
         {
-          address: publisher.address.toBase58(),
+          address: publisher.address,
           share: 100,
         },
       ],
@@ -54,12 +72,11 @@ export const createPublisherJson = (publisher: Publisher): JsonMetadata => {
 
 type CreatePublisherInput = {
   mintAddress: Signer;
-  // TODO(jon): Give this a better type
-  publisherJson: any;
+  publisherDetails: Publisher;
 };
 
 export const createPublisher = async (
-  { mintAddress, publisherJson }: CreatePublisherInput,
+  { mintAddress, publisherDetails }: CreatePublisherInput,
   { connection, publisher }: Context
 ): Promise<TransactionBuilder> => {
   debug(`Minting publisher NFT`);
@@ -74,6 +91,9 @@ export const createPublisher = async (
           })
         : bundlrStorage()
     );
+
+  const publisherJson = createPublisherJson(publisherDetails);
+  validatePublisher(publisherJson);
 
   const txBuilder = await mintNft(metaplex, publisherJson, {
     isCollection: true,

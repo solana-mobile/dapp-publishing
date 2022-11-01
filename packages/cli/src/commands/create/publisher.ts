@@ -2,7 +2,7 @@ import fs from "fs";
 import { Command } from "commander";
 import {
   createPublisher,
-  createPublisherJson,
+  Publisher,
 } from "@solana-mobile/dapp-publishing-tools";
 import {
   Connection,
@@ -11,44 +11,40 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import { load } from "js-yaml";
-import { parseKeypair } from "../../utils";
 
-const getPublisherJson = async ({
+export const getPublisherDetails = async ({
   publisherAddress,
 }: {
   publisherAddress: PublicKey;
-}): Promise<any> => {
+}): Promise<Publisher> => {
+  const configFile = `${process.cwd()}/dapp-store/config.yaml`;
+  console.info(`Pulling publisher details from ${configFile}`);
+
   // @ts-ignore
   const { publisher } = load(
     // TODO(jon): Parameterize this
-    fs.readFileSync(`${process.cwd()}/dapp-store/config.yaml`, "utf-8")
+    fs.readFileSync(configFile, "utf-8")
   );
 
-  const publisherMetadata = createPublisherJson({
-    ...publisher,
-    address: publisherAddress,
-    description: publisher.description["en-US"],
-  });
-  console.log(JSON.stringify(publisherMetadata, null, 2));
-
-  return publisherMetadata;
+  return publisher;
 };
 
 const createPublisherNft = async ({
   connection,
   publisher,
-  publisherJson,
+  publisherDetails,
 }: {
   connection: Connection;
   publisher: Keypair;
-  publisherJson: any;
+  publisherDetails: Publisher;
 }) => {
   const mintAddress = Keypair.generate();
+  console.trace();
   console.info(
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
   );
   const txBuilder = await createPublisher(
-    { mintAddress, publisherJson },
+    { mintAddress, publisherDetails },
     { connection, publisher }
   );
 
@@ -63,35 +59,28 @@ const createPublisherNft = async ({
   console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
 };
 
-const program = new Command();
+export const createPublisherCommand = async ({
+  signer,
+  url,
+  dryRun,
+}: {
+  signer: Keypair;
+  url: string;
+  dryRun: boolean;
+}) => {
+  // TODO(jon): Elevate this somehow
+  const connection = new Connection(url);
 
-program
-  .description("Creates a publisher")
-  .requiredOption(
-    "-k, --keypair <path-to-keypair-file>",
-    "Path to keypair file"
-  )
-  .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net/")
-  .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-  .action(async () => {
-    const { keypair, url, dryRun } = program.opts();
-
-    // TODO(jon): Elevate this somehow
-    const connection = new Connection(url);
-    const signer = parseKeypair(keypair);
-
-    const publisherJson = getPublisherJson({
-      publisherAddress: signer.publicKey,
-    });
-
-    if (!dryRun) {
-      // TODO(jon): Pass the JSON
-      await createPublisherNft({
-        connection,
-        publisher: signer,
-        publisherJson,
-      });
-    }
+  const publisherDetails = await getPublisherDetails({
+    publisherAddress: signer.publicKey,
   });
 
-program.parse(process.argv);
+  if (!dryRun) {
+    // TODO(jon): Pass the JSON
+    await createPublisherNft({
+      connection,
+      publisher: signer,
+      publisherDetails,
+    });
+  }
+};

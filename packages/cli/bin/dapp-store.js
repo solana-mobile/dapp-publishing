@@ -1,3 +1,3 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --experimental-specifier-resolution=node
 
-require("../lib/esm/index");
+import "../lib/esm/index.js";

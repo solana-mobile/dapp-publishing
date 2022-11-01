@@ -1,11 +1,8 @@
 import {
   CreateNftInput,
-  CreateNftOutput,
   Metaplex,
   TransactionBuilder,
-  UploadMetadataInput,
 } from "@metaplex-foundation/js";
-import { Keypair, Transaction } from "@solana/web3.js";
 
 export const mintNft = async (
   metaplex: Metaplex,
