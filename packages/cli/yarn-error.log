@@ -1,0 +1,76 @@
+Arguments: 
+  /Users/jnwng/.nvm/versions/node/v16.13.2/bin/node /Users/jnwng/.node/corepack/yarn/1.22.19/bin/yarn.js add inquirer
+
+PATH: 
+  /Users/jnwng/.nvm/versions/node/v16.13.2/bin:/Users/jnwng/forks/solana/bin:/usr/local/opt/openssl@1.1/bin:/Users/jnwng/bin:/Users/jnwng/.cargo/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/Users/jnwng/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Users/jnwng/forks/solana/bin:/usr/local/opt/openssl@1.1/bin:/Users/jnwng/bin:/Users/jnwng/.cargo/bin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/Users/jnwng/.local/share/solana/install/active_release/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.13.2
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@solana-mobile%2fdapp-publishing-tools: Not found
+      at Request.params.callback [as _callback] (/Users/jnwng/.node/corepack/yarn/1.22.19/lib/cli.js:66145:18)
+      at Request.self.callback (/Users/jnwng/.node/corepack/yarn/1.22.19/lib/cli.js:140890:22)
+      at Request.emit (node:events:390:28)
+      at Request.<anonymous> (/Users/jnwng/.node/corepack/yarn/1.22.19/lib/cli.js:141862:10)
+      at Request.emit (node:events:390:28)
+      at IncomingMessage.<anonymous> (/Users/jnwng/.node/corepack/yarn/1.22.19/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:509:28)
+      at IncomingMessage.emit (node:events:402:35)
+      at endReadableNT (node:internal/streams/readable:1343:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "private": true,
+    "name": "@solana-mobile/dapp-cli",
+    "version": "0.1.0",
+    "license": "Apache-2.0",
+    "type": "module",
+    "sideEffects": false,
+    "main": "./lib/cjs/index.js",
+    "module": "./lib/esm/index.js",
+    "types": "./lib/types/index.d.ts",
+    "exports": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
+    },
+    "bin": {
+      "@solana-mobile/dapp-cli": "./lib/index.js"
+    },
+    "files": [
+      "lib",
+      "src",
+      "LICENSE"
+    ],
+    "publishConfig": {
+      "access": "public"
+    },
+    "scripts": {
+      "clean": "shx mkdir -p lib && shx rm -rf lib",
+      "prebuild": "pnpm run clean"
+    },
+    "devDependencies": {
+      "shx": "^0.3.4"
+    },
+    "dependencies": {
+      "@solana-mobile/dapp-publishing-tools": "workspace:^0.1.0",
+      "@solana/web3.js": "^1.66.2",
+      "commander": "^9.4.1",
+      "esm": "^3.2.25",
+      "inquirer": "^9.1.4"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

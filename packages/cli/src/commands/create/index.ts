@@ -1,17 +1,6 @@
-// export * from "./publisher";
-// export * from "./app";
-// export * from "./release";
-
-import { Command } from "commander";
-
-const program = new Command();
-
-program
-  .command("publisher", "Create a publisher", { executableFile: "publisher" })
-  .command("app", "Create an app", { executableFile: "app" })
-  .command("release", "Create a release", { executableFile: "release" });
-
-program.parse(process.argv);
+export * from "./publisher";
+export * from "./app";
+export * from "./release";
 
 /*
  * Module responsible for creating publishers, apps, and releases (in that order)
