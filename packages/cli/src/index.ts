@@ -1,14 +1,13 @@
 import { Command } from "commander";
 import Conf from "conf";
 import inquirer from "inquirer";
-import { config } from "process";
-import { validateCommand } from "./commands";
+import { validateCommand } from "./commands/index.js";
 import {
   createAppCommand,
   createPublisherCommand,
   createReleaseCommand,
-} from "./commands/create";
-import { parseKeypair } from "./utils";
+} from "./commands/create/index.js";
+import { parseKeypair } from "./utils.js";
 
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
