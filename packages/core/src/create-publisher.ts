@@ -1,5 +1,5 @@
 import { mintNft } from "./utils";
-import type { Context, Publisher } from "./types";
+import type { Context, Publisher, PublisherJsonMetadata } from "./types";
 import {
   bundlrStorage,
   keypairIdentity,
@@ -7,24 +7,10 @@ import {
   TransactionBuilder,
 } from "@metaplex-foundation/js";
 import debugModule from "debug";
-import type { JsonMetadata } from "@metaplex-foundation/js";
-import type { PublicKey, Signer } from "@solana/web3.js";
+import type { Signer } from "@solana/web3.js";
 import { validatePublisher } from "./validate";
 
 const debug = debugModule("PUBLISHER");
-
-export type PublisherJsonMetadata = JsonMetadata & {
-  name: string;
-  extensions: {
-    solana_dapp_store: {
-      publisher_details: {
-        name: string;
-        website: string;
-        contact: string;
-      };
-    };
-  };
-};
 
 export const createPublisherJson = (
   publisher: Publisher

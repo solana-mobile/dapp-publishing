@@ -1,4 +1,6 @@
+import fs from "fs";
 import { createRelease } from "@solana-mobile/dapp-publishing-tools";
+import type { Release } from "@solana-mobile/dapp-publishing-tools";
 import {
   Connection,
   Keypair,
@@ -13,6 +15,54 @@ type CreateReleaseCommandInput = {
   dryRun?: boolean;
 };
 
+export const getReleaseDetails = async (): Promise<Release> => {
+  const configFile = `${process.cwd()}/dapp-store/config.yaml`;
+  console.info(`Pulling app details from ${configFile}`);
+
+  // @ts-ignore
+  const { release } = load(
+    // TODO(jon): Parameterize this
+    fs.readFileSync(configFile, "utf-8")
+  );
+
+  return release;
+};
+
+const createReleaseNft = async ({
+  appMintAddress,
+  releaseDetails,
+  connection,
+  publisher,
+}: {
+  appMintAddress: string;
+  releaseDetails: Release;
+  connection: Connection;
+  publisher: Keypair;
+}) => {
+  const releaseMintAddress = Keypair.generate();
+  const txBuilder = await createRelease(
+    {
+      appMintAddress: new PublicKey(appMintAddress),
+      releaseMintAddress,
+      releaseDetails,
+    },
+    { connection, publisher }
+  );
+
+  const blockhash = await connection.getLatestBlockhash();
+  const tx = txBuilder.toTransaction(blockhash);
+  tx.sign(releaseMintAddress, publisher);
+
+  const txSig = await sendAndConfirmTransaction(connection, tx, [
+    publisher,
+    releaseMintAddress,
+  ]);
+  console.info({
+    txSig,
+    releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+  });
+};
+
 export const createReleaseCommand = async ({
   appMintAddress,
   signer,
@@ -21,27 +71,14 @@ export const createReleaseCommand = async ({
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const releaseMintAddress = Keypair.generate();
-  const txBuilder = await createRelease(
-    {
-      appMintAddress: new PublicKey(appMintAddress),
-      releaseMintAddress,
-    },
-    { connection, publisher: signer }
-  );
-
-  const blockhash = await connection.getLatestBlockhash();
-  const tx = txBuilder.toTransaction(blockhash);
-  tx.sign(releaseMintAddress, signer);
+  const releaseDetails = await getReleaseDetails();
 
   if (!dryRun) {
-    const txSig = await sendAndConfirmTransaction(connection, tx, [
-      signer,
-      releaseMintAddress,
-    ]);
-    console.info({
-      txSig,
-      releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+    await createReleaseNft({
+      appMintAddress,
+      connection,
+      publisher: signer,
+      releaseDetails,
     });
   }
 };

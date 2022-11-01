@@ -1,8 +1,21 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
+export * from "./validate/generated";
 
 export type Context = {
   publisher: Keypair;
   connection: Connection;
+};
+
+type AndroidDetails = {
+  android_package: string;
+  google_store_package: string;
+  min_sdk: number;
+  version_code: number;
+  permissions: (
+    | "android.permission.INTERNET"
+    | "android.permission.LOCATION_HARDWARE"
+    | "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
+  )[];
 };
 
 export type Publisher = {
@@ -29,21 +42,22 @@ export type App = {
     website: string;
   };
   age_rating: string;
-  android_details: {
-    android_package: string;
-    google_store_package: string;
-    min_sdk: number;
-    version_code: number;
-    permissions: (
-      | "android.permission.INTERNET"
-      | "android.permission.LOCATION_HARDWARE"
-      | "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
-    )[];
-  };
+  android_details: AndroidDetails;
 };
 
 export type Release = {
   address: PublicKey;
-  appAddress: PublicKey;
-  publisherAddress: PublicKey;
+  appMintAddress: string;
+  publisherMintAddress: string;
+  media: {
+    mime: "image/png";
+    purpose: "screenshot";
+    uri: string;
+  }[];
+  files: {
+    mime: "application/octet-stream";
+    purpose: "install";
+    uri: string;
+  }[];
+  androidDetails: AndroidDetails;
 };

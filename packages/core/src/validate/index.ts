@@ -1,8 +1,12 @@
 import Ajv from "ajv";
-import { AppJsonMetadata } from "../create-app";
-import { PublisherJsonMetadata } from "../create-publisher";
-import publisherSchema from "./schemas/publisher.json";
-import appSchema from "./schemas/app.json";
+import publisherSchema from "./schemas/publisherJsonMetadata.json";
+import appSchema from "./schemas/appJsonMetadata.json";
+import releaseSchema from "./schemas/releaseJsonMetadata.json";
+import type {
+  AppJsonMetadata,
+  PublisherJsonMetadata,
+  ReleaseJsonMetadata,
+} from "../types";
 
 export const validatePublisher = (publisherJson: PublisherJsonMetadata) => {
   const ajv = new Ajv({ strictTuples: false });
@@ -24,6 +28,18 @@ export const validateApp = (appJson: AppJsonMetadata) => {
   if (!valid) {
     console.error(validate.errors);
     throw new Error("App JSON not valid");
+  }
+  return valid;
+};
+
+export const validateRelease = (releaseJson: ReleaseJsonMetadata) => {
+  const ajv = new Ajv({ strictTuples: false });
+  const validate = ajv.compile(releaseSchema);
+
+  const valid = validate(releaseJson);
+  if (!valid) {
+    console.error(validate.errors);
+    throw new Error("Release JSON not valid");
   }
   return valid;
 };

@@ -3,11 +3,13 @@ import {
   validatePublisher,
   createAppJson,
   validateApp,
+  createReleaseJson,
+  validateRelease,
 } from "@solana-mobile/dapp-publishing-tools";
 import { getPublisherDetails } from "./create/publisher";
 import type { Keypair } from "@solana/web3.js";
 import { debug } from "../utils";
-import { getAppDetails } from "./create";
+import { getAppDetails, getReleaseDetails } from "./create";
 
 export const validateCommand = async ({ signer }: { signer: Keypair }) => {
   const publisherDetails = await getPublisherDetails({
@@ -33,6 +35,20 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
 
   try {
     validateApp(appJson);
+    console.info(`App JSON valid!`);
+  } catch (e) {
+    console.error(e);
+  }
+
+  const releaseDetails = await getReleaseDetails();
+  debug({ releaseDetails });
+
+  // TODO(jon): Pass the publisher
+  const releaseJson = createReleaseJson(releaseDetails);
+  debug(JSON.stringify({ releaseJson }, null, 2));
+
+  try {
+    validateRelease(releaseJson);
     console.info(`App JSON valid!`);
   } catch (e) {
     console.error(e);

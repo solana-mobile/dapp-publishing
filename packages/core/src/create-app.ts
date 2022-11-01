@@ -1,5 +1,5 @@
 import { mintNft } from "./utils";
-import type { Context, App } from "./types";
+import type { Context, App, AppJsonMetadata } from "./types";
 import { Keypair, PublicKey, Signer } from "@solana/web3.js";
 import {
   bundlrStorage,
@@ -11,15 +11,6 @@ import debugModule from "debug";
 import { validateApp } from "./validate";
 
 const debug = debugModule("APP");
-
-export type AppJsonMetadata = JsonMetadata & {
-  name: string;
-  extensions: {
-    solana_dapp_store: {
-      android_package: string;
-    };
-  };
-};
 
 export const createAppJson = (
   app: App,

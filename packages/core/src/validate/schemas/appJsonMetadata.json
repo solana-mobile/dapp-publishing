@@ -17,13 +17,19 @@
           "type": "string"
         },
         "creators": {
-          "type": "object",
-          "properties": {
-            "address": {
-              "type": "string"
-            }
-          },
-          "required": ["address"]
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              },
+              "share": {
+                "type": "integer"
+              }
+            },
+            "required": ["address", "share"]
+          }
         }
       },
       "required": ["category", "creators"]
