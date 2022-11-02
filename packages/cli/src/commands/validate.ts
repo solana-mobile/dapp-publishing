@@ -41,10 +41,13 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
   }
 
   // TODO(jon): Remove this hardcoded version
-  const releaseDetails = await getReleaseDetails("v1.0.2");
+  const { release: releaseDetails } = await getReleaseDetails("v1.0.2");
   debug({ releaseDetails });
 
-  const releaseJson = createReleaseJson(releaseDetails, signer.publicKey);
+  const releaseJson = await createReleaseJson(
+    { releaseDetails, appDetails, publisherDetails },
+    signer.publicKey
+  );
   debug(JSON.stringify({ releaseJson }, null, 2));
 
   try {

@@ -62,7 +62,7 @@
                   "type": "string"
                 },
                 "updated_on": {
-                  "type": "string"
+                  "type": "integer"
                 },
                 "license_url": {
                   "type": "string"
@@ -118,14 +118,11 @@
                   "purpose": {
                     "type": "string"
                   },
-                  "uri": {
-                    "type": "string"
-                  },
                   "sha256": {
                     "type": "string"
                   }
                 },
-                "required": ["mime", "purpose", "uri", "sha256"]
+                "required": ["mime", "purpose", "sha256"]
               }
             },
             "files": {
@@ -139,17 +136,14 @@
                   "purpose": {
                     "type": "string"
                   },
-                  "uri": {
-                    "type": "string"
-                  },
                   "size": {
-                    "type": "string"
+                    "type": "integer"
                   },
                   "sha256": {
                     "type": "string"
                   }
                 },
-                "required": ["mime", "purpose", "uri", "size", "sha256"]
+                "required": ["mime", "purpose", "size", "sha256"]
               }
             },
             "android_details": {
@@ -167,7 +161,7 @@
                     "type": "string"
                   }
                 },
-                "languages": {
+                "locales": {
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -178,7 +172,7 @@
                 "android_package",
                 "min_sdk",
                 "permissions",
-                "languages"
+                "locales"
               ]
             }
           },

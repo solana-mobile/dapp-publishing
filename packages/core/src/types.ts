@@ -1,4 +1,5 @@
 import type { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { ReleaseJsonMetadata } from "./validate/generated/releaseJsonMetadata.js";
 export * from "./validate/generated/index.js";
 
 export type Context = {
@@ -16,6 +17,7 @@ type AndroidDetails = {
     | "android.permission.LOCATION_HARDWARE"
     | "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
   )[];
+  locales: string[];
 };
 
 export type Publisher = {
@@ -47,16 +49,15 @@ export type App = {
 
 export type Release = {
   address: PublicKey;
+  version: string;
   appMintAddress: string;
   publisherMintAddress: string;
   media: {
-    mime: "image/png";
-    purpose: "screenshot";
+    purpose: string;
     uri: string;
   }[];
   files: {
-    mime: "application/octet-stream";
-    purpose: "install";
+    purpose: string;
     uri: string;
   }[];
   android_details: AndroidDetails;

@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/mime": "^3.0.1",
     "@types/node-fetch": "^2.6.2",
     "json-schema-to-typescript": "^11.0.2",
     "shx": "^0.3.4"
@@ -35,6 +36,7 @@
     "@metaplex-foundation/js": "^0.17.1",
     "@solana/web3.js": "^1.64.0",
     "ajv": "^8.11.0",
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "mime": "^3.0.0"
   }
 }

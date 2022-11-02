@@ -1,6 +1,11 @@
 release:
-  version: 1.0.2
-  apk: ./app-debug.apk
+  version: v1.0.2
+  media:
+    - purpose: screenshot
+      uri: ./app_screenshot.png
+  files:
+    - purpose: install
+      uri: ./app-debug.apk
   localized_resources:
     en-US:
       short_description: >

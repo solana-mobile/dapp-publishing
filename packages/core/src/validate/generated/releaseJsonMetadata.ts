@@ -5,6 +5,8 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+import type { MetaplexFile } from "@metaplex-foundation/js";
+
 export interface ReleaseJsonMetadata {
   name: string;
   description: string;
@@ -28,7 +30,7 @@ export interface ReleaseJsonMetadata {
       release_details: {
         name: string;
         version: string;
-        updated_on: string;
+        updated_on: number;
         license_url: string;
         copyright_url: string;
         privacy_policy_url: string;
@@ -44,15 +46,16 @@ export interface ReleaseJsonMetadata {
       media: {
         mime: string;
         purpose: string;
-        uri: string;
+        uri: string | MetaplexFile;
         sha256: string;
+        size: number;
         [k: string]: unknown;
       }[];
       files: {
         mime: string;
         purpose: string;
-        uri: string;
-        size: string;
+        uri: string | MetaplexFile;
+        size: number;
         sha256: string;
         [k: string]: unknown;
       }[];
@@ -60,7 +63,7 @@ export interface ReleaseJsonMetadata {
         android_package: string;
         min_sdk: number;
         permissions: string[];
-        languages: string[];
+        locales: string[];
         [k: string]: unknown;
       };
       [k: string]: unknown;

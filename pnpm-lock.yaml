@@ -72,18 +72,22 @@ importers:
       '@metaplex-foundation/js': ^0.17.1
       '@solana/web3.js': ^1.64.0
       '@types/debug': ^4.1.7
+      '@types/mime': ^3.0.1
       '@types/node-fetch': ^2.6.2
       ajv: ^8.11.0
       debug: ^4.3.4
       json-schema-to-typescript: ^11.0.2
+      mime: ^3.0.0
       shx: ^0.3.4
     dependencies:
       '@metaplex-foundation/js': 0.17.2
       '@solana/web3.js': 1.66.2
       ajv: 8.11.0
       debug: 4.3.4
+      mime: 3.0.0
     devDependencies:
       '@types/debug': 4.1.7
+      '@types/mime': 3.0.1
       '@types/node-fetch': 2.6.2
       json-schema-to-typescript: 11.0.2
       shx: 0.3.4
@@ -870,6 +874,10 @@ packages:
 
   /@types/lodash/4.14.187:
     resolution: {integrity: sha512-MrO/xLXCaUgZy3y96C/iOsaIqZSeupyTImKClHunL5GrmaiII2VwvWmLBu2hwa0Kp0sV19CsyjtrTc/Fx8rg/A==}
+    dev: true
+
+  /@types/mime/3.0.1:
+    resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: true
 
   /@types/minimatch/5.1.2:
