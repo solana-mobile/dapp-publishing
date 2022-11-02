@@ -116,6 +116,5 @@ dapp-store/releases
 └── v1.0.2
     ├── app-debug.apk
     ├── app_screenshot.png
-    ├── release.json
     └── release.yml
 ```
