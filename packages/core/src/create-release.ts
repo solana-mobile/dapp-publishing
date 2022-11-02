@@ -1,30 +1,81 @@
+import path from "path";
+import fs from "fs";
+import { createHash } from "crypto";
+import mime from "mime";
 import type { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
 import {
   bundlrStorage,
   keypairIdentity,
   Metaplex,
+  toMetaplexFile,
 } from "@metaplex-foundation/js";
-import { mintNft } from "./utils.js";
+import { mintNft, truncateAddress } from "./utils.js";
 import { validateRelease } from "./validate/index.js";
 
-import type { Context, Release, ReleaseJsonMetadata } from "./types.js";
+import type {
+  App,
+  Context,
+  Publisher,
+  Release,
+  ReleaseJsonMetadata,
+} from "./types.js";
 
 const debug = debugModule("RELEASE");
 
-export const createReleaseJson = (
-  release: Release,
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
+type DappFile = ArrayElement<Release["media"]>;
+
+const getFileMetadata = async (item: DappFile, version: string) => {
+  const file = path.join(
+    process.cwd(),
+    "dapp-store",
+    "releases",
+    version,
+    item.uri
+  );
+  debug({ file });
+  const mediaBuffer = await fs.promises.readFile(file);
+  const size = (await fs.promises.stat(file)).size;
+  const hash = createHash("sha256").update(mediaBuffer).digest("base64");
+  return {
+    purpose: item.purpose,
+    uri: toMetaplexFile(mediaBuffer, item.uri),
+    mime: mime.getType(item.uri) || "",
+    size,
+    sha256: hash,
+  };
+};
+
+export const createReleaseJson = async (
+  {
+    releaseDetails,
+    appDetails,
+    publisherDetails,
+  }: { releaseDetails: Release; appDetails: App; publisherDetails: Publisher },
   publisherAddress: PublicKey
-): ReleaseJsonMetadata => {
+): Promise<ReleaseJsonMetadata> => {
+  const truncatedAppMintAddress = truncateAddress(appDetails.address);
+
+  const releaseName = `${truncatedAppMintAddress} ${releaseDetails.version}`;
+
+  const media = [];
+  for await (const item of releaseDetails.media) {
+    media.push(await getFileMetadata(item, releaseDetails.version));
+  }
+
+  const files = [];
+  debug({ files: releaseDetails.files });
+  for await (const item of releaseDetails.files) {
+    files.push(await getFileMetadata(item, releaseDetails.version));
+  }
+
   const releaseMetadata = {
-    // TODO(jon): Auto-generate this release name
-    name: "",
-    // TODO(jon): Pull this from release notes
-    description: "",
+    name: releaseName,
+    description: releaseDetails.localized_resources["en-US"].new_in_version,
     // TODO(jon): Figure out where to get this image
     image: "",
-    // TODO(jon): Retrieve this from the application information
-    external_url: "",
+    external_url: appDetails.urls.website,
     properties: {
       category: "dApp",
       creators: [
@@ -35,59 +86,35 @@ export const createReleaseJson = (
       ],
     },
     extensions: {
-      // TODO(jon): What is the name of this actually?
       solana_dapp_store: {
         publisher_details: {
-          // TODO(jon): Retrieve this from the publisher
-          name: "Solana Mobile",
-          website: "https://solanamobile.com/",
-          contact: "contact@solanamobile.com",
+          name: publisherDetails.name,
+          website: publisherDetails.website,
+          contact: publisherDetails.email,
         },
         release_details: {
-          name: "Cute Kittens: cute kittens on the go",
-          version: "0.5.0",
-          updated_on: "1660594142",
-          license_url: "https://solanamobile.com/tos",
-          copyright_url: "https://solanamobile.com/tos",
-          privacy_policy_url: "https://solanamobile.com/privacy-policy",
-          age_rating: "3+",
+          name: releaseName,
+          version: releaseDetails.version,
+          updated_on: Math.floor(Date.now() / 1000),
+          license_url: appDetails.urls.license_url,
+          copyright_url: appDetails.urls.copyright_url,
+          privacy_policy_url: appDetails.urls.privacy_policy_url,
+          age_rating: appDetails.age_rating,
           localized_resources: {
             short_description: 1,
             long_description: 2,
             new_in_version: 3,
           },
         },
-        media: [
-          {
-            mime: "image/png",
-            purpose: "screenshot",
-            uri: "app_screenshot.png",
-            sha256:
-              "135ebc451cd93e15e6f5c80a41099f8bb3c5f1762742676300badf8520b32a56",
-          },
-        ],
-        files: [
-          {
-            mime: "application/octet-stream",
-            purpose: "install",
-            uri: "app-debug.apk",
-            size: "5976883",
-            sha256:
-              "b4c6a3eca0fe9d7d593f487f534642778a9a521fe301113a6550ea3980b569b9",
-          },
-        ],
-        android_details: {
-          android_package: "com.solanamobile.cutekittens",
-          min_sdk: 24,
-          permissions: ["android.permission.INTERNET"],
-          languages: ["en-US"],
-        },
+        media,
+        files,
+        android_details: appDetails.android_details,
       },
       i18n: {
         "en-US": {
-          "1": release.localized_resources["en-US"].short_description,
-          "2": release.localized_resources["en-US"].long_description,
-          "3": release.localized_resources["en-US"].new_in_version,
+          "1": releaseDetails.localized_resources["en-US"].short_description,
+          "2": releaseDetails.localized_resources["en-US"].long_description,
+          "3": releaseDetails.localized_resources["en-US"].new_in_version,
         },
       },
     },
@@ -100,18 +127,22 @@ type CreateReleaseInput = {
   releaseMintAddress: Keypair;
   appMintAddress: PublicKey;
   releaseDetails: Release;
+  publisherDetails: Publisher;
+  appDetails: App;
 };
 
 export const createRelease = async (
-  { appMintAddress, releaseMintAddress, releaseDetails }: CreateReleaseInput,
+  {
+    appMintAddress,
+    releaseMintAddress,
+    releaseDetails,
+    appDetails,
+    publisherDetails,
+  }: CreateReleaseInput,
   // We're going to assume that the publisher is the signer
   { publisher, connection }: Context
 ) => {
-  debug(
-    `Minting release NFT for: ${{
-      app: appMintAddress.toBase58(),
-    }}`
-  );
+  debug(`Minting release NFT for: ${appMintAddress.toBase58()}`);
 
   const metaplex = Metaplex.make(connection)
     .use(keypairIdentity(publisher))
@@ -123,9 +154,13 @@ export const createRelease = async (
         : bundlrStorage()
     );
 
-  const releaseJson = createReleaseJson(releaseDetails, publisher.publicKey);
+  const releaseJson = await createReleaseJson(
+    { releaseDetails, appDetails, publisherDetails },
+    publisher.publicKey
+  );
   validateRelease(releaseJson);
 
+  // TODO(jon): This should respect the --dry-run flag
   const txBuilder = await mintNft(metaplex, releaseJson, {
     useNewMint: releaseMintAddress,
     collection: appMintAddress,
@@ -143,5 +178,5 @@ export const createRelease = async (
     })
   );
 
-  return txBuilder;
+  return { releaseJson, txBuilder };
 };

@@ -52,7 +52,7 @@
         "android_package": "com.solanamobile.cutekittens",
         "minSdk": 24,
         "permissions": ["android.permission.INTERNET"],
-        "languages": ["en-US"]
+        "locales": ["en-US"]
       }
     },
     "i18n": {

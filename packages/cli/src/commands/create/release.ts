@@ -1,6 +1,10 @@
 import fs from "fs";
 import { createRelease } from "@solana-mobile/dapp-publishing-tools";
-import type { Release } from "@solana-mobile/dapp-publishing-tools";
+import type {
+  Release,
+  App,
+  Publisher,
+} from "@solana-mobile/dapp-publishing-tools";
 import {
   Connection,
   Keypair,
@@ -17,7 +21,17 @@ type CreateReleaseCommandInput = {
   dryRun?: boolean;
 };
 
-export const getReleaseDetails = async (version: string): Promise<Release> => {
+export const getReleaseDetails = async (
+  version: string
+): Promise<{ release: Release; app: App; publisher: Publisher }> => {
+  const globalConfigFile = `${process.cwd()}/dapp-store/config.yaml`;
+  console.info(`Pulling app and publisher details from ${globalConfigFile}`);
+
+  const { app, publisher } = load(
+    // TODO(jon): Parameterize this
+    fs.readFileSync(globalConfigFile, "utf-8")
+  ) as { app: App; publisher: Publisher };
+
   const configFile = `${process.cwd()}/dapp-store/releases/${version}/release.yaml`;
   console.info(`Pulling release details from ${configFile}`);
 
@@ -26,26 +40,34 @@ export const getReleaseDetails = async (version: string): Promise<Release> => {
     fs.readFileSync(configFile, "utf-8")
   ) as { release: Release };
 
-  return release;
+  return { release, app, publisher };
 };
 
 const createReleaseNft = async ({
   appMintAddress,
   releaseDetails,
+  appDetails,
+  publisherDetails,
   connection,
   publisher,
+  dryRun,
 }: {
   appMintAddress: string;
   releaseDetails: Release;
+  appDetails: App;
+  publisherDetails: Publisher;
   connection: Connection;
   publisher: Keypair;
+  dryRun: boolean;
 }) => {
   const releaseMintAddress = Keypair.generate();
-  const txBuilder = await createRelease(
+  const { txBuilder, releaseJson } = await createRelease(
     {
       appMintAddress: new PublicKey(appMintAddress),
       releaseMintAddress,
       releaseDetails,
+      appDetails,
+      publisherDetails,
     },
     { connection, publisher }
   );
@@ -54,16 +76,18 @@ const createReleaseNft = async ({
   const tx = txBuilder.toTransaction(blockhash);
   tx.sign(releaseMintAddress, publisher);
 
-  // const txSig = await sendAndConfirmTransaction(connection, tx, [
-  //   publisher,
-  //   releaseMintAddress,
-  // ]);
-  // console.info({
-  //   txSig,
-  //   releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
-  // });
+  if (!dryRun) {
+    const txSig = await sendAndConfirmTransaction(connection, tx, [
+      publisher,
+      releaseMintAddress,
+    ]);
+    console.info({
+      txSig,
+      releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+    });
 
-  // return { releaseMintAddress };
+    return { releaseMintAddress };
+  }
 };
 
 export const createReleaseCommand = async ({
@@ -71,18 +95,19 @@ export const createReleaseCommand = async ({
   version,
   signer,
   url,
-  dryRun,
+  dryRun = false,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const releaseDetails = await getReleaseDetails(version);
+  const { release, app, publisher } = await getReleaseDetails(version);
 
-  if (!dryRun) {
-    await createReleaseNft({
-      appMintAddress,
-      connection,
-      publisher: signer,
-      releaseDetails,
-    });
-  }
+  await createReleaseNft({
+    appMintAddress,
+    connection,
+    publisher: signer,
+    releaseDetails: release,
+    appDetails: app,
+    publisherDetails: publisher,
+    dryRun,
+  });
 };
