@@ -14,7 +14,7 @@
     "types": "./lib/types/index.d.ts"
   },
   "bin": {
-    "dapp-store": "./lib/esm/index.js"
+    "dapp-store": "./bin/dapp-store.js"
   },
   "files": [
     "lib",

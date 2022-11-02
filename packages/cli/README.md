@@ -33,7 +33,7 @@ In your application folder (e.g., `example`):
 ```shell
 cd example
 pnpm link <path-to-app-publishing-spec>/packages/cli
-NODE_OPTIONS=--experimental-json-modules npx dapp-store --help
+npx dapp-store --help
 ```
 
 # Overview
