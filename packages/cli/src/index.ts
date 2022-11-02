@@ -85,7 +85,7 @@ async function main() {
     });
 
   createCommand
-    .command("release")
+    .command("release <version>")
     .description("Create a release")
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
@@ -97,7 +97,7 @@ async function main() {
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .action(async ({ appMintAddress, keypair, url, dryRun }) => {
+    .action(async (version, { appMintAddress, keypair, url, dryRun }) => {
       const signer = parseKeypair(keypair);
 
       if (!appMintAddress) {
@@ -116,6 +116,7 @@ async function main() {
       if (signer) {
         await createReleaseCommand({
           appMintAddress: appMintAddress ?? conf.get("app"),
+          version,
           signer,
           url,
           dryRun,

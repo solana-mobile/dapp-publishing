@@ -59,5 +59,12 @@ export type Release = {
     purpose: "install";
     uri: string;
   }[];
-  androidDetails: AndroidDetails;
+  android_details: AndroidDetails;
+  localized_resources: {
+    [locale: string]: {
+      short_description: string;
+      long_description: string;
+      new_in_version: string;
+    };
+  };
 };
