@@ -70,7 +70,7 @@
                   "type": "string"
                 },
                 "updated_on": {
-                  "type": "integer"
+                  "type": "string"
                 },
                 "license_url": {
                   "type": "string"

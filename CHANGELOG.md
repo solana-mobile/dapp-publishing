@@ -4,7 +4,7 @@
 - Added `schema_version` field to all JSON schemas
 - Added width & height values to media
 - Icon size is set to 512x512 px
-- Converted `updated_on` value to a number
+- The `updated_on` value is still a string, but follows ISO 8601 string format
 - Converted file `size` value to a number
 - Converted string resource reference strings to denote unique ID
 - Removed `short_description` from release JSON schema

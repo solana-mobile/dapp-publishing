@@ -30,7 +30,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
       "release_details": {
         "name": "[Display Catalog Name]",
         "version": "1.0.2",
-        "updated_on": 354343342112121,
+        "updated_on": "2018-12-10T13:45:00.000Z",
         "license_url": "http://cdn.org/license.html",
         "copyright_url": "http://cdn.org/copyright.html",
         "privacy_policy_url": "http://cdn.org/privacy.html",
