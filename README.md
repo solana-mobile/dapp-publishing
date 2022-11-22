@@ -1,21 +1,22 @@
-# Release NFT Metadata Spec v0.1.4
+# Release NFT Metadata Spec v0.2.0
 
 This is the official spec of the off-chain metadata that will be created for the NFT release management system.
 
 ## Release NFT JSON Overview
 
-The following is a JSON file for a dApp NFT release with readable sample data filled in:
+The following is a JSON file for a dApp NFT release with readable sample data filled in.
 
 ```json
 {
-  "name": "[Wallet-visible name; 32 char limit]",
-  "description": "[Wallet-visible description]",
-  "image": "http://cdn.org/wallet_display.png",
+  "schema_version": "0.2.0",
+  "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
+  "description": "Wallet-visible description [Metaplex compatibility]",
+  "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
-    "category": "dApp",
+    "category": "dApp [Metaplex compatibility]",
     "creators": [
       {
-        "address": "7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE"
+        "address": "7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE [Metaplex compatibility]"
       }
     ]
   },
@@ -27,17 +28,16 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "contact": "contact@company.com"
       },
       "release_details": {
-        "name": "[Official Catalog Name]",
+        "name": "[Display Catalog Name]",
         "version": "1.0.2",
-        "updated_on": "354343342112121",
+        "updated_on": 354343342112121,
         "license_url": "http://cdn.org/license.html",
         "copyright_url": "http://cdn.org/copyright.html",
         "privacy_policy_url": "http://cdn.org/privacy.html",
         "age_rating": "3+",
         "localized_resources": {
-          "short_description": 1,
-          "long_description": 2,
-          "new_in_version": 3
+          "long_description": "uid_1",
+          "new_in_version": "uid_2"
         }
       },
       "media": [
@@ -45,30 +45,40 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
           "mime": "image/png",
           "purpose": "icon",
           "uri": "http://cdn.org/app_icon.png",
+          "width": 512,
+          "height": 512,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         },
         {
           "mime": "image/mp4",
           "purpose": "video",
           "uri": "http://cdn.org/video.mp4",
+          "width": 1080,
+          "height": 1920,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         },
         {
           "mime": "image/jpg",
           "purpose": "banner",
           "uri": "http://cdn.org/image.jpg",
+          "width": 1080,
+          "height": 1920,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         },
         {
           "mime": "image/jpg",
           "purpose": "screenshot",
           "uri": "http://cdn.org/image.jpg",
+          "width": 1080,
+          "height": 1920,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         },
         {
           "mime": "image/jpg",
           "purpose": "screenshot",
           "uri": "http://cdn.org/image.jpg",
+          "width": 1080,
+          "height": 1920,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         }
       ],
@@ -77,21 +87,13 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
           "mime": "application/octet-stream",
           "purpose": "install",
           "uri": "http://cdn.org/dapp_1.0.2.apk",
-          "size": "125829120",
-          "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
-        },
-        {
-          "mime": "application/octet-stream",
-          "purpose": "configuration",
-          "uri": "http://cdn.org/some_binary.bin",
-          "size": "125829120",
+          "size": 125829120,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         }
       ],
       "android_details": {
         "android_package": "com.company.dapp",
-        "google_store_package": "com.company.dapp.otherpkg",
-        "saga_features_localized": "4",
+        "saga_features_localized": "uid_3",
         "version_code": 5,
         "min_sdk": 21,
         "permissions": [
@@ -99,27 +101,28 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
           "android.permission.LOCATION_HARDWARE",
           "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
         ],
-        "locales": ["en-US", "ja-JP", "it-IT"]
+        "locales": [
+          "en-US", 
+          "ja-JP", 
+          "it-IT"
+        ]
       }
     },
     "i18n": {
       "en-US": {
-        "1": "[Short desc en]",
-        "2": "[Long desc en]",
-        "3": "[New in version en]",
-        "4": "[Saga features in en]"
+        "uid_1": "[Long desc en]",
+        "uid_2": "[New in version en]",
+        "uid_3": "[Saga features in en]"
       },
       "fr-FR": {
-        "1": "[Short desc fr]",
-        "2": "[Long desc fr]",
-        "3": "[New in version fr]",
-        "4": "[Saga features in fr]"
+        "uid_1": "[Long desc fr]",
+        "uid_2": "[New in version fr]",
+        "uid_3": "[Saga features in fr]"
       },
       "de": {
-        "1": "[Short desc de]",
-        "2": "[Long desc de]",
-        "3": "[New in version de]",
-        "4": "[Saga features in de]"
+        "uid_1": "[Long desc de]",
+        "uid_2": "[New in version de]",
+        "uid_3": "[Saga features in de]"
       }
     }
   }
@@ -128,7 +131,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 
 ### Clarifications & Comments
 
-In general, the schema of this JSON file has moved away from using metaplex-spec fields and instead puts most of the dApp store data into the `extensions` region. These releases only need minimal existing Wallet support, which this scheme fulfills.
+In general, the schema of this JSON file has moved away from using Metaplex NFT JSON fields and instead puts most of the dApp store data into the `extensions` region. These releases only need minimal existing Wallet support, which this scheme fulfills. Fields left in to fulfill the Metaplex spec are suffixed with `[Metaplex compatibility]`.
 
 It should be noted that many of the fields included in the above JSON scheme are duplicated between releases. A convenient feature for the tooling would be to populate fields from the previous release when beginning to prepare a new release for publishing.
 
@@ -150,13 +153,14 @@ All releases for a dApp store entry will be grouped under a collection, which it
 
 ```json
 {
-  "name": "[Wallet-visible collection name - 32 char limit]",
-  "description": "[Wallet-visible collection description]",
-  "image": "http://cdn.org/wallet_display.png",
+  "schema_version": "0.2.0",
+  "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
+  "description": "Wallet-visible collection description [Metaplex compatibility]",
+  "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
-    "category": "dApp",
+    "category": "dApp [Metaplex compatibility]",
     "creators": {
-      "address": "7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE"
+      "address": "7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE [Metaplex compatibility]"
     }
   },
   "extensions": {
@@ -179,15 +183,15 @@ That said, all store-relevant publisher information will be managed in the relea
 
 ```json
 {
-  "name": "[Wallet-visible Publisher; 32 char limit]",
-  "description": "[Wallet-visible pub desc]",
-  "image": "http://cdn.org/wallet_display.png",
-  "external_url": "https://www.company.com",
+  "schema_version": "0.2.0",
+  "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
+  "description": "Wallet-visible pub desc [Metaplex compatibility]",
+  "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
-    "category": "dApp",
+    "category": "dApp [Metaplex compatibility]",
     "creators": [
       {
-        "address": "7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE"
+        "address": "7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE [Metaplex compatibility]"
       }
     ]
   },
