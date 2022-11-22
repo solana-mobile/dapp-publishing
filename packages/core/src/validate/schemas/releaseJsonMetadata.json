@@ -1,6 +1,9 @@
 {
   "type": "object",
   "properties": {
+    "schema_version": {
+      "type": "string"
+    },
     "name": {
       "type": "string"
     },
@@ -25,11 +28,12 @@
                 "type": "string"
               }
             },
-            "required": ["address"]
+            "required": [
+              "address"
+            ]
           }
         }
-      },
-      "required": ["category", "creators"]
+      }
     },
     "extensions": {
       "type": "object",
@@ -50,7 +54,11 @@
                   "type": "string"
                 }
               },
-              "required": ["name", "website", "contact"]
+              "required": [
+                "name",
+                "website",
+                "contact"
+              ]
             },
             "release_details": {
               "type": "object",
@@ -79,18 +87,14 @@
                 "localized_resources": {
                   "type": "object",
                   "properties": {
-                    "short_description": {
-                      "type": "integer"
-                    },
                     "long_description": {
-                      "type": "integer"
+                      "type": "string"
                     },
                     "new_in_version": {
-                      "type": "integer"
+                      "type": "string"
                     }
                   },
                   "required": [
-                    "short_description",
                     "long_description",
                     "new_in_version"
                   ]
@@ -118,11 +122,27 @@
                   "purpose": {
                     "type": "string"
                   },
+                  "uri": {
+                    "type": "string"
+                  },
+                  "width": {
+                    "type": "integer"
+                  },
+                  "height": {
+                    "type": "integer"
+                  },
                   "sha256": {
                     "type": "string"
                   }
                 },
-                "required": ["mime", "purpose", "sha256"]
+                "required": [
+                  "mime",
+                  "purpose",
+                  "uri",
+                  "width",
+                  "height",
+                  "sha256"
+                ]
               }
             },
             "files": {
@@ -136,6 +156,9 @@
                   "purpose": {
                     "type": "string"
                   },
+                  "uri": {
+                    "type": "string"
+                  },
                   "size": {
                     "type": "integer"
                   },
@@ -143,7 +166,13 @@
                     "type": "string"
                   }
                 },
-                "required": ["mime", "purpose", "size", "sha256"]
+                "required": [
+                  "mime",
+                  "purpose",
+                  "uri",
+                  "size",
+                  "sha256"
+                ]
               }
             },
             "android_details": {
@@ -151,6 +180,12 @@
               "properties": {
                 "android_package": {
                   "type": "string"
+                },
+                "saga_features_localized": {
+                  "type": "string"
+                },
+                "version_code": {
+                  "type": "integer"
                 },
                 "min_sdk": {
                   "type": "integer"
@@ -170,6 +205,8 @@
               },
               "required": [
                 "android_package",
+                "saga_features_localized",
+                "version_code",
                 "min_sdk",
                 "permissions",
                 "locales"
@@ -186,28 +223,30 @@
         },
         "i18n": {
           "type": "object",
-          "properties": {
-            "en-US": {
+          "patternProperties": {
+            "([A-Za-z0-9\\-]+)\\w+/gi": {
               "type": "object",
-              "properties": {
-                "1": {
-                  "type": "string"
-                },
-                "2": {
-                  "type": "string"
-                },
-                "3": {
+              "patternProperties": {
+                "([A-Za-z0-9\\-]+)\\w+/gi": {
                   "type": "string"
                 }
-              },
-              "required": ["1", "2", "3"]
+              }
             }
-          },
-          "required": ["en-US"]
+          }
         }
       },
-      "required": ["solana_dapp_store", "i18n"]
+      "required": [
+        "solana_dapp_store",
+        "i18n"
+      ]
     }
   },
-  "required": ["name", "description", "image", "properties", "extensions"]
+  "required": [
+    "schema_version",
+    "name",
+    "description",
+    "image",
+    "properties",
+    "extensions"
+  ]
 }

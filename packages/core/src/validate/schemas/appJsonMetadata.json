@@ -20,19 +20,14 @@
           "type": "string"
         },
         "creators": {
-          "type": "array",
-          "items": [
-            {
-              "type": "object",
-              "properties": {
-                "address": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "address"
-              ]
+          "type": "object",
+          "properties": {
+            "address": {
+              "type": "string"
             }
+          },
+          "required": [
+            "address"
           ]
         }
       },
@@ -47,211 +42,17 @@
         "solana_dapp_store": {
           "type": "object",
           "properties": {
-            "publisher_details": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "website": {
-                  "type": "string"
-                },
-                "contact": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "name",
-                "website",
-                "contact"
-              ]
-            },
-            "release_details": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "version": {
-                  "type": "string"
-                },
-                "updated_on": {
-                  "type": "integer"
-                },
-                "license_url": {
-                  "type": "string"
-                },
-                "copyright_url": {
-                  "type": "string"
-                },
-                "privacy_policy_url": {
-                  "type": "string"
-                },
-                "age_rating": {
-                  "type": "string"
-                },
-                "localized_resources": {
-                  "type": "object",
-                  "properties": {
-                    "long_description": {
-                      "type": "string"
-                    },
-                    "new_in_version": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "long_description",
-                    "new_in_version"
-                  ]
-                }
-              },
-              "required": [
-                "name",
-                "version",
-                "updated_on",
-                "license_url",
-                "copyright_url",
-                "privacy_policy_url",
-                "age_rating",
-                "localized_resources"
-              ]
-            },
-            "media": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "mime": {
-                      "type": "string"
-                    },
-                    "purpose": {
-                      "type": "string"
-                    },
-                    "uri": {
-                      "type": "string"
-                    },
-                    "width": {
-                      "type": "integer"
-                    },
-                    "height": {
-                      "type": "integer"
-                    },
-                    "sha256": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "mime",
-                    "purpose",
-                    "uri",
-                    "width",
-                    "height",
-                    "sha256"
-                  ]
-                }
-              ]
-            },
-            "files": {
-              "type": "array",
-              "items": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "mime": {
-                      "type": "string"
-                    },
-                    "purpose": {
-                      "type": "string"
-                    },
-                    "uri": {
-                      "type": "string"
-                    },
-                    "size": {
-                      "type": "integer"
-                    },
-                    "sha256": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "mime",
-                    "purpose",
-                    "uri",
-                    "size",
-                    "sha256"
-                  ]
-                }
-              ]
-            },
-            "android_details": {
-              "type": "object",
-              "properties": {
-                "android_package": {
-                  "type": "string"
-                },
-                "saga_features_localized": {
-                  "type": "string"
-                },
-                "version_code": {
-                  "type": "integer"
-                },
-                "min_sdk": {
-                  "type": "integer"
-                },
-                "permissions": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "string"
-                    }
-                  ]
-                },
-                "locales": {
-                  "type": "array",
-                  "items": [
-                    {
-                      "type": "string"
-                    }
-                  ]
-                }
-              },
-              "required": [
-                "android_package",
-                "saga_features_localized",
-                "version_code",
-                "min_sdk",
-                "permissions",
-                "locales"
-              ]
+            "android_package": {
+              "type": "string"
             }
           },
           "required": [
-            "publisher_details",
-            "release_details",
-            "media",
-            "files",
-            "android_details"
+            "android_package"
           ]
-        },
-        "i18n": {
-          "type": "object",
-          "patternProperties": {
-            "([A-Za-z0-9\\-]+)\\w+/gi": {
-              "type": "object",
-              "patternProperties": {
-                "([A-Za-z0-9\\-]+)\\w+/gi": {
-                  "type": "string"
-                }
-              }
-            }
-          }
         }
       },
       "required": [
-        "solana_dapp_store",
-        "i18n"
+        "solana_dapp_store"
       ]
     }
   },
