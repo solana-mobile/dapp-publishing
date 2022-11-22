@@ -1,6 +1,9 @@
 {
   "type": "object",
   "properties": {
+    "schema_version": {
+      "type": "string"
+    },
     "name": {
       "type": "string"
     },
@@ -8,9 +11,6 @@
       "type": "string"
     },
     "image": {
-      "type": "string"
-    },
-    "external_url": {
       "type": "string"
     },
     "properties": {
@@ -28,11 +28,16 @@
                 "type": "string"
               }
             },
-            "required": ["address"]
+            "required": [
+              "address"
+            ]
           }
         }
       },
-      "required": ["category", "creators"]
+      "required": [
+        "category",
+        "creators"
+      ]
     },
     "extensions": {
       "type": "object",
@@ -53,19 +58,28 @@
                   "type": "string"
                 }
               },
-              "required": ["name", "website", "contact"]
+              "required": [
+                "name",
+                "website",
+                "contact"
+              ]
             }
           },
-          "required": ["publisher_details"]
+          "required": [
+            "publisher_details"
+          ]
         }
       },
-      "required": ["solana_dapp_store"]
+      "required": [
+        "solana_dapp_store"
+      ]
     }
   },
   "required": [
+    "schema_version",
     "name",
     "description",
-    "external_url",
+    "image",
     "properties",
     "extensions"
   ]

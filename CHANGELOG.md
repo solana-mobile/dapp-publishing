@@ -1,3 +1,17 @@
+## 0.2.0
+
+- Noted Metaplex-compatibility JSON fields
+- Added `schema_version` field to all JSON schemas
+- Added width & height values to media
+- Icon size is set to 512x512 px
+- The `updated_on` value is still a string, but follows ISO 8601 string format
+- Converted file `size` value to a number
+- Converted string resource reference strings to denote unique ID
+- Removed `short_description` from release JSON schema
+- Removed `google_store_package` from release schema
+- Removed `"configuration"` as file role/purpose from release schema
+- Removed `external_url` from publisher JSON schema
+
 ## 0.1.4
 
 - Fixed inconsistent field naming.

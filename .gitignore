@@ -1,5 +1,6 @@
 node_modules/
 .env
+.idea/
 lib/
 tsconfig.buildinfo
 tsconfig.tsbuildinfo
