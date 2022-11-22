@@ -8,7 +8,8 @@
     "isolatedModules": true,
     "noEmitOnError": true,
     "resolveJsonModule": true,
-    "strict": true,
+    "strict": false,
+//    "strict": true,
     "stripInternal": true,
     "skipLibCheck": true
   }

@@ -8,7 +8,9 @@ import {
   createReleaseCommand,
 } from "./commands/create/index.js";
 import { parseKeypair } from "./utils.js";
+import nodeApk from "node-apk";
 
+const { Apk } = nodeApk;
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
 
@@ -21,6 +23,25 @@ async function main() {
   const createCommand = program
     .command("create")
     .description("Create a `publisher`, `app`, or `release`");
+
+  createCommand
+    .command("test")
+    .requiredOption(
+      "-a, --apkPath <path-to-keypair-file>",
+      "Path to dApp release APK"
+    )
+    .action(async ({ apkPath }) => {
+      const parsedApk = new Apk(apkPath);
+
+      parsedApk.getManifestInfo().then((manifest) => {
+        console.log(`package = ${ manifest.package }`);
+        console.log(`versionCode = ${ manifest.versionCode }`);
+        console.log(`versionName = ${ manifest.versionName }`);
+
+        // for properties which haven't any existing accessors you can use the raw binary xml
+        console.log(JSON.stringify(manifest.raw, null, 4));
+      });
+    });
 
   createCommand
     .command("publisher")
