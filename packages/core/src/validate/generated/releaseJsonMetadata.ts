@@ -30,7 +30,7 @@ export interface ReleaseJsonMetadata {
       release_details: {
         name: string;
         version: string;
-        updated_on: number;
+        updated_on: string;
         license_url: string;
         copyright_url: string;
         privacy_policy_url: string;

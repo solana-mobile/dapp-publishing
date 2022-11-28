@@ -26,14 +26,8 @@ const debug = debugModule("RELEASE");
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 type DappFile = ArrayElement<Release["media"]>;
 
-const getFileMetadata = async (item: DappFile, version: string) => {
-  const file = path.join(
-    process.cwd(),
-    "dapp-store",
-    "releases",
-    version,
-    item.uri
-  );
+const getFileMetadata = async (type: "media" | "files", item: DappFile) => {
+  const file = path.join(process.cwd(), "dapp-store", type, item.uri);
   debug({ file });
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
@@ -61,16 +55,17 @@ export const createReleaseJson = async (
 
   const media = [];
   for await (const item of releaseDetails.media) {
-    media.push(await getFileMetadata(item, releaseDetails.version));
+    media.push(await getFileMetadata("media", item));
   }
 
   const files = [];
   debug({ files: releaseDetails.files });
   for await (const item of releaseDetails.files) {
-    files.push(await getFileMetadata(item, releaseDetails.version));
+    files.push(await getFileMetadata("files", item));
   }
 
   const releaseMetadata = {
+    schema_version: "0.2.0",
     name: releaseName,
     description: releaseDetails.localized_resources["en-US"].new_in_version,
     // TODO(jon): Figure out where to get this image
@@ -95,7 +90,7 @@ export const createReleaseJson = async (
         release_details: {
           name: releaseName,
           version: releaseDetails.version,
-          updated_on: Math.floor(Date.now() / 1000),
+          updated_on: new Date().toISOString(),
           license_url: appDetails.urls.license_url,
           copyright_url: appDetails.urls.copyright_url,
           privacy_policy_url: appDetails.urls.privacy_policy_url,
@@ -150,6 +145,7 @@ export const createRelease = async (
       connection.rpcEndpoint.includes("devnet")
         ? bundlrStorage({
             address: "https://devnet.bundlr.network",
+            providerUrl: "https://api.devnet.solana.com",
           })
         : bundlrStorage()
     );

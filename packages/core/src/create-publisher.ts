@@ -17,6 +17,7 @@ export const createPublisherJson = (
   publisher: Publisher
 ): PublisherJsonMetadata => {
   const publisherMetadata = {
+    schema_version: "0.2.0",
     name: publisher.name,
     // TODO(jon): Handle locale resources
     description: publisher.description["en-US"],

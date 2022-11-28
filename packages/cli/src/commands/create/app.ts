@@ -7,31 +7,23 @@ import {
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import { load } from "js-yaml";
 
-export const getAppDetails = async (): Promise<App> => {
-  const configFile = `${process.cwd()}/dapp-store/config.yaml`;
-  console.info(`Pulling app details from ${configFile}`);
+import { getConfigFile, saveToConfig } from "../../utils.js";
 
-  const { app } = load(
-    // TODO(jon): Parameterize this
-    fs.readFileSync(configFile, "utf-8")
-  ) as { app: App };
-
-  return app;
-};
-
-const createAppNft = async ({
-  appDetails,
-  connection,
-  publisherMintAddress,
-  publisher,
-}: {
-  appDetails: App;
-  connection: Connection;
-  publisherMintAddress: string;
-  publisher: Keypair;
-}) => {
+const createAppNft = async (
+  {
+    appDetails,
+    connection,
+    publisherMintAddress,
+    publisher,
+  }: {
+    appDetails: App;
+    connection: Connection;
+    publisherMintAddress: string;
+    publisher: Keypair;
+  },
+  { dryRun }: { dryRun?: boolean }
+) => {
   const mintAddress = Keypair.generate();
   const txBuilder = await createApp(
     {
@@ -46,11 +38,13 @@ const createAppNft = async ({
   const tx = txBuilder.toTransaction(blockhash);
   tx.sign(mintAddress, publisher);
 
-  const txSig = await sendAndConfirmTransaction(connection, tx, [
-    publisher,
-    mintAddress,
-  ]);
-  console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+  if (!dryRun) {
+    const txSig = await sendAndConfirmTransaction(connection, tx, [
+      publisher,
+      mintAddress,
+    ]);
+    console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+  }
 
   return { appAddress: mintAddress.publicKey.toBase58() };
 };
@@ -70,15 +64,19 @@ export const createAppCommand = async ({
 }: CreateAppCommandInput) => {
   const connection = new Connection(url);
 
-  const appDetails = await getAppDetails();
+  const { app: appDetails } = await getConfigFile();
 
-  if (!dryRun) {
-    const { appAddress } = await createAppNft({
+  const { appAddress } = await createAppNft(
+    {
       connection,
       publisher: signer,
       publisherMintAddress,
       appDetails,
-    });
-    return { appAddress };
-  }
+    },
+    { dryRun }
+  );
+
+  saveToConfig({ app: { address: appAddress } });
+
+  return { appAddress };
 };
