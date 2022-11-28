@@ -1,8 +1,8 @@
-import { Keypair } from "@solana/web3.js";
+import type { AndroidDetails, App, Publisher, Release, SolanaMobileDappPublisherPortal } from "@solana-mobile/dapp-publishing-tools";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
-import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
@@ -38,6 +38,7 @@ interface CLIConfig {
   publisher: Publisher;
   app: App;
   release: Release;
+  solana_mobile_dapp_publisher_portal: SolanaMobileDappPublisherPortal;
 }
 
 export const getConfigFile = async (
@@ -120,6 +121,7 @@ export const saveToConfig = async ({ publisher, app, release }: SaveToConfigArgs
       address: release?.address ?? currentConfig.release.address,
       version: release?.version ?? currentConfig.release.version,
     },
+    solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal,
   };
 
   // TODO(jon): Verify the contents of the YAML file
