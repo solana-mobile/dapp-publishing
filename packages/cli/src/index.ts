@@ -5,10 +5,12 @@ import { validateCommand } from "./commands/index.js";
 import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import { parseKeypair } from "./utils.js";
 import * as dotenv from "dotenv";
+import * as util from "util";
 import { exec } from "child_process";
 
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
+const runExec = util.promisify(exec);
 
 async function main() {
   program
@@ -29,14 +31,8 @@ async function main() {
       dotenv.config();
       const aaptDir = process.env.AAPT_DIR;
 
-      exec(`${aaptDir}/aapt2 dump badging ${test}`, (err, stdout, stderr) => {
-        if (err) {
-          console.log(`:: Error: ${err}`);
-          return;
-        }
-
-        console.log(`stdout ${stdout}`);
-      })
+      const { stdout, stderr } = await runExec(`${aaptDir}/aapt2 dump badging ${test}`)
+      console.log(`stdout ${stdout}`);
     })
 
   const createCommand = program
