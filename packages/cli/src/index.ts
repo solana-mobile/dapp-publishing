@@ -2,11 +2,7 @@ import { Command } from "commander";
 import Conf from "conf";
 import inquirer from "inquirer";
 import { validateCommand } from "./commands/index.js";
-import {
-  createAppCommand,
-  createPublisherCommand,
-  createReleaseCommand,
-} from "./commands/create/index.js";
+import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import { parseKeypair } from "./utils.js";
 
 const program = new Command();
@@ -17,6 +13,19 @@ async function main() {
     .name("dapp-store")
     .version("0.1.0")
     .description("CLI to assist with publishing to the Saga Dapp Store");
+
+  program
+    .command("test")
+    .description("Andrew's development testing command")
+    .requiredOption(
+      "-t, --test <path-to-apk>",
+      "Path to apk file"
+    )
+    .action(async ({ test }) => {
+      console.log(":: Your path: " + test);
+
+
+    })
 
   const createCommand = program
     .command("create")

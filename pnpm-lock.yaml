@@ -35,6 +35,8 @@ importers:
   example:
     specifiers:
       '@solana-mobile/dapp-store-cli': ^0.1.0
+    dependencies:
+      '@solana-mobile/dapp-store-cli': link:../packages/cli
 
   packages/cli:
     specifiers:
@@ -47,6 +49,7 @@ importers:
       commander: ^9.4.1
       conf: ^10.2.0
       debug: ^4.3.4
+      dotenv: ^16.0.3
       esm: ^3.2.25
       inquirer: ^9.1.4
       js-yaml: ^4.1.0
@@ -57,6 +60,7 @@ importers:
       commander: 9.4.1
       conf: 10.2.0
       debug: 4.3.4
+      dotenv: 16.0.3
       esm: 3.2.25
       inquirer: 9.1.4
       js-yaml: 4.1.0
@@ -1835,6 +1839,11 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       is-obj: 2.0.0
+    dev: false
+
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
     dev: false
 
   /duplexer/0.1.2:

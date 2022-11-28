@@ -1,3 +1,8 @@
+
+## APK Best Practices
+
+- https://developer.android.com/guide/topics/resources/multilingual-support#specify-the-languages-your-app-supports
+
 ## Prerequisites
 
 - Node 16+
