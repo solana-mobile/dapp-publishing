@@ -4,6 +4,8 @@ import inquirer from "inquirer";
 import { validateCommand } from "./commands/index.js";
 import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import { parseKeypair } from "./utils.js";
+import * as dotenv from "dotenv";
+import { exec } from "child_process";
 
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
@@ -22,9 +24,19 @@ async function main() {
       "Path to apk file"
     )
     .action(async ({ test }) => {
-      console.log(":: Your path: " + test);
+      //console.log(":: Your path: " + test);
 
+      dotenv.config();
+      const aaptDir = process.env.AAPT_DIR;
 
+      exec(`${aaptDir}/aapt2 dump badging ${test}`, (err, stdout, stderr) => {
+        if (err) {
+          console.log(`:: Error: ${err}`);
+          return;
+        }
+
+        console.log(`stdout ${stdout}`);
+      })
     })
 
   const createCommand = program
