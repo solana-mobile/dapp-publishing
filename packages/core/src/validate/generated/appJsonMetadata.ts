@@ -6,6 +6,7 @@
  */
 
 export interface AppJsonMetadata {
+  schema_version: string;
   name: string;
   description: string;
   image: string;
@@ -13,7 +14,6 @@ export interface AppJsonMetadata {
     category: string;
     creators: {
       address: string;
-      share: number;
       [k: string]: unknown;
     }[];
     [k: string]: unknown;

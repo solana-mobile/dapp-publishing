@@ -95,5 +95,7 @@ export const createReleaseCommand = async ({
     { dryRun }
   );
 
-  saveToConfig({ release: { address: releaseMintAddress } });
+  saveToConfig({
+    release: { address: releaseMintAddress.toBase58(), version },
+  });
 };

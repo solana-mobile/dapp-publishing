@@ -41,13 +41,13 @@ export const getConfigFile = (): CLIConfig => {
 type SaveToConfigArgs = {
   publisher?: Pick<Publisher, "address">;
   app?: Pick<App, "address">;
-  release?: Pick<Release, "address">;
+  release?: Pick<Release, "address" | "version">;
 };
 
 export const saveToConfig = ({ publisher, app, release }: SaveToConfigArgs) => {
   const currentConfig = getConfigFile();
 
-  const newConfig = {
+  const newConfig: CLIConfig = {
     publisher: {
       ...currentConfig.publisher,
       address: publisher?.address ?? currentConfig.publisher.address,
@@ -59,6 +59,7 @@ export const saveToConfig = ({ publisher, app, release }: SaveToConfigArgs) => {
     release: {
       ...currentConfig.release,
       address: release?.address ?? currentConfig.release.address,
+      version: release?.version ?? currentConfig.release.version,
     },
   };
 

@@ -2,16 +2,15 @@ publisher:
   name: My new publisher name
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
   description:
-    en-US: >
+    en-US: |
       A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
-
 app:
   name: My new app name
   address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
   description:
-    en-US: >
+    en-US: |
       My new app description
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
@@ -21,10 +20,10 @@ app:
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
   age_rating: 3+
-  # TODO(jon): This will be removed in a future version
   android_details:
     android_package: com.company.dapp
     google_store_package: com.company.dapp.otherpkg
+    saga_features_localized: uid_3
     min_sdk: 21
     version_code: 5
     permissions:
@@ -35,20 +34,22 @@ app:
       - en-US
       - ja-JP
       - it-IT
-
 release:
-  version: v1.0.2
+  version: v1.0.4
   media:
     - purpose: screenshot
       uri: ./app_screenshot.png
+      width: 512
+      height: 512
   files:
     - purpose: install
       uri: ./app-debug.apk
   localized_resources:
     en-US:
-      short_description: >
+      short_description: |
         Some wonderful release notes
-      long_description: >
+      long_description: |
         Some wonderful release notes, in long-form
-      new_in_version: >
+      new_in_version: |
         Something new in this version
+  address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA

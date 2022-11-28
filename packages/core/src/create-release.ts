@@ -2,7 +2,6 @@ import path from "path";
 import fs from "fs";
 import { createHash } from "crypto";
 import mime from "mime";
-import type { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
 import {
   bundlrStorage,
@@ -13,6 +12,8 @@ import {
 import { mintNft, truncateAddress } from "./utils.js";
 import { validateRelease } from "./validate/index.js";
 
+import type { Keypair, PublicKey } from "@solana/web3.js";
+import type { MetaplexFile } from "@metaplex-foundation/js";
 import type {
   App,
   Context,
@@ -24,20 +25,41 @@ import type {
 const debug = debugModule("RELEASE");
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
-type DappFile = ArrayElement<Release["media"]>;
+type File = ArrayElement<Release["files"]>;
+type Media = ArrayElement<Release["media"]>;
 
-const getFileMetadata = async (type: "media" | "files", item: DappFile) => {
+const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   const file = path.join(process.cwd(), "dapp-store", type, item.uri);
   debug({ file });
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
-  return {
+  const metadata = {
     purpose: item.purpose,
     uri: toMetaplexFile(mediaBuffer, item.uri),
     mime: mime.getType(item.uri) || "",
     size,
     sha256: hash,
+  };
+
+  return metadata;
+};
+
+const getMediaMetadata = async (item: Media) => {
+  const metadata = await getFileMetadata("media", item);
+  return {
+    ...metadata,
+    width: item.width,
+    height: item.height,
+  };
+};
+
+type MetaplexFileReleaseJsonMetadata = ReleaseJsonMetadata & {
+  extensions: {
+    solana_dapp_store: {
+      media: { uri: MetaplexFile }[];
+      files: { uri: MetaplexFile }[];
+    };
   };
 };
 
@@ -48,14 +70,15 @@ export const createReleaseJson = async (
     publisherDetails,
   }: { releaseDetails: Release; appDetails: App; publisherDetails: Publisher },
   publisherAddress: PublicKey
-): Promise<ReleaseJsonMetadata> => {
+): Promise<MetaplexFileReleaseJsonMetadata> => {
   const truncatedAppMintAddress = truncateAddress(appDetails.address);
 
   const releaseName = `${truncatedAppMintAddress} ${releaseDetails.version}`;
 
   const media = [];
+  debug({ media: releaseDetails.media });
   for await (const item of releaseDetails.media) {
-    media.push(await getFileMetadata("media", item));
+    media.push(await getMediaMetadata(item));
   }
 
   const files = [];
@@ -96,9 +119,9 @@ export const createReleaseJson = async (
           privacy_policy_url: appDetails.urls.privacy_policy_url,
           age_rating: appDetails.age_rating,
           localized_resources: {
-            short_description: 1,
-            long_description: 2,
-            new_in_version: 3,
+            short_description: "1",
+            long_description: "2",
+            new_in_version: "3",
           },
         },
         media,
@@ -115,6 +138,7 @@ export const createReleaseJson = async (
     },
   };
 
+  // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
   return releaseMetadata;
 };
 
@@ -156,7 +180,6 @@ export const createRelease = async (
   );
   validateRelease(releaseJson);
 
-  // TODO(jon): This should respect the --dry-run flag
   const txBuilder = await mintNft(metaplex, releaseJson, {
     useNewMint: releaseMintAddress,
     collection: appMintAddress,
