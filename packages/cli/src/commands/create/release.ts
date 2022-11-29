@@ -3,6 +3,21 @@ import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-too
 import { AndroidDetails, createRelease } from "@solana-mobile/dapp-publishing-tools";
 import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { load } from "js-yaml";
+import * as util from "util";
+import { exec } from "child_process";
+
+const runExec = util.promisify(exec);
+
+class AaptPrefixes {
+  quoteRegex = "'(.*?)'";
+  quoteNonLazyRegex = "'(.*)'";
+  packagePrefix = "package: name=";
+  verCodePrefix = "versionCode=";
+  verNamePrefix = "versionName=";
+  sdkPrefix = "sdkVersion:";
+  permissionPrefix = "uses-permission: name=";
+  localePrefix = "locales: ";
+}
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -23,8 +38,6 @@ export const getReleaseDetails = async (
     fs.readFileSync(globalConfigFile, "utf-8")
   ) as { app: App; publisher: Publisher };
 
-  app.android_details = getAndroidDetails();
-
   const configFile = `${process.cwd()}/dapp-store/releases/${version}/release.yaml`;
   console.info(`Pulling release details from ${configFile}`);
 
@@ -33,21 +46,43 @@ export const getReleaseDetails = async (
     fs.readFileSync(configFile, "utf-8")
   ) as { release: Release };
 
+  app.android_details = await getAndroidDetails("", "");
+
   return { release, app, publisher };
 };
 
-const getAndroidDetails = async (): Promise<AndroidDetails> => {
+const getAndroidDetails = async (
+  aaptDir: string,
+  apkPath: string
+): Promise<AndroidDetails> => {
+  const prefixes = new AaptPrefixes();
 
-  const details: AndroidDetails = {
-    android_package: "",
-    google_store_package: "",
-    min_sdk: 1,
-    version_code: 1,
+  const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging ${apkPath}`);
+
+  const appPackage = new RegExp(prefixes.packagePrefix + prefixes.quoteRegex).exec(stdout);
+  const versionCode = new RegExp(prefixes.verCodePrefix + prefixes.quoteRegex).exec(stdout);
+  const versionName = new RegExp(prefixes.verNamePrefix + prefixes.quoteRegex).exec(stdout);
+  const minSdk = new RegExp(prefixes.sdkPrefix + prefixes.quoteRegex).exec(stdout);
+  const permissions = new RegExp(prefixes.permissionPrefix + prefixes.quoteNonLazyRegex).exec(stdout);
+  const locales = new RegExp(prefixes.localePrefix + prefixes.quoteNonLazyRegex).exec(stdout);
+
+  // console.log(versionName?.[1]);
+  // console.log(permissions?.[1]);
+  // const result = locales?.values();
+  //
+  // if (result != undefined) {
+  //   for (const blah of result) {
+  //     console.log(blah); // 1, "string", false
+  //   }
+  // }
+
+  return {
+    android_package: appPackage?.[1] ?? "",
+    min_sdk: parseInt(minSdk?.[1] ?? "0"),
+    version_code: parseInt(versionCode?.[1] ?? "0"),
     permissions: ["android.permission.INTERNET"],
     locales: ["en-us"],
   };
-
-  return details;
 };
 
 const createReleaseNft = async ({
