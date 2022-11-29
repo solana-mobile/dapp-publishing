@@ -1,5 +1,5 @@
 import type { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { ReleaseJsonMetadata } from "./validate/generated/releaseJsonMetadata.js";
+
 export * from "./validate/generated/index.js";
 
 export type Context = {
@@ -7,16 +7,11 @@ export type Context = {
   connection: Connection;
 };
 
-type AndroidDetails = {
+export type AndroidDetails = {
   android_package: string;
-  google_store_package: string;
   min_sdk: number;
   version_code: number;
-  permissions: (
-    | "android.permission.INTERNET"
-    | "android.permission.LOCATION_HARDWARE"
-    | "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
-  )[];
+  permissions: string[];
   locales: string[];
 };
 
