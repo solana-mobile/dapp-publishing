@@ -26,13 +26,34 @@ async function main() {
       "Path to apk file"
     )
     .action(async ({ test }) => {
-      //console.log(":: Your path: " + test);
+      const quoteRegex = "'(.*?)'";
+      const quoteNonLazyRegex = "'(.*?)'";
+      const packagePrefix = "package: name=";
+      const verCodePrefix = "versionCode=";
+      const verNamePrefix = "versionName=";
+      const sdkPrefx = "sdkVersion:";
+      const permissionPrefix = "uses-permission: name=";
+      const localePrefix = "locales: ";
 
       dotenv.config();
       const aaptDir = process.env.AAPT_DIR;
-
       const { stdout, stderr } = await runExec(`${aaptDir}/aapt2 dump badging ${test}`)
-      console.log(`stdout ${stdout}`);
+
+      const search = new RegExp("");
+
+      const appPackage = new RegExp(packagePrefix + quoteRegex).exec(stdout);
+      const versionCode = new RegExp(verCodePrefix + quoteRegex).exec(stdout);
+      const versionName = new RegExp(verNamePrefix + quoteRegex).exec(stdout);
+      const minSdk = new RegExp(sdkPrefx + quoteRegex).exec(stdout);
+      const permissions = new RegExp(permissionPrefix + quoteNonLazyRegex).exec(stdout);
+      const locales = new RegExp(localePrefix + quoteNonLazyRegex).exec(stdout);
+
+      console.log("::: Result: " + appPackage.values());
+      // console.log(versionCode)
+      // console.log(versionName)
+      // console.log(minSdk)
+      // console.log(permissions)
+      // console.log(locales)
     })
 
   const createCommand = program
