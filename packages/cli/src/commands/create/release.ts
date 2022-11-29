@@ -1,16 +1,7 @@
 import fs from "fs";
-import { createRelease } from "@solana-mobile/dapp-publishing-tools";
-import type {
-  Release,
-  App,
-  Publisher,
-} from "@solana-mobile/dapp-publishing-tools";
-import {
-  Connection,
-  Keypair,
-  PublicKey,
-  sendAndConfirmTransaction,
-} from "@solana/web3.js";
+import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
+import { AndroidDetails, createRelease } from "@solana-mobile/dapp-publishing-tools";
+import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import { load } from "js-yaml";
 
 type CreateReleaseCommandInput = {
@@ -32,6 +23,8 @@ export const getReleaseDetails = async (
     fs.readFileSync(globalConfigFile, "utf-8")
   ) as { app: App; publisher: Publisher };
 
+  app.android_details = getAndroidDetails();
+
   const configFile = `${process.cwd()}/dapp-store/releases/${version}/release.yaml`;
   console.info(`Pulling release details from ${configFile}`);
 
@@ -41,6 +34,20 @@ export const getReleaseDetails = async (
   ) as { release: Release };
 
   return { release, app, publisher };
+};
+
+const getAndroidDetails = async (): Promise<AndroidDetails> => {
+
+  const details: AndroidDetails = {
+    android_package: "",
+    google_store_package: "",
+    min_sdk: 1,
+    version_code: 1,
+    permissions: ["android.permission.INTERNET"],
+    locales: ["en-us"],
+  };
+
+  return details;
 };
 
 const createReleaseNft = async ({

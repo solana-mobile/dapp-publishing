@@ -7,6 +7,7 @@ import { parseKeypair } from "./utils.js";
 import * as dotenv from "dotenv";
 import * as util from "util";
 import { exec } from "child_process";
+import { Keypair } from "@solana/web3.js";
 
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
@@ -27,7 +28,7 @@ async function main() {
     )
     .action(async ({ test }) => {
       const quoteRegex = "'(.*?)'";
-      const quoteNonLazyRegex = "'(.*?)'";
+      const quoteNonLazyRegex = "'(.*)'";
       const packagePrefix = "package: name=";
       const verCodePrefix = "versionCode=";
       const verNamePrefix = "versionName=";
@@ -39,8 +40,6 @@ async function main() {
       const aaptDir = process.env.AAPT_DIR;
       const { stdout, stderr } = await runExec(`${aaptDir}/aapt2 dump badging ${test}`)
 
-      const search = new RegExp("");
-
       const appPackage = new RegExp(packagePrefix + quoteRegex).exec(stdout);
       const versionCode = new RegExp(verCodePrefix + quoteRegex).exec(stdout);
       const versionName = new RegExp(verNamePrefix + quoteRegex).exec(stdout);
@@ -48,12 +47,18 @@ async function main() {
       const permissions = new RegExp(permissionPrefix + quoteNonLazyRegex).exec(stdout);
       const locales = new RegExp(localePrefix + quoteNonLazyRegex).exec(stdout);
 
-      console.log("::: Result: " + appPackage.values());
-      // console.log(versionCode)
-      // console.log(versionName)
-      // console.log(minSdk)
-      // console.log(permissions)
-      // console.log(locales)
+      console.log(appPackage?.[1]);
+      console.log(versionCode?.[1]);
+      console.log(versionName?.[1]);
+      console.log(minSdk?.[1]);
+      console.log(permissions?.[1]);
+      const result = locales?.values();
+
+      if (result != undefined) {
+        for (const blah of result) {
+          console.log(blah); // 1, "string", false
+        }
+      }
     })
 
   const createCommand = program
@@ -125,10 +130,10 @@ async function main() {
   createCommand
     .command("release <version>")
     .description("Create a release")
-    .requiredOption(
-      "-k, --keypair <path-to-keypair-file>",
-      "Path to keypair file"
-    )
+    // .requiredOption(
+    //   "-k, --keypair <path-to-keypair-file>",
+    //   "Path to keypair file"
+    // )
     .option(
       "-a, --app-mint-address <app-mint-address>",
       "The mint address of the app NFT"
@@ -136,22 +141,23 @@ async function main() {
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async (version, { appMintAddress, keypair, url, dryRun }) => {
-      const signer = parseKeypair(keypair);
+      //const signer = parseKeypair(keypair);
+      const signer = new Keypair();
 
-      if (!appMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "appAddress",
-            message:
-              "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
-            default: conf.get("app"),
-          },
-        ]);
-        conf.set("app", answers.appAddress);
-      }
+      // if (!appMintAddress) {
+      //   const answers = await inquirer.prompt([
+      //     {
+      //       type: "input",
+      //       name: "appAddress",
+      //       message:
+      //         "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
+      //       default: conf.get("app"),
+      //     },
+      //   ]);
+      //   conf.set("app", answers.appAddress);
+      // }
 
-      if (signer) {
+      //if (signer) {
         await createReleaseCommand({
           appMintAddress: appMintAddress ?? conf.get("app"),
           version,
@@ -159,7 +165,7 @@ async function main() {
           url,
           dryRun,
         });
-      }
+      //}
     });
 
   program
