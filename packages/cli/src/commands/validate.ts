@@ -1,10 +1,10 @@
 import {
-  createPublisherJson,
-  validatePublisher,
   createAppJson,
-  validateApp,
+  createPublisherJson,
   createReleaseJson,
-  validateRelease,
+  validateApp,
+  validatePublisher,
+  validateRelease
 } from "@solana-mobile/dapp-publishing-tools";
 import { debug, getConfigFile } from "../utils.js";
 
@@ -15,7 +15,7 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
-  } = getConfigFile();
+  } = await getConfigFile();
 
   debug({ publisherDetails, appDetails, releaseDetails });
 

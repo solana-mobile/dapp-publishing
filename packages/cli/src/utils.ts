@@ -32,13 +32,16 @@ class AaptPrefixes {
   localePrefix = "locales: ";
 }
 
+// TODO: Add version number return here
 interface CLIConfig {
   publisher: Publisher;
   app: App;
   release: Release;
 }
 
-export const getConfigFile = async (aaptDir: string): Promise<CLIConfig> => {
+export const getConfigFile = async (
+  aaptDir: string | null = null
+): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/dapp-store/config.yaml`;
   const configFile = fs.readFileSync(configFilePath, "utf-8");
 
@@ -46,9 +49,11 @@ export const getConfigFile = async (aaptDir: string): Promise<CLIConfig> => {
 
   const config = load(configFile) as CLIConfig;
 
-  //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
-  const apkPath = config.release.files[0].uri;
-  config.app.android_details = await getAndroidDetails(aaptDir, apkPath);
+  if (aaptDir && aaptDir.length > 0) {
+    //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
+    const apkPath = config.release.files[0].uri;
+    config.app.android_details = await getAndroidDetails(aaptDir, apkPath);
+  }
 
   // TODO(jon): Verify the contents of the YAML file
   return config;
@@ -96,8 +101,8 @@ type SaveToConfigArgs = {
   release?: Pick<Release, "address" | "version">;
 };
 
-export const saveToConfig = ({ publisher, app, release }: SaveToConfigArgs) => {
-  const currentConfig = getConfigFile();
+export const saveToConfig = async ({ publisher, app, release }: SaveToConfigArgs) => {
+  const currentConfig = await getConfigFile();
 
   const newConfig: CLIConfig = {
     publisher: {
