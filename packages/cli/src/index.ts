@@ -5,7 +5,6 @@ import { validateCommand } from "./commands/index.js";
 import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import { parseKeypair } from "./utils.js";
 import * as dotenv from "dotenv";
-import { Keypair } from "@solana/web3.js";
 
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
@@ -83,48 +82,59 @@ async function main() {
     });
 
   createCommand
+    .showHelpAfterError()
     .command("release <version>")
     .description("Create a release")
-    // .requiredOption(
-    //   "-k, --keypair <path-to-keypair-file>",
-    //   "Path to keypair file"
-    // )
+    .requiredOption(
+      "-k, --keypair <path-to-keypair-file>",
+      "Path to keypair file"
+    )
     .option(
-      "-a, --app-mint-address <app-mint-address>",
+      "-m, --mint-address <mint-address>",
       "The mint address of the app NFT"
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .action(async (version, { appMintAddress, keypair, url, dryRun }) => {
+    .option("-a, --aapt2-path <aapt2-path>", "Directory containing aapt2 in the Android dev tooling")
+    .action(async (version, { mintAddress, keypair, url, dryRun, aapt2Path }) => {
       dotenv.config();
-      const aaptDir = process.env.AAPT_DIR ?? "";
+      const aaptEnv = process.env.AAPT2_DIR ?? "";
 
-      //const signer = parseKeypair(keypair);
-      const signer = new Keypair();
+      let aaptDir = "";
+      if (aaptEnv && aaptEnv.length > 0) {
+        aaptDir = aaptEnv;
+      } else if (aapt2Path) {
+        aaptDir = aapt2Path;
+      } else {
+        console.log("\n\n::: Please specify an AAPT2 directory in a .env file or via the command line argument. :::\n\n");
+        return;
+      }
 
-      // if (!appMintAddress) {
-      //   const answers = await inquirer.prompt([
-      //     {
-      //       type: "input",
-      //       name: "appAddress",
-      //       message:
-      //         "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
-      //       default: conf.get("app"),
-      //     },
-      //   ]);
-      //   conf.set("app", answers.appAddress);
-      // }
+      const signer = parseKeypair(keypair);
 
-      //if (signer) {
+      if (!mintAddress) {
+        const answers = await inquirer.prompt([
+          {
+            type: "input",
+            name: "appAddress",
+            message:
+              "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
+            default: conf.get("app"),
+          },
+        ]);
+        conf.set("app", answers.appAddress);
+      }
+
+      if (signer) {
         await createReleaseCommand({
-          appMintAddress: appMintAddress ?? conf.get("app"),
+          appMintAddress: mintAddress ?? conf.get("app"),
           version,
           aaptDir,
           signer,
           url,
           dryRun,
         });
-      //}
+      }
     });
 
   program

@@ -48,14 +48,9 @@ export const getReleaseDetails = async (
     fs.readFileSync(configFile, "utf-8")
   ) as { release: Release };
 
+  //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
   const apkPath = release.files[0].uri;
   app.android_details = await getAndroidDetails(aaptDir, apkPath);
-
-  console.log("::::: " + app.android_details.android_package);
-  console.log("::::: " + app.android_details.min_sdk);
-  console.log("::::: " + app.android_details.version_code);
-  console.log("::::: " + app.android_details.permissions);
-  console.log("::::: " + app.android_details.locales);
 
   return { release, app, publisher };
 };
@@ -70,6 +65,7 @@ const getAndroidDetails = async (
 
   const appPackage = new RegExp(prefixes.packagePrefix + prefixes.quoteRegex).exec(stdout);
   const versionCode = new RegExp(prefixes.verCodePrefix + prefixes.quoteRegex).exec(stdout);
+  //TODO: Return this and use automatically replacing command line arg
   //const versionName = new RegExp(prefixes.verNamePrefix + prefixes.quoteRegex).exec(stdout);
   const minSdk = new RegExp(prefixes.sdkPrefix + prefixes.quoteRegex).exec(stdout);
   const permissions = new RegExp(prefixes.permissionPrefix + prefixes.quoteNonLazyRegex).exec(stdout);
