@@ -22,13 +22,15 @@ class AaptPrefixes {
 type CreateReleaseCommandInput = {
   appMintAddress: string;
   version: string;
+  aaptDir: string;
   signer: Keypair;
   url: string;
   dryRun?: boolean;
 };
 
 export const getReleaseDetails = async (
-  version: string
+  version: string,
+  aaptDir: string
 ): Promise<{ release: Release; app: App; publisher: Publisher }> => {
   const globalConfigFile = `${process.cwd()}/dapp-store/config.yaml`;
   console.info(`Pulling app and publisher details from ${globalConfigFile}`);
@@ -46,7 +48,10 @@ export const getReleaseDetails = async (
     fs.readFileSync(configFile, "utf-8")
   ) as { release: Release };
 
-  app.android_details = await getAndroidDetails("", "");
+  const apkPath = release.files[0].uri;
+  app.android_details = await getAndroidDetails(aaptDir, apkPath);
+
+  console.log(":::::" + app.android_details.android_package);
 
   return { release, app, publisher };
 };
@@ -135,13 +140,14 @@ const createReleaseNft = async ({
 export const createReleaseCommand = async ({
   appMintAddress,
   version,
+  aaptDir,
   signer,
   url,
   dryRun = false,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await getReleaseDetails(version);
+  const { release, app, publisher } = await getReleaseDetails(version, aaptDir);
 
   await createReleaseNft({
     appMintAddress,

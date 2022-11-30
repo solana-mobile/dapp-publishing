@@ -5,7 +5,7 @@ release:
       uri: ./app_screenshot.png
   files:
     - purpose: install
-      uri: ./app-debug.apk
+      uri: dapp-store/releases/v1.0.2/app-debug.apk
   localized_resources:
     en-US:
       short_description: >

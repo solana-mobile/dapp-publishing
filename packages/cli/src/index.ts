@@ -16,18 +16,6 @@ async function main() {
     .version("0.1.0")
     .description("CLI to assist with publishing to the Saga Dapp Store");
 
-  program
-    .command("test")
-    .description("Andrew's development testing command")
-    .requiredOption(
-      "-t, --test <path-to-apk>",
-      "Path to apk file"
-    )
-    .action(async ({ test }) => {
-      dotenv.config();
-      const aaptDir = process.env.AAPT_DIR;
-    })
-
   const createCommand = program
     .command("create")
     .description("Create a `publisher`, `app`, or `release`");
@@ -108,6 +96,9 @@ async function main() {
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async (version, { appMintAddress, keypair, url, dryRun }) => {
+      dotenv.config();
+      const aaptDir = process.env.AAPT_DIR ?? "";
+
       //const signer = parseKeypair(keypair);
       const signer = new Keypair();
 
@@ -128,6 +119,7 @@ async function main() {
         await createReleaseCommand({
           appMintAddress: appMintAddress ?? conf.get("app"),
           version,
+          aaptDir,
           signer,
           url,
           dryRun,

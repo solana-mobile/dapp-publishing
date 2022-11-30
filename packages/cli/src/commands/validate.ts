@@ -1,10 +1,10 @@
 import {
-  createPublisherJson,
-  validatePublisher,
   createAppJson,
-  validateApp,
+  createPublisherJson,
   createReleaseJson,
-  validateRelease,
+  validateApp,
+  validatePublisher,
+  validateRelease
 } from "@solana-mobile/dapp-publishing-tools";
 import { getPublisherDetails } from "./create/publisher.js";
 import type { Keypair } from "@solana/web3.js";
@@ -41,7 +41,7 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
   }
 
   // TODO(jon): Remove this hardcoded version
-  const { release: releaseDetails } = await getReleaseDetails("v1.0.2");
+  const { release: releaseDetails } = await getReleaseDetails("v1.0.2", "./my-apk.apk");
   debug({ releaseDetails });
 
   const releaseJson = await createReleaseJson(
