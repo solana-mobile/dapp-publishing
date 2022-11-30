@@ -1,4 +1,5 @@
-import type { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import type { Connection, Keypair } from "@solana/web3.js";
+import { ReleaseJsonMetadata } from "./validate/generated";
 
 export * from "./validate/generated/index.js";
 
