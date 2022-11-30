@@ -1,21 +1,23 @@
 import {
-  createAppJson,
   createPublisherJson,
-  createReleaseJson,
-  validateApp,
   validatePublisher,
-  validateRelease
+  createAppJson,
+  validateApp,
+  createReleaseJson,
+  validateRelease,
 } from "@solana-mobile/dapp-publishing-tools";
-import { getPublisherDetails } from "./create/publisher.js";
+import { debug, getConfigFile } from "../utils.js";
+
 import type { Keypair } from "@solana/web3.js";
-import { debug } from "../utils.js";
-import { getAppDetails, getReleaseDetails } from "./create/index.js";
 
 export const validateCommand = async ({ signer }: { signer: Keypair }) => {
-  const publisherDetails = await getPublisherDetails({
-    publisherAddress: signer.publicKey,
-  });
-  debug({ publisherDetails });
+  const {
+    publisher: publisherDetails,
+    app: appDetails,
+    release: releaseDetails,
+  } = getConfigFile();
+
+  debug({ publisherDetails, appDetails, releaseDetails });
 
   const publisherJson = createPublisherJson(publisherDetails);
   debug(JSON.stringify({ publisherJson }, null, 2));
@@ -27,9 +29,6 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
     console.error(e);
   }
 
-  const appDetails = await getAppDetails();
-  debug({ appDetails });
-
   const appJson = createAppJson(appDetails, signer.publicKey);
   debug(JSON.stringify({ appJson }, null, 2));
 
@@ -39,10 +38,6 @@ export const validateCommand = async ({ signer }: { signer: Keypair }) => {
   } catch (e) {
     console.error(e);
   }
-
-  // TODO(jon): Remove this hardcoded version
-  const { release: releaseDetails } = await getReleaseDetails("v1.0.2", "./my-apk.apk");
-  debug({ releaseDetails });
 
   const releaseJson = await createReleaseJson(
     { releaseDetails, appDetails, publisherDetails },
