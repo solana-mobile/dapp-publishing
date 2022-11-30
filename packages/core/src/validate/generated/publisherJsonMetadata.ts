@@ -6,10 +6,10 @@
  */
 
 export interface PublisherJsonMetadata {
+  schema_version: string;
   name: string;
   description: string;
-  image?: string;
-  external_url: string;
+  image: string;
   properties: {
     category: string;
     creators: {

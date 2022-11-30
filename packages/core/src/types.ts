@@ -47,19 +47,14 @@ export type App = {
   android_details: AndroidDetails;
 };
 
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 export type Release = {
-  address: PublicKey;
+  address: string;
   version: string;
   appMintAddress: string;
   publisherMintAddress: string;
-  media: {
-    purpose: string;
-    uri: string;
-  }[];
-  files: {
-    purpose: string;
-    uri: string;
-  }[];
+  media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
+  files: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["files"];
   android_details: AndroidDetails;
   localized_resources: {
     [locale: string]: {

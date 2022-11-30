@@ -5,15 +5,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-import type { MetaplexFile } from "@metaplex-foundation/js";
-
 export interface ReleaseJsonMetadata {
+  schema_version: string;
   name: string;
   description: string;
   image: string;
   properties: {
-    category: string;
-    creators: {
+    category?: string;
+    creators?: {
       address: string;
       [k: string]: unknown;
     }[];
@@ -30,15 +29,14 @@ export interface ReleaseJsonMetadata {
       release_details: {
         name: string;
         version: string;
-        updated_on: number;
+        updated_on: string;
         license_url: string;
         copyright_url: string;
         privacy_policy_url: string;
         age_rating: string;
         localized_resources: {
-          short_description: number;
-          long_description: number;
-          new_in_version: number;
+          long_description: string;
+          new_in_version: string;
           [k: string]: unknown;
         };
         [k: string]: unknown;
@@ -46,21 +44,24 @@ export interface ReleaseJsonMetadata {
       media: {
         mime: string;
         purpose: string;
-        uri: string | MetaplexFile;
+        uri: string;
+        width: number;
+        height: number;
         sha256: string;
-        size: number;
         [k: string]: unknown;
       }[];
       files: {
         mime: string;
         purpose: string;
-        uri: string | MetaplexFile;
+        uri: string;
         size: number;
         sha256: string;
         [k: string]: unknown;
       }[];
       android_details: {
         android_package: string;
+        saga_features_localized: string;
+        version_code: number;
         min_sdk: number;
         permissions: string[];
         locales: string[];
@@ -69,13 +70,17 @@ export interface ReleaseJsonMetadata {
       [k: string]: unknown;
     };
     i18n: {
-      "en-US": {
-        "1": string;
-        "2": string;
-        "3": string;
-        [k: string]: unknown;
+      /**
+       * This interface was referenced by `undefined`'s JSON-Schema definition
+       * via the `patternProperty` "([A-Za-z0-9\-]+)\w+/gi".
+       */
+      [k: string]: {
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "([A-Za-z0-9\-]+)\w+/gi".
+         */
+        [k: string]: string;
       };
-      [k: string]: unknown;
     };
     [k: string]: unknown;
   };

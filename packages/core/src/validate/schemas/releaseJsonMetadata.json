@@ -28,9 +28,7 @@
                 "type": "string"
               }
             },
-            "required": [
-              "address"
-            ]
+            "required": ["address"]
           }
         }
       }
@@ -54,11 +52,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "name",
-                "website",
-                "contact"
-              ]
+              "required": ["name", "website", "contact"]
             },
             "release_details": {
               "type": "object",
@@ -94,10 +88,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "long_description",
-                    "new_in_version"
-                  ]
+                  "required": ["long_description", "new_in_version"]
                 }
               },
               "required": [
@@ -122,9 +113,6 @@
                   "purpose": {
                     "type": "string"
                   },
-                  "uri": {
-                    "type": "string"
-                  },
                   "width": {
                     "type": "integer"
                   },
@@ -135,14 +123,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "mime",
-                  "purpose",
-                  "uri",
-                  "width",
-                  "height",
-                  "sha256"
-                ]
+                "required": ["mime", "purpose", "width", "height", "sha256"]
               }
             },
             "files": {
@@ -156,9 +137,6 @@
                   "purpose": {
                     "type": "string"
                   },
-                  "uri": {
-                    "type": "string"
-                  },
                   "size": {
                     "type": "integer"
                   },
@@ -166,13 +144,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "mime",
-                  "purpose",
-                  "uri",
-                  "size",
-                  "sha256"
-                ]
+                "required": ["mime", "purpose", "size", "sha256"]
               }
             },
             "android_details": {
@@ -235,10 +207,7 @@
           }
         }
       },
-      "required": [
-        "solana_dapp_store",
-        "i18n"
-      ]
+      "required": ["solana_dapp_store", "i18n"]
     }
   },
   "required": [

@@ -1,39 +1,25 @@
-import fs from "fs";
 import type { Publisher } from "@solana-mobile/dapp-publishing-tools";
 import { createPublisher } from "@solana-mobile/dapp-publishing-tools";
-import type { PublicKey } from "@solana/web3.js";
 import {
   Connection,
   Keypair,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import { load } from "js-yaml";
 
-export const getPublisherDetails = async ({
-  publisherAddress,
-}: {
-  publisherAddress: PublicKey;
-}): Promise<Publisher> => {
-  const configFile = `${process.cwd()}/dapp-store/config.yaml`;
-  console.info(`Pulling publisher details from ${configFile}`);
+import { getConfigFile, saveToConfig } from "../../utils.js";
 
-  const { publisher } = load(
-    // TODO(jon): Parameterize this
-    fs.readFileSync(configFile, "utf-8")
-  ) as { publisher: Publisher };
-
-  return publisher;
-};
-
-const createPublisherNft = async ({
-  connection,
-  publisher,
-  publisherDetails,
-}: {
-  connection: Connection;
-  publisher: Keypair;
-  publisherDetails: Publisher;
-}) => {
+const createPublisherNft = async (
+  {
+    connection,
+    publisher,
+    publisherDetails,
+  }: {
+    connection: Connection;
+    publisher: Keypair;
+    publisherDetails: Publisher;
+  },
+  { dryRun }: { dryRun: boolean }
+) => {
   const mintAddress = Keypair.generate();
   console.info(
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
@@ -47,11 +33,13 @@ const createPublisherNft = async ({
   const tx = txBuilder.toTransaction(blockhash);
   tx.sign(mintAddress, publisher);
 
-  const txSig = await sendAndConfirmTransaction(connection, tx, [
-    publisher,
-    mintAddress,
-  ]);
-  console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+  if (!dryRun) {
+    const txSig = await sendAndConfirmTransaction(connection, tx, [
+      publisher,
+      mintAddress,
+    ]);
+    console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+  }
 
   return { publisherAddress: mintAddress.publicKey.toBase58() };
 };
@@ -67,17 +55,18 @@ export const createPublisherCommand = async ({
 }) => {
   const connection = new Connection(url);
 
-  const publisherDetails = await getPublisherDetails({
-    publisherAddress: signer.publicKey,
-  });
+  const { publisher: publisherDetails } = await getConfigFile();
 
-  if (!dryRun) {
-    const { publisherAddress } = await createPublisherNft({
+  const { publisherAddress } = await createPublisherNft(
+    {
       connection,
       publisher: signer,
       publisherDetails,
-    });
+    },
+    { dryRun }
+  );
 
-    return { publisherAddress };
-  }
+  saveToConfig({ publisher: { address: publisherAddress } });
+
+  return { publisherAddress };
 };

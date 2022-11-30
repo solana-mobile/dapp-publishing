@@ -20,21 +20,19 @@
           "type": "string"
         },
         "creators": {
-          "type": "object",
-          "properties": {
-            "address": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "address"
-          ]
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string"
+              }
+            },
+            "required": ["address"]
+          }
         }
       },
-      "required": [
-        "category",
-        "creators"
-      ]
+      "required": ["category", "creators"]
     },
     "extensions": {
       "type": "object",
@@ -46,14 +44,10 @@
               "type": "string"
             }
           },
-          "required": [
-            "android_package"
-          ]
+          "required": ["android_package"]
         }
       },
-      "required": [
-        "solana_dapp_store"
-      ]
+      "required": ["solana_dapp_store"]
     }
   },
   "required": [
