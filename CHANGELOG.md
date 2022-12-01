@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Remove `age_rating` from release schema for the time being
+
 ## 0.2.0
 
 - Noted Metaplex-compatibility JSON fields

@@ -111,7 +111,6 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
-  age_rating: 3+
   locales:
     - en-US
     - ja-JP

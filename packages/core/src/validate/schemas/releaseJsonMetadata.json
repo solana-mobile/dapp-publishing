@@ -75,9 +75,6 @@
                 "privacy_policy_url": {
                   "type": "string"
                 },
-                "age_rating": {
-                  "type": "string"
-                },
                 "localized_resources": {
                   "type": "object",
                   "properties": {
@@ -98,7 +95,6 @@
                 "license_url",
                 "copyright_url",
                 "privacy_policy_url",
-                "age_rating",
                 "localized_resources"
               ]
             },

@@ -39,7 +39,6 @@ export type App = {
     privacy_policy_url: string;
     website: string;
   };
-  age_rating: string;
   android_details: AndroidDetails;
 };
 

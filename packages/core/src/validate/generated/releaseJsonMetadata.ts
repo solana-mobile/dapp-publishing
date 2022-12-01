@@ -33,7 +33,6 @@ export interface ReleaseJsonMetadata {
         license_url: string;
         copyright_url: string;
         privacy_policy_url: string;
-        age_rating: string;
         localized_resources: {
           long_description: string;
           new_in_version: string;
