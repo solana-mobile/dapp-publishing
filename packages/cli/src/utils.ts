@@ -21,16 +21,16 @@ export const parseKeypair = (pathToKeypairFile: string) => {
   }
 };
 
-class AaptPrefixes {
-  quoteRegex = "'(.*?)'";
-  quoteNonLazyRegex = "'(.*)'";
-  packagePrefix = "package: name=";
-  verCodePrefix = "versionCode=";
-  verNamePrefix = "versionName=";
-  sdkPrefix = "sdkVersion:";
-  permissionPrefix = "uses-permission: name=";
-  localePrefix = "locales: ";
-}
+const AaptPrefixes = {
+  quoteRegex: "'(.*?)'",
+  quoteNonLazyRegex: "'(.*)'",
+  packagePrefix: "package: name=",
+  verCodePrefix: "versionCode=",
+  verNamePrefix: "versionName=",
+  sdkPrefix: "sdkVersion:",
+  permissionPrefix: "uses-permission: name=",
+  localePrefix: "locales: ",
+};
 
 // TODO: Add version number return here
 interface CLIConfig {
@@ -63,17 +63,15 @@ const getAndroidDetails = async (
   aaptDir: string,
   apkPath: string
 ): Promise<AndroidDetails> => {
-  const prefixes = new AaptPrefixes();
-
   const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging ${apkPath}`);
 
-  const appPackage = new RegExp(prefixes.packagePrefix + prefixes.quoteRegex).exec(stdout);
-  const versionCode = new RegExp(prefixes.verCodePrefix + prefixes.quoteRegex).exec(stdout);
+  const appPackage = new RegExp(AaptPrefixes.packagePrefix + AaptPrefixes.quoteRegex).exec(stdout);
+  const versionCode = new RegExp(AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex).exec(stdout);
   //TODO: Return this and use automatically replacing command line arg
   //const versionName = new RegExp(prefixes.verNamePrefix + prefixes.quoteRegex).exec(stdout);
-  const minSdk = new RegExp(prefixes.sdkPrefix + prefixes.quoteRegex).exec(stdout);
-  const permissions = new RegExp(prefixes.permissionPrefix + prefixes.quoteNonLazyRegex).exec(stdout);
-  const locales = new RegExp(prefixes.localePrefix + prefixes.quoteNonLazyRegex).exec(stdout);
+  const minSdk = new RegExp(AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex).exec(stdout);
+  const permissions = new RegExp(AaptPrefixes.permissionPrefix + AaptPrefixes.quoteNonLazyRegex).exec(stdout);
+  const locales = new RegExp(AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex).exec(stdout);
 
   let permissionArray = Array.from(permissions?.values() ?? []);
   if (permissionArray.length >= 2) {
@@ -88,8 +86,8 @@ const getAndroidDetails = async (
 
   return {
     android_package: appPackage?.[1] ?? "",
-    min_sdk: parseInt(minSdk?.[1] ?? "0"),
-    version_code: parseInt(versionCode?.[1] ?? "0"),
+    min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
+    version_code: parseInt(versionCode?.[1] ?? "0", 10),
     permissions: permissionArray,
     locales: localeArray,
   };

@@ -82,7 +82,6 @@ async function main() {
     });
 
   createCommand
-    .showHelpAfterError()
     .command("release <version>")
     .description("Create a release")
     .requiredOption(
@@ -90,13 +89,13 @@ async function main() {
       "Path to keypair file"
     )
     .option(
-      "-m, --mint-address <mint-address>",
+      "-a, --app-mint-address <app-mint-address>",
       "The mint address of the app NFT"
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .option("-a, --aapt2-path <aapt2-path>", "Directory containing aapt2 in the Android dev tooling")
-    .action(async (version, { mintAddress, keypair, url, dryRun, aapt2Path }) => {
+    .action(async (version, { appMintAddress, keypair, url, dryRun, aapt2Path }) => {
       dotenv.config();
       const aaptEnv = process.env.AAPT2_DIR ?? "";
 
@@ -106,13 +105,13 @@ async function main() {
       } else if (aapt2Path) {
         aaptDir = aapt2Path;
       } else {
-        console.log("\n\n::: Please specify an AAPT2 directory in a .env file or via the command line argument. :::\n\n");
+        console.error("\n\n::: Please specify an AAPT2 directory in a .env file or via the command line argument. :::\n\n");
         return;
       }
 
       const signer = parseKeypair(keypair);
 
-      if (!mintAddress) {
+      if (!appMintAddress) {``
         const answers = await inquirer.prompt([
           {
             type: "input",
@@ -127,7 +126,7 @@ async function main() {
 
       if (signer) {
         await createReleaseCommand({
-          appMintAddress: mintAddress ?? conf.get("app"),
+          appMintAddress: appMintAddress ?? conf.get("app"),
           version,
           aaptDir,
           signer,
