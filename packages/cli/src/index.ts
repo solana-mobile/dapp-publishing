@@ -2,12 +2,9 @@ import { Command } from "commander";
 import Conf from "conf";
 import inquirer from "inquirer";
 import { validateCommand } from "./commands/index.js";
-import {
-  createAppCommand,
-  createPublisherCommand,
-  createReleaseCommand,
-} from "./commands/create/index.js";
+import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import { parseKeypair } from "./utils.js";
+import * as dotenv from "dotenv";
 
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
@@ -97,7 +94,22 @@ async function main() {
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .action(async (version, { appMintAddress, keypair, url, dryRun }) => {
+    .option("-b, --build-tools-path <build-tools-path>", "Path to Android build tools which contains AAPT2")
+    .action(async (version, { appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
+      dotenv.config();
+      const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
+
+      let buildTools = "";
+      if (toolsEnvDir && toolsEnvDir.length > 0) {
+        buildTools = toolsEnvDir;
+      } else if (buildToolsPath) {
+        buildTools = buildToolsPath;
+      } else {
+        console.error("\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n");
+        createCommand.showHelpAfterError()
+        return;
+      }
+
       const signer = parseKeypair(keypair);
 
       if (!appMintAddress) {
@@ -117,6 +129,7 @@ async function main() {
         await createReleaseCommand({
           appMintAddress: appMintAddress ?? conf.get("app"),
           version,
+          buildToolsPath: buildTools,
           signer,
           url,
           dryRun,
