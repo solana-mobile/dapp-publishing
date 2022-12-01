@@ -11,6 +11,13 @@
   - S3 URL -->
 - when we run the release, SHA hash the previous files and commit to an `.asset-cache`
 
+
+## Publishing Notes
+
+- https://developer.android.com/guide/topics/resources/multilingual-support#specify-the-languages-your-app-supports
+- Android build tools
+- Specify ANDROID_TOOLS_DIR= in .env file
+
 ## Prerequisites
 
 - Node 16+

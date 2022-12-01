@@ -1,21 +1,13 @@
+import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
 import { createRelease } from "@solana-mobile/dapp-publishing-tools";
-import type {
-  Release,
-  App,
-  Publisher,
-} from "@solana-mobile/dapp-publishing-tools";
-import {
-  Connection,
-  Keypair,
-  PublicKey,
-  sendAndConfirmTransaction,
-} from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 
 import { getConfigFile, saveToConfig } from "../../utils.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
   version: string;
+  buildToolsPath: string;
   signer: Keypair;
   url: string;
   dryRun?: boolean;
@@ -72,13 +64,14 @@ const createReleaseNft = async (
 export const createReleaseCommand = async ({
   appMintAddress,
   version,
+  buildToolsPath,
   signer,
   url,
   dryRun = false,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await getConfigFile();
+  const { release, app, publisher } = await getConfigFile(buildToolsPath);
 
   const { releaseMintAddress } = await createReleaseNft(
     {
