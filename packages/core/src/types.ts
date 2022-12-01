@@ -1,5 +1,6 @@
-import type { Connection, Keypair, PublicKey } from "@solana/web3.js";
+import type { Connection, Keypair } from "@solana/web3.js";
 import { ReleaseJsonMetadata } from "./validate/generated/releaseJsonMetadata.js";
+
 export * from "./validate/generated/index.js";
 
 export type Context = {
@@ -43,7 +44,6 @@ export type App = {
     privacy_policy_url: string;
     website: string;
   };
-  age_rating: string;
   android_details: AndroidDetails;
 };
 

@@ -28,8 +28,6 @@ export * from "./release.js";
 // - `license_url`
 // - `copyright_url`
 // - `privacy_policy_url`
-// - `age_rating`
-
 // Release
 // Publisher creator key required
 // Immutable; information cannot be edited after publishing.

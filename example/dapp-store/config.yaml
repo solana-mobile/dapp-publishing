@@ -19,7 +19,6 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
-  age_rating: 3+
   android_details:
     android_package: com.company.dapp
     google_store_package: com.company.dapp.otherpkg

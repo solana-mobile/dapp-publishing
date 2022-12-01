@@ -1,11 +1,7 @@
 import { mintNft } from "./utils.js";
-import type { Context, App, AppJsonMetadata } from "./types.js";
+import type { App, AppJsonMetadata, Context } from "./types.js";
 import type { PublicKey, Signer } from "@solana/web3.js";
-import {
-  bundlrStorage,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
+import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
 import debugModule from "debug";
 import { validateApp } from "./validate/index.js";
 
@@ -34,7 +30,6 @@ export const createAppJson = (
     },
     extensions: {
       solana_dapp_store: {
-        // TODO(jon): This probably needs more details
         android_package: app.android_details.android_package,
       },
     },

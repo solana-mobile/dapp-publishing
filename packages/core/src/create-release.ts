@@ -3,24 +3,13 @@ import fs from "fs";
 import { createHash } from "crypto";
 import mime from "mime";
 import debugModule from "debug";
-import {
-  bundlrStorage,
-  keypairIdentity,
-  Metaplex,
-  toMetaplexFile,
-} from "@metaplex-foundation/js";
+import type { MetaplexFile } from "@metaplex-foundation/js";
+import { bundlrStorage, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
 import { mintNft, truncateAddress } from "./utils.js";
 import { validateRelease } from "./validate/index.js";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
-import type { MetaplexFile } from "@metaplex-foundation/js";
-import type {
-  App,
-  Context,
-  Publisher,
-  Release,
-  ReleaseJsonMetadata,
-} from "./types.js";
+import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "./types.js";
 
 const debug = debugModule("RELEASE");
 
@@ -117,7 +106,6 @@ export const createReleaseJson = async (
           license_url: appDetails.urls.license_url,
           copyright_url: appDetails.urls.copyright_url,
           privacy_policy_url: appDetails.urls.privacy_policy_url,
-          age_rating: appDetails.age_rating,
           localized_resources: {
             short_description: "1",
             long_description: "2",
