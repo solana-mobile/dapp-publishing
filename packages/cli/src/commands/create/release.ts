@@ -7,7 +7,7 @@ import { getConfigFile, saveToConfig } from "../../utils.js";
 type CreateReleaseCommandInput = {
   appMintAddress: string;
   version: string;
-  aaptDir: string;
+  buildToolsPath: string;
   signer: Keypair;
   url: string;
   dryRun?: boolean;
@@ -64,14 +64,14 @@ const createReleaseNft = async (
 export const createReleaseCommand = async ({
   appMintAddress,
   version,
-  aaptDir,
+  buildToolsPath,
   signer,
   url,
   dryRun = false,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await getConfigFile(aaptDir);
+  const { release, app, publisher } = await getConfigFile(buildToolsPath);
 
   const { releaseMintAddress } = await createReleaseNft(
     {

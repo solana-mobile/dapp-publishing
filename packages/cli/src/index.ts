@@ -94,24 +94,25 @@ async function main() {
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .option("-a, --aapt2-path <aapt2-path>", "Directory containing aapt2 in the Android dev tooling")
-    .action(async (version, { appMintAddress, keypair, url, dryRun, aapt2Path }) => {
+    .option("-b, --build-tools-path <build-tools-path>", "Path to Android build tools which contains AAPT2")
+    .action(async (version, { appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
       dotenv.config();
-      const aaptEnv = process.env.AAPT2_DIR ?? "";
+      const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
 
-      let aaptDir = "";
-      if (aaptEnv && aaptEnv.length > 0) {
-        aaptDir = aaptEnv;
-      } else if (aapt2Path) {
-        aaptDir = aapt2Path;
+      let buildTools = "";
+      if (toolsEnvDir && toolsEnvDir.length > 0) {
+        buildTools = toolsEnvDir;
+      } else if (buildToolsPath) {
+        buildTools = buildToolsPath;
       } else {
-        console.error("\n\n::: Please specify an AAPT2 directory in a .env file or via the command line argument. :::\n\n");
+        console.error("\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n");
+        createCommand.showHelpAfterError()
         return;
       }
 
       const signer = parseKeypair(keypair);
 
-      if (!appMintAddress) {``
+      if (!appMintAddress) {
         const answers = await inquirer.prompt([
           {
             type: "input",
@@ -128,7 +129,7 @@ async function main() {
         await createReleaseCommand({
           appMintAddress: appMintAddress ?? conf.get("app"),
           version,
-          aaptDir,
+          buildToolsPath: buildTools,
           signer,
           url,
           dryRun,
