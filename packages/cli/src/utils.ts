@@ -5,6 +5,7 @@ import { dump, load } from "js-yaml";
 import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
 import * as util from "util";
 import { exec } from "child_process";
+import * as path from "path";
 
 const runExec = util.promisify(exec);
 
@@ -51,8 +52,11 @@ export const getConfigFile = async (
 
   if (buildToolsDir && buildToolsDir.length > 0) {
     //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
-    const apkPath = config.release.files[0].uri;
-    config.app.android_details = await getAndroidDetails(buildToolsDir, apkPath);
+
+    const apkSrc = config.release.files[0].uri;
+    const apkPath = path.join(process.cwd(), "dapp-store", "files", apkSrc);
+
+    config.release.android_details = await getAndroidDetails(buildToolsDir, apkPath);
   }
 
   // TODO(jon): Verify the contents of the YAML file
@@ -83,6 +87,8 @@ const getAndroidDetails = async (
     const localesSrc = localeArray[1];
     localeArray = localesSrc.split("' '").slice(1);
   }
+
+  throw new Error("TODO REMOVE ME");
 
   return {
     android_package: appPackage?.[1] ?? "",
