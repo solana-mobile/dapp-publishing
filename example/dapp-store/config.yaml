@@ -22,7 +22,6 @@ app:
   android_details:
     android_package: com.company.dapp
     google_store_package: com.company.dapp.otherpkg
-    saga_features_localized: uid_3
     min_sdk: 21
     version_code: 5
     permissions:
@@ -51,4 +50,6 @@ release:
         Some wonderful release notes, in long-form
       new_in_version: |
         Something new in this version
+      saga_features_localized: |
+        Some information about saga specific features
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
