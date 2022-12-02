@@ -30,6 +30,7 @@ export type App = {
   name: string;
   address: string;
   publisherAddress: string;
+  androidPackage: string;
   description: {
     "en-US": string;
   };
@@ -39,10 +40,10 @@ export type App = {
     privacy_policy_url: string;
     website: string;
   };
-  android_details: AndroidDetails;
 };
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
+
 export type Release = {
   address: string;
   version: string;

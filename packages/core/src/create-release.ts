@@ -114,7 +114,7 @@ export const createReleaseJson = async (
         },
         media,
         files,
-        android_details: appDetails.android_details,
+        android_details: releaseDetails.android_details,
       },
       i18n: {
         "en-US": {

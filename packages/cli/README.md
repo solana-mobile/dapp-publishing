@@ -93,7 +93,7 @@ publisher:
   name: My new publisher name
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
   description:
-    en-US: >
+    en-US: |
       A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
@@ -102,7 +102,7 @@ app:
   name: My new app name
   address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
   description:
-    en-US: >
+    en-US: |
       My new app description
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
@@ -111,19 +111,26 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
-  locales:
-    - en-US
-    - ja-JP
-    - it-IT
-  android_details:
-    android_package: com.company.dapp
-    google_store_package: com.company.dapp.otherpkg
-    min_sdk: 21
-    version_code: 5
-    permissions:
-      - android.permission.INTERNET
-      - android.permission.LOCATION_HARDWARE
-      - com.solanamobile.seedvault.ACCESS_SEED_VAULT
+
+release:
+  version: v1.0.4
+  address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
+  media:
+    - purpose: screenshot
+      uri: ./app_screenshot.png
+      width: 512
+      height: 512
+  files:
+    - purpose: install
+      uri: ./app-debug.apk
+  localized_resources:
+    en-US:
+      short_description: |
+        Some wonderful release notes
+      long_description: |
+        Some wonderful release notes, in long-form
+      new_in_version: |
+        Something new in this version
 ```
 
 Since releases happen quite often, those are stored in the `dapp-store/releases` folder.

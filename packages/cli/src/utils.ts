@@ -56,7 +56,7 @@ export const getConfigFile = async (
     const apkSrc = config.release.files[0].uri;
     const apkPath = path.join(process.cwd(), "dapp-store", "files", apkSrc);
 
-    config.app.android_details = await getAndroidDetails(buildToolsDir, apkPath);
+    config.release.android_details = await getAndroidDetails(buildToolsDir, apkPath);
   }
 
   // TODO(jon): Verify the contents of the YAML file
