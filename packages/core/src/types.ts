@@ -1,19 +1,12 @@
 import type { Connection, Keypair } from "@solana/web3.js";
-import { ReleaseJsonMetadata } from "./validate/generated";
+// import { ReleaseJsonMetadata } from "./validate/generated";
+// import exp = require("constants");
 
 export * from "./validate/generated/index.js";
 
 export type Context = {
   publisher: Keypair;
   connection: Connection;
-};
-
-export type AndroidDetails = {
-  android_package: string;
-  min_sdk: number;
-  version_code: number;
-  permissions: string[];
-  locales: string[];
 };
 
 export type Publisher = {
@@ -49,8 +42,8 @@ export type Release = {
   version: string;
   appMintAddress: string;
   publisherMintAddress: string;
-  media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
-  files: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["files"];
+  media: ReleaseMedia[];
+  files: ReleaseFile[];
   android_details: AndroidDetails;
   localized_resources: {
     [locale: string]: {
@@ -60,4 +53,26 @@ export type Release = {
       saga_features_localized: string;
     };
   };
+};
+
+export type AndroidDetails = {
+  android_package: string;
+  min_sdk: number;
+  version_code: number;
+  permissions: string[];
+  locales: string[];
+};
+
+export type ReleaseFile = {
+  mime: string;
+  purpose: string;
+  path: string; // Intermediary value from yaml config
+  uri: string;
+  size: number;
+  sha256: string;
+};
+
+export type ReleaseMedia = ReleaseFile & {
+  width: number;
+  height: number;
 };

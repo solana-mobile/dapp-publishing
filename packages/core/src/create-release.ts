@@ -9,23 +9,24 @@ import { mintNft, truncateAddress } from "./utils.js";
 import { validateRelease } from "./validate/index.js";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
-import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "./types.js";
+import type { App, Context, Publisher, Release, ReleaseFile, ReleaseJsonMetadata, ReleaseMedia } from "./types.js";
 
 const debug = debugModule("RELEASE");
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 type File = ArrayElement<Release["files"]>;
-type Media = ArrayElement<Release["media"]>;
 
-const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
-  const file = path.join(process.cwd(), "dapp-store", type, item.uri);
+const getFileMetadata = async (type: "media" | "files", item: ReleaseFile | File) => {
+  const file = path.join(process.cwd(), "dapp-store", type, item.path);
   debug({ file });
+
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
+
   const metadata = {
     purpose: item.purpose,
-    uri: toMetaplexFile(mediaBuffer, item.uri),
+    uri: toMetaplexFile(mediaBuffer, item.path),
     mime: mime.getType(item.uri) || "",
     size,
     sha256: hash,
@@ -34,8 +35,11 @@ const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   return metadata;
 };
 
-const getMediaMetadata = async (item: Media) => {
+const getMediaMetadata = async (item: ReleaseMedia) => {
   const metadata = await getFileMetadata("media", item);
+
+  //TODO: Parse image dimensions here as it was previous relying on the yaml
+
   return {
     ...metadata,
     width: item.width,
@@ -127,6 +131,12 @@ export const createReleaseJson = async (
       },
     },
   };
+
+  console.log("\n:: Your Data:");
+  console.log(releaseMetadata.extensions.solana_dapp_store.media[0].width);
+  console.log("\n::::::::");
+
+  throw new Error(":: Execution break ::");
 
   // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
   return releaseMetadata;

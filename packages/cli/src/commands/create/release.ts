@@ -76,7 +76,7 @@ export const createReleaseCommand = async ({
 
   if (buildToolsPath && buildToolsPath.length > 0) {
     //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
-    const apkSrc = release.files[0].uri;
+    const apkSrc = release.files[0].path;
     const apkPath = path.join(process.cwd(), "dapp-store", "files", apkSrc);
 
     release.android_details = await getAndroidDetails(buildToolsPath, apkPath);
