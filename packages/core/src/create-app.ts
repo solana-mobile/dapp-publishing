@@ -30,7 +30,7 @@ export const createAppJson = (
     },
     extensions: {
       solana_dapp_store: {
-        android_package: app.androidPackage,
+        android_package: app.android_package,
       },
     },
   };

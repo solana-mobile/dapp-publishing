@@ -30,7 +30,7 @@ export type App = {
   name: string;
   address: string;
   publisherAddress: string;
-  androidPackage: string;
+  android_package: string;
   description: {
     "en-US": string;
   };
