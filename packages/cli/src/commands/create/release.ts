@@ -2,7 +2,8 @@ import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-too
 import { createRelease } from "@solana-mobile/dapp-publishing-tools";
 import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 
-import { getConfigFile, saveToConfig } from "../../utils.js";
+import { getAndroidDetails, getConfigFile, saveToConfig } from "../../utils.js";
+import path from "path";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -71,7 +72,15 @@ export const createReleaseCommand = async ({
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await getConfigFile(buildToolsPath);
+  const { release, app, publisher } = await getConfigFile();
+
+  if (buildToolsPath && buildToolsPath.length > 0) {
+    //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
+    const apkSrc = release.files[0].uri;
+    const apkPath = path.join(process.cwd(), "dapp-store", "files", apkSrc);
+
+    release.android_details = await getAndroidDetails(buildToolsPath, apkPath);
+  }
 
   const { releaseMintAddress } = await createReleaseNft(
     {
