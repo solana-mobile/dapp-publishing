@@ -41,9 +41,10 @@ release:
         Some wonderful release notes, in long-form
       new_in_version: |
         Something new in this version
+      saga_features_localized: |
+        Some information about saga specific features
   android_details:
     android_package: com.company.dapp
-    saga_features_localized: uid_3
     min_sdk: 21
     version_code: 5
     permissions:

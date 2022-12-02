@@ -57,6 +57,7 @@ export type Release = {
       short_description: string;
       long_description: string;
       new_in_version: string;
+      saga_features_localized: string;
     };
   };
 };

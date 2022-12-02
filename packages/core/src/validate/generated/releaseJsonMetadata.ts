@@ -36,6 +36,7 @@ export interface ReleaseJsonMetadata {
         localized_resources: {
           long_description: string;
           new_in_version: string;
+          saga_features_localized: string;
           [k: string]: unknown;
         };
         [k: string]: unknown;
@@ -59,7 +60,6 @@ export interface ReleaseJsonMetadata {
       }[];
       android_details: {
         android_package: string;
-        saga_features_localized: string;
         version_code: number;
         min_sdk: number;
         permissions: string[];

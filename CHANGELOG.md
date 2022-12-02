@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Move `saga_features_localized` to be along side other localized strings
+
 ## 0.2.1
 
 - Remove `age_rating` from release schema for the time being

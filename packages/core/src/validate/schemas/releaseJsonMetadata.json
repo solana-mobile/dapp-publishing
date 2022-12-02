@@ -83,6 +83,9 @@
                     },
                     "new_in_version": {
                       "type": "string"
+                    },
+                    "saga_features_localized": {
+                      "type": "string"
                     }
                   },
                   "required": ["long_description", "new_in_version"]
@@ -149,9 +152,6 @@
                 "android_package": {
                   "type": "string"
                 },
-                "saga_features_localized": {
-                  "type": "string"
-                },
                 "version_code": {
                   "type": "integer"
                 },
@@ -173,7 +173,6 @@
               },
               "required": [
                 "android_package",
-                "saga_features_localized",
                 "version_code",
                 "min_sdk",
                 "permissions",
