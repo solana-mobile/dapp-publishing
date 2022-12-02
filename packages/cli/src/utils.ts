@@ -88,8 +88,6 @@ const getAndroidDetails = async (
     localeArray = localesSrc.split("' '").slice(1);
   }
 
-  throw new Error("TODO REMOVE ME");
-
   return {
     android_package: appPackage?.[1] ?? "",
     min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
