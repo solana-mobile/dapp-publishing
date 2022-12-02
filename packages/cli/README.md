@@ -97,10 +97,10 @@ publisher:
       A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
-
 app:
   name: My new app name
-  address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
+  address: CSz8WVNH4UMc2dyzRPktkJKRYxXsmRCkEruL53UzF3bW
+  android_package: com.company.dapp
   description:
     en-US: |
       My new app description
@@ -111,18 +111,15 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
-
 release:
   version: v1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
-      uri: ./app_screenshot.png
-      width: 512
-      height: 512
+      path: ./app_screenshot.png
   files:
     - purpose: install
-      uri: ./app-debug.apk
+      path: ./app-debug.apk
   localized_resources:
     en-US:
       short_description: |
@@ -131,6 +128,8 @@ release:
         Some wonderful release notes, in long-form
       new_in_version: |
         Something new in this version
+      saga_features_localized: |
+        Some information about saga specific features
 ```
 
 Since releases happen quite often, those are stored in the `dapp-store/releases` folder.
