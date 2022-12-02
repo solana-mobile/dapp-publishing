@@ -8,7 +8,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 
 ```json
 {
-  "schema_version": "0.2.1",
+  "schema_version": "0.2.2",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -36,7 +36,8 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "privacy_policy_url": "http://cdn.org/privacy.html",
         "localized_resources": {
           "long_description": "uid_1",
-          "new_in_version": "uid_2"
+          "new_in_version": "uid_2",
+          "saga_features_localized": "uid_3"
         }
       },
       "media": [
@@ -92,7 +93,6 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
       ],
       "android_details": {
         "android_package": "com.company.dapp",
-        "saga_features_localized": "uid_3",
         "version_code": 5,
         "min_sdk": 21,
         "permissions": [
@@ -152,7 +152,7 @@ All releases for a dApp store entry will be grouped under a collection, which it
 
 ```json
 {
-  "schema_version": "0.2.1",
+  "schema_version": "0.2.2",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible collection description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -182,7 +182,7 @@ That said, all store-relevant publisher information will be managed in the relea
 
 ```json
 {
-  "schema_version": "0.2.1",
+  "schema_version": "0.2.2",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible pub desc [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
