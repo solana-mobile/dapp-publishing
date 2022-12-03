@@ -82,12 +82,6 @@ export const createReleaseJson = async (
     },
   };
 
-  console.log("\n:: Your Data:");
-  console.log(releaseMetadata.extensions.solana_dapp_store.media[0].sha256);
-  console.log("\n::::::::");
-
-  throw new Error(":: Execution break ::");
-
   // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
   return releaseMetadata;
 };
@@ -129,6 +123,12 @@ export const createRelease = async (
     publisher.publicKey
   );
   validateRelease(releaseJson);
+
+  console.log("\n:: Your Data:");
+  console.log(releaseJson.extensions.solana_dapp_store.media[0].sha256);
+  console.log("\n::::::::");
+
+  throw new Error(":: Execution break ::");
 
   const txBuilder = await mintNft(metaplex, releaseJson, {
     useNewMint: releaseMintAddress,

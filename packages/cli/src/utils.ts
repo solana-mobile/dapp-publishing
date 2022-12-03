@@ -2,11 +2,7 @@ import { Keypair } from "@solana/web3.js";
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
-import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
-import * as util from "util";
-import { exec } from "child_process";
-
-const runExec = util.promisify(exec);
+import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
 
 export const debug = debugModule("CLI");
 
@@ -19,17 +15,6 @@ export const parseKeypair = (pathToKeypairFile: string) => {
       `Something went wrong when attempting to retrieve the keypair at ${pathToKeypairFile}`
     );
   }
-};
-
-const AaptPrefixes = {
-  quoteRegex: "'(.*?)'",
-  quoteNonLazyRegex: "'(.*)'",
-  packagePrefix: "package: name=",
-  verCodePrefix: "versionCode=",
-  verNamePrefix: "versionName=",
-  sdkPrefix: "sdkVersion:",
-  permissionPrefix: "uses-permission: name=",
-  localePrefix: "locales: ",
 };
 
 // TODO: Add version number return here
@@ -47,40 +32,6 @@ export const getConfigFile = async (): Promise<CLIConfig> => {
 
   // TODO(jon): Verify the contents of the YAML file
   return load(configFile) as CLIConfig;
-};
-
-export const getAndroidDetails = async (
-  aaptDir: string,
-  apkPath: string
-): Promise<AndroidDetails> => {
-  const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging ${apkPath}`);
-
-  const appPackage = new RegExp(AaptPrefixes.packagePrefix + AaptPrefixes.quoteRegex).exec(stdout);
-  const versionCode = new RegExp(AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex).exec(stdout);
-  //TODO: Return this and use automatically replacing command line arg
-  //const versionName = new RegExp(prefixes.verNamePrefix + prefixes.quoteRegex).exec(stdout);
-  const minSdk = new RegExp(AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex).exec(stdout);
-  const permissions = new RegExp(AaptPrefixes.permissionPrefix + AaptPrefixes.quoteNonLazyRegex).exec(stdout);
-  const locales = new RegExp(AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex).exec(stdout);
-
-  let permissionArray = Array.from(permissions?.values() ?? []);
-  if (permissionArray.length >= 2) {
-    permissionArray = permissionArray.slice(1);
-  }
-
-  let localeArray = Array.from(locales?.values() ?? []);
-  if (localeArray.length == 2) {
-    const localesSrc = localeArray[1];
-    localeArray = localesSrc.split("' '").slice(1);
-  }
-
-  return {
-    android_package: appPackage?.[1] ?? "",
-    min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
-    version_code: parseInt(versionCode?.[1] ?? "0", 10),
-    permissions: permissionArray,
-    locales: localeArray,
-  };
 };
 
 type SaveToConfigArgs = {
