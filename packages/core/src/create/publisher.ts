@@ -7,9 +7,9 @@ import {
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
-import { validatePublisher } from "./validate/index.js";
-import { mintNft } from "./utils.js";
-import type { Context, Publisher, PublisherJsonMetadata } from "./types.js";
+import { validatePublisher } from "../validate/index.js";
+import { mintNft } from "../utils.js";
+import type { Context, Publisher, PublisherJsonMetadata } from "../types.js";
 
 const debug = debugModule("PUBLISHER");
 

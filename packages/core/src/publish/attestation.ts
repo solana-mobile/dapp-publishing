@@ -1,5 +1,5 @@
-import { Connection, Keypair } from "@solana/web3.js";
-import nacl from "tweetnacl";
+import { Connection } from "@solana/web3.js";
+import { SignWithPublisherKeypair } from "./types";
 
 //
 // Construct and sign attestation payloads
@@ -10,7 +10,7 @@ type Attestation = {
   request_unique_id: string;
 };
 
-export const createAttestationPayload = async (connection: Connection, publisher: Keypair) => {
+export const createAttestationPayload = async (connection: Connection, sign: SignWithPublisherKeypair) => {
   const REQUEST_UNIQUE_ID_LEN = 32;
   const REQUEST_UNIQUE_ID_CHAR_SET = "0123456789";
   const requestUniqueId = Array(REQUEST_UNIQUE_ID_LEN).fill(undefined).map((_) =>
@@ -23,7 +23,7 @@ export const createAttestationPayload = async (connection: Connection, publisher
     timestamp_blockhash: blockhash.blockhash,
     request_unique_id: requestUniqueId
   };
-  const signedAttestation = nacl.sign(Buffer.from(JSON.stringify(attestation)), publisher.secretKey);
+  const signedAttestation = sign(Buffer.from(JSON.stringify(attestation)));
 
   return { attestationPayload: Buffer.from(signedAttestation.buffer).toString("base64"), requestUniqueId };
 };
