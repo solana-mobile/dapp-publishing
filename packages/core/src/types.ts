@@ -1,4 +1,5 @@
 import type { Connection, Keypair } from "@solana/web3.js";
+import { MetaplexFile } from "@metaplex-foundation/js";
 // import { ReleaseJsonMetadata } from "./validate/generated";
 // import exp = require("constants");
 
@@ -67,7 +68,7 @@ export type ReleaseFile = {
   mime: string;
   purpose: string;
   path: string; // Intermediary value from yaml config
-  uri: string;
+  uri: MetaplexFile;
   size: number;
   sha256: string;
 };

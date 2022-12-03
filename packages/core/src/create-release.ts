@@ -1,51 +1,13 @@
-import path from "path";
-import fs from "fs";
-import { createHash } from "crypto";
-import mime from "mime";
 import debugModule from "debug";
 import type { MetaplexFile } from "@metaplex-foundation/js";
-import { bundlrStorage, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
+import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
 import { mintNft, truncateAddress } from "./utils.js";
 import { validateRelease } from "./validate/index.js";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
-import type { App, Context, Publisher, Release, ReleaseFile, ReleaseJsonMetadata, ReleaseMedia } from "./types.js";
+import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "./types.js";
 
 const debug = debugModule("RELEASE");
-
-type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
-type File = ArrayElement<Release["files"]>;
-
-const getFileMetadata = async (type: "media" | "files", item: ReleaseFile | File) => {
-  const file = path.join(process.cwd(), "dapp-store", type, item.path);
-  debug({ file });
-
-  const mediaBuffer = await fs.promises.readFile(file);
-  const size = (await fs.promises.stat(file)).size;
-  const hash = createHash("sha256").update(mediaBuffer).digest("base64");
-
-  const metadata = {
-    purpose: item.purpose,
-    uri: toMetaplexFile(mediaBuffer, item.path),
-    mime: mime.getType(item.uri) || "",
-    size,
-    sha256: hash,
-  };
-
-  return metadata;
-};
-
-const getMediaMetadata = async (item: ReleaseMedia) => {
-  const metadata = await getFileMetadata("media", item);
-
-  //TODO: Parse image dimensions here as it was previous relying on the yaml
-
-  return {
-    ...metadata,
-    width: item.width,
-    height: item.height,
-  };
-};
 
 type MetaplexFileReleaseJsonMetadata = ReleaseJsonMetadata & {
   extensions: {
@@ -67,18 +29,6 @@ export const createReleaseJson = async (
   const truncatedAppMintAddress = truncateAddress(appDetails.address);
 
   const releaseName = `${truncatedAppMintAddress} ${releaseDetails.version}`;
-
-  const media = [];
-  debug({ media: releaseDetails.media });
-  for await (const item of releaseDetails.media) {
-    media.push(await getMediaMetadata(item));
-  }
-
-  const files = [];
-  debug({ files: releaseDetails.files });
-  for await (const item of releaseDetails.files) {
-    files.push(await getFileMetadata("files", item));
-  }
 
   const releaseMetadata = {
     schema_version: "0.2.0",
@@ -117,8 +67,8 @@ export const createReleaseJson = async (
             saga_features_localized: "4",
           },
         },
-        media,
-        files,
+        media: releaseDetails.media,
+        files: releaseDetails.files,
         android_details: releaseDetails.android_details,
       },
       i18n: {
@@ -133,7 +83,7 @@ export const createReleaseJson = async (
   };
 
   console.log("\n:: Your Data:");
-  console.log(releaseMetadata.extensions.solana_dapp_store.media[0].width);
+  console.log(releaseMetadata.extensions.solana_dapp_store.media[0].sha256);
   console.log("\n::::::::");
 
   throw new Error(":: Execution break ::");

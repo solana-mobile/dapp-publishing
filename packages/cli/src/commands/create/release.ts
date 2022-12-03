@@ -1,9 +1,12 @@
-import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
+import type { App, Publisher, Release, ReleaseFile, ReleaseMedia } from "@solana-mobile/dapp-publishing-tools";
 import { createRelease } from "@solana-mobile/dapp-publishing-tools";
 import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
-
+import { toMetaplexFile } from "@metaplex-foundation/js";
 import { getAndroidDetails, getConfigFile, saveToConfig } from "../../utils.js";
 import path from "path";
+import fs from "fs";
+import { createHash } from "crypto";
+import mime from "mime";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -82,6 +85,23 @@ export const createReleaseCommand = async ({
     release.android_details = await getAndroidDetails(buildToolsPath, apkPath);
   }
 
+  const media = [];
+  for await (const item of release.media) {
+    media.push(await getMediaMetadata(item));
+  }
+
+  const files = [];
+  for await (const item of release.files) {
+    files.push(await getFileMetadata("files", item));
+  }
+
+  release.files = files;
+  release.media = media;
+
+  console.log("------");
+  console.log("Your media: " + release.media[0].sha256);
+  console.log("------");
+
   const { releaseMintAddress } = await createReleaseNft(
     {
       appMintAddress,
@@ -100,4 +120,38 @@ export const createReleaseCommand = async ({
   saveToConfig({
     release: { address: releaseMintAddress.toBase58(), version },
   });
+};
+
+type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
+type File = ArrayElement<Release["files"]>;
+
+const getFileMetadata = async (type: "media" | "files", item: ReleaseFile | File): Promise<ReleaseFile> => {
+  const file = path.join(process.cwd(), "dapp-store", type, item.path);
+
+  const mediaBuffer = await fs.promises.readFile(file);
+  const size = (await fs.promises.stat(file)).size;
+  const hash = createHash("sha256").update(mediaBuffer).digest("base64");
+
+  const metadata: ReleaseFile = {
+    purpose: item.purpose,
+    uri: toMetaplexFile(mediaBuffer, item.path),
+    mime: mime.getType(item.path) || "",
+    size,
+    sha256: hash,
+    path: "",
+  };
+
+  return metadata;
+};
+
+const getMediaMetadata = async (item: ReleaseMedia): Promise<ReleaseMedia> => {
+  const metadata = await getFileMetadata("media", item);
+
+  //TODO: Parse image dimensions here as it was previous relying on the yaml
+
+  return {
+    ...metadata,
+    width: item.width,
+    height: item.height,
+  };
 };
