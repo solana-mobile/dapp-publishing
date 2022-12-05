@@ -105,5 +105,5 @@ export const publishRemove = async (
     requestorIsAuthorized,
     criticalUpdate);
 
-  submitRequestToSolanaDappPublisherPortal(removeRequest, URL_FORM_REMOVE, dryRun);
+  return submitRequestToSolanaDappPublisherPortal(removeRequest, URL_FORM_REMOVE, dryRun);
 };
