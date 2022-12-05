@@ -124,5 +124,5 @@ export const publishSubmit = async (
     compliesWithSolanaDappStorePolicies,
     requestorIsAuthorized);
 
-  submitRequestToSolanaDappPublisherPortal(submitRequest, URL_FORM_SUBMIT, dryRun);
+  return submitRequestToSolanaDappPublisherPortal(submitRequest, URL_FORM_SUBMIT, dryRun);
 };
