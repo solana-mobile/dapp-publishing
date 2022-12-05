@@ -1,9 +1,14 @@
 {
   "assets": {
-    "./app_screenshot.png": {
-      "path": "./app_screenshot.png",
+    "media/app_screenshot.png": {
+      "path": "media/app_screenshot.png",
       "sha256": "wTJ4LeINpTxdoavrqrG2jmoVWD/YOTQ3UN99XCP1WgY=",
-      "uri": "https://arweave.net/0Ef7K7rsKYYDlSCK0k4na2QmnZ1V5xApJJG95Hmx9EA"
+      "uri": "https://arweave.net/tycnMnNkzZ4NDhKnn--1RrJAQrWqv377ywsgAXx-3YM"
+    },
+    "files/app-debug.apk": {
+      "path": "files/app-debug.apk",
+      "sha256": "IG+ONBzo4vza7BpogfUQBEyre5NcrSsPSGe+7govPAw=",
+      "uri": "https://arweave.net/CWd_4cqsc5n6g5E4HrYK_RRE353tD8IqvZ7j9ILLUSg"
     }
   }
 }

@@ -10,13 +10,14 @@ type Asset = {
   uri: URI;
 };
 
-type AssetManifestSchema = {
+export type AssetManifestSchema = {
   schema_version: string;
   assets: {
     [path: string]: Asset;
   };
 };
 
+// TODO(jon): We need to manage the removal / replacement of assets in the manifest
 export class CachedStorageDriver implements StorageDriver {
   static readonly SCHEMA_VERSION = "0.2.2";
   assetManifest: AssetManifestSchema;
@@ -62,6 +63,15 @@ export class CachedStorageDriver implements StorageDriver {
     }
     const hash = createHash("sha256").update(file.buffer).digest("base64");
 
+    console.info(
+      JSON.stringify({
+        file: {
+          name: file.fileName,
+          disn: file.displayName,
+          un: file.uniqueName,
+        },
+      })
+    );
     const uploadedAsset = this.uploadedAsset(file.fileName, { sha256: hash });
     if (uploadedAsset) {
       console.log(

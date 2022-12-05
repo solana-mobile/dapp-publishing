@@ -6,7 +6,6 @@ publisher:
       A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
-
 app:
   name: My new app name
   address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
@@ -21,10 +20,9 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
-
 release:
   version: v1.0.4
-  address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
+  address: 9fs5vMWeVoMcRcUv5PXpXrvoCPr6RYYanH7arqrEgGaQ
   media:
     - purpose: screenshot
       uri: ./app_screenshot.png

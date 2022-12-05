@@ -31,7 +31,7 @@ const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
   const metadata = {
     purpose: item.purpose,
-    uri: toMetaplexFile(mediaBuffer, item.uri),
+    uri: toMetaplexFile(mediaBuffer, path.join(type, item.uri)),
     mime: mime.getType(item.uri) || "",
     size,
     sha256: hash,
