@@ -100,7 +100,6 @@ export const createReleaseJson = async (
           contact: publisherDetails.email,
         },
         release_details: {
-          name: releaseName,
           version: releaseDetails.version,
           updated_on: new Date().toISOString(),
           license_url: appDetails.urls.license_url,
@@ -111,6 +110,7 @@ export const createReleaseJson = async (
             long_description: "2",
             new_in_version: "3",
             saga_features_localized: "4",
+            name: "5",
           },
         },
         media,
@@ -123,6 +123,7 @@ export const createReleaseJson = async (
           "2": releaseDetails.catalog["en-US"].long_description,
           "3": releaseDetails.catalog["en-US"].new_in_version,
           "4": releaseDetails.catalog["en-US"].saga_features_localized,
+          "5": releaseDetails.catalog["en-US"].name,
         },
       },
     },

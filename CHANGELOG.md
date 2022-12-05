@@ -1,6 +1,7 @@
 ## 0.2.3
 
 - Remove `description` from Publisher & App "Collection" JSON schemas
+- In the release schema, the `name` field that used to be under `release_details` has now been moved to be contained in `localized_resources`
 
 ## 0.2.2
 

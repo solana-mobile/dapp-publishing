@@ -48,6 +48,7 @@ export type Release = {
   android_details: AndroidDetails;
   catalog: {
     [locale: string]: {
+      name: string;
       short_description: string;
       long_description: string;
       new_in_version: string;
