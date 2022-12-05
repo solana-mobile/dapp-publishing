@@ -18,7 +18,7 @@ type File = ArrayElement<Release["files"]>;
 type Media = ArrayElement<Release["media"]>;
 
 const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
-  const file = path.join(process.cwd(), "dapp-store", type, item.uri);
+  const file = path.join(process.cwd(), type, item.uri);
   debug({ file });
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;

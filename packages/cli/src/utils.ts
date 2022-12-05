@@ -1,5 +1,11 @@
-import type { AndroidDetails, App, Publisher, Release, SolanaMobileDappPublisherPortal } from "@solana-mobile/dapp-publishing-tools";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import type {
+  AndroidDetails,
+  App,
+  Publisher,
+  Release,
+  SolanaMobileDappPublisherPortal
+} from "@solana-mobile/dapp-publishing-tools";
+import { Keypair } from "@solana/web3.js";
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
@@ -44,7 +50,7 @@ interface CLIConfig {
 export const getConfigFile = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
-  const configFilePath = `${process.cwd()}/dapp-store/config.yaml`;
+  const configFilePath = `${process.cwd()}/config.yaml`;
   const configFile = fs.readFileSync(configFilePath, "utf-8");
 
   console.info(`Pulling details from ${configFilePath}`);
@@ -55,7 +61,7 @@ export const getConfigFile = async (
     //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
 
     const apkSrc = config.release.files[0].uri;
-    const apkPath = path.join(process.cwd(), "dapp-store", "files", apkSrc);
+    const apkPath = path.join(process.cwd(), "files", apkSrc);
 
     config.release.android_details = await getAndroidDetails(buildToolsDir, apkPath);
   }
@@ -125,5 +131,5 @@ export const saveToConfig = async ({ publisher, app, release }: SaveToConfigArgs
   };
 
   // TODO(jon): Verify the contents of the YAML file
-  fs.writeFileSync(`${process.cwd()}/dapp-store/config.yaml`, dump(newConfig));
+  fs.writeFileSync(`${process.cwd()}/config.yaml`, dump(newConfig));
 };
