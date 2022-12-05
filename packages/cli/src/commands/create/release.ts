@@ -28,8 +28,7 @@ const createReleaseNft = async (
     publisherDetails: Publisher;
     connection: Connection;
     publisher: Keypair;
-  },
-  { dryRun }: { dryRun: boolean }
+  }
 ) => {
   const releaseMintAddress = Keypair.generate();
   const { txBuilder } = await createRelease(
@@ -47,18 +46,16 @@ const createReleaseNft = async (
   const tx = txBuilder.toTransaction(blockhash);
   tx.sign(releaseMintAddress, publisher);
 
-  if (!dryRun) {
-    const txSig = await sendAndConfirmTransaction(connection, tx, [
-      publisher,
-      releaseMintAddress,
-    ]);
-    console.info({
-      txSig,
-      releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
-    });
-  }
+  const txSig = await sendAndConfirmTransaction(connection, tx, [
+    publisher,
+    releaseMintAddress,
+  ]);
+  console.info({
+    txSig,
+    releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+  });
 
-  return { releaseMintAddress: releaseMintAddress.publicKey };
+  return { releaseAddress: releaseMintAddress.publicKey.toBase58() };
 };
 
 export const createReleaseCommand = async ({
@@ -73,22 +70,25 @@ export const createReleaseCommand = async ({
 
   const { release, app, publisher } = await getConfigFile(buildToolsPath);
 
-  const { releaseMintAddress } = await createReleaseNft(
-    {
-      appMintAddress,
-      connection,
-      publisher: signer,
-      releaseDetails: {
-        ...release,
-        version,
-      },
-      appDetails: app,
-      publisherDetails: publisher,
-    },
-    { dryRun }
-  );
+  if (!dryRun) {
+    const { releaseAddress } = await createReleaseNft(
+      {
+        appMintAddress,
+        connection,
+        publisher: signer,
+        releaseDetails: {
+          ...release,
+          version,
+        },
+        appDetails: app,
+        publisherDetails: publisher,
+      }
+    );
 
-  saveToConfig({
-    release: { address: releaseMintAddress.toBase58(), version },
-  });
+    saveToConfig({
+      release: { address: releaseAddress, version },
+    });
+
+    return { releaseAddress };
+  }
 };

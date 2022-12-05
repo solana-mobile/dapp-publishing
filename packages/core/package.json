@@ -36,6 +36,7 @@
     "@metaplex-foundation/js": "^0.17.1",
     "@solana/web3.js": "^1.64.0",
     "ajv": "^8.11.0",
+    "axios": "1.1.3",
     "debug": "^4.3.4",
     "mime": "^3.0.0"
   }

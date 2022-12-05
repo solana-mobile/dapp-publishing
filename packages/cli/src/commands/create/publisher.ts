@@ -66,6 +66,7 @@ export const createPublisherCommand = async ({
     { dryRun }
   );
 
+  // TODO(sdlaver): dry-run should not modify config
   saveToConfig({ publisher: { address: publisherAddress } });
 
   return { publisherAddress };
