@@ -19,9 +19,6 @@ export type AndroidDetails = {
 export type Publisher = {
   address: string;
   name: string;
-  description: {
-    "en-US": string;
-  };
   website: string;
   email: string;
 };
@@ -31,9 +28,6 @@ export type App = {
   address: string;
   publisherAddress: string;
   androidPackage: string;
-  description: {
-    "en-US": string;
-  };
   urls: {
     license_url: string;
     copyright_url: string;

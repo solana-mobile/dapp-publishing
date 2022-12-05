@@ -14,8 +14,8 @@ export const createAppJson = (
   const appMetadata = {
     schema_version: "0.2.0",
     name: app.name,
-    // TODO(jon): Handle locale resources
-    description: app.description["en-US"],
+    // TODO(Andrew): Determine where description comes from
+    description: "",
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: app.urls.website,

@@ -1,9 +1,6 @@
 publisher:
   name: My new publisher name
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
-  description:
-    en-US: |
-      A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
 
@@ -11,9 +8,6 @@ app:
   name: My new app name
   address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
   android_package: com.company.dapp
-  description:
-    en-US: |
-      My new app description
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
   urls:

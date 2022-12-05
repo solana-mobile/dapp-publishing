@@ -1,9 +1,5 @@
 import type { TransactionBuilder } from "@metaplex-foundation/js";
-import {
-  bundlrStorage,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
+import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
@@ -19,8 +15,8 @@ export const createPublisherJson = (
   const publisherMetadata = {
     schema_version: "0.2.0",
     name: publisher.name,
-    // TODO(jon): Handle locale resources
-    description: publisher.description["en-US"],
+    // TODO(Andrew): Determine where description comes from
+    description: "",
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: publisher.website,

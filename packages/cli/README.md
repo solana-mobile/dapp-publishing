@@ -92,18 +92,13 @@ In `dapp-store/config.yaml`:
 publisher:
   name: My new publisher name
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
-  description:
-    en-US: |
-      A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
 
 app:
   name: My new app name
   address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
-  description:
-    en-US: |
-      My new app description
+  android_package: com.company.dapp
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
   urls:
@@ -131,6 +126,27 @@ release:
         Some wonderful release notes, in long-form
       new_in_version: |
         Something new in this version
+      saga_features_localized: |
+        Some information about saga specific features
+  android_details:
+    android_package: com.company.dapp
+    min_sdk: 21
+    version_code: 5
+    permissions:
+      - android.permission.INTERNET
+      - android.permission.LOCATION_HARDWARE
+      - com.solanamobile.seedvault.ACCESS_SEED_VAULT
+    locales:
+      - en-US
+      - ja-JP
+      - it-IT
+
+solana_mobile_dapp_publisher_portal:
+  google_store_package: com.company.dapp.otherpkg
+  testing_instructions: >
+    Here are some steps informing Solana Mobile of how to test this dapp. You
+    can specify multiple lines of instructions. For example, if a login is
+    needed, you would add those details here.
 ```
 
 Since releases happen quite often, those are stored in the `dapp-store/releases` folder.
