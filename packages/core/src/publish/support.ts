@@ -98,5 +98,5 @@ export const publishSupport = async (
     requestorIsAuthorized,
     requestDetails);
 
-  submitRequestToSolanaDappPublisherPortal(supportRequest, URL_FORM_SUPPORT, dryRun);
+  return submitRequestToSolanaDappPublisherPortal(supportRequest, URL_FORM_SUPPORT, dryRun);
 };
