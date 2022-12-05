@@ -1,0 +1,9 @@
+{
+  "assets": {
+    "./app_screenshot.png": {
+      "path": "./app_screenshot.png",
+      "sha256": "wTJ4LeINpTxdoavrqrG2jmoVWD/YOTQ3UN99XCP1WgY=",
+      "uri": "https://arweave.net/0Ef7K7rsKYYDlSCK0k4na2QmnZ1V5xApJJG95Hmx9EA"
+    }
+  }
+}

@@ -1,6 +1,22 @@
-import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
+import {
+  bundlrStorage,
+  BundlrStorageDriver,
+  keypairIdentity,
+  Metaplex,
+} from "@metaplex-foundation/js";
+import type {
+  App,
+  Publisher,
+  Release,
+} from "@solana-mobile/dapp-publishing-tools";
 import { createRelease } from "@solana-mobile/dapp-publishing-tools";
-import { Connection, Keypair, PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
 
 import { getConfigFile, saveToConfig } from "../../utils.js";
 
@@ -32,6 +48,20 @@ const createReleaseNft = async (
   { dryRun }: { dryRun: boolean }
 ) => {
   const releaseMintAddress = Keypair.generate();
+
+  const metaplex = Metaplex.make(connection).use(keypairIdentity(publisher));
+  metaplex.storage().setDriver(
+    new CachedStorageDriver(
+      new BundlrStorageDriver(metaplex, {
+        address: "https://devnet.bundlr.network",
+        providerUrl: "https://api.devnet.solana.com",
+      }),
+      {
+        assetManifestPath: "./.asset-manifest.json",
+      }
+    )
+  );
+
   const { txBuilder } = await createRelease(
     {
       appMintAddress: new PublicKey(appMintAddress),
@@ -40,7 +70,7 @@ const createReleaseNft = async (
       appDetails,
       publisherDetails,
     },
-    { connection, publisher }
+    { connection, metaplex, publisher }
   );
 
   const blockhash = await connection.getLatestBlockhash();
