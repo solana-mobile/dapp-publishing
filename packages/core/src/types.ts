@@ -46,7 +46,7 @@ export type Release = {
   media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
   files: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["files"];
   android_details: AndroidDetails;
-  localized_resources: {
+  catalog: {
     [locale: string]: {
       short_description: string;
       long_description: string;
