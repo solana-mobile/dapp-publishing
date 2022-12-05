@@ -75,7 +75,7 @@ const createSubmitRequest = async (
     ]
   };
 
-  if (solanaMobileDappPublisherPortalDetails.google_store_package != undefined) {
+  if (solanaMobileDappPublisherPortalDetails.google_store_package !== undefined) {
     request.fields.push({
       objectTypeId: TICKET_OBJECT_ID,
       name: TICKET_PROPERTY_GOOGLE_PLAY_STORE_PACKAGE_NAME,
