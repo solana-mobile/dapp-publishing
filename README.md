@@ -34,10 +34,10 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "copyright_url": "http://cdn.org/copyright.html",
         "privacy_policy_url": "http://cdn.org/privacy.html",
         "localized_resources": {
-          "name": "[Display Catalog Name]",
           "long_description": "uid_1",
           "new_in_version": "uid_2",
-          "saga_features_localized": "uid_3"
+          "saga_features_localized": "uid_3",
+          "name": "uid_4"
         }
       },
       "media": [
@@ -111,17 +111,20 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
       "en-US": {
         "uid_1": "[Long desc en]",
         "uid_2": "[New in version en]",
-        "uid_3": "[Saga features in en]"
+        "uid_3": "[Saga features in en]",
+        "uid_4": "[Name in en]"
       },
       "fr-FR": {
         "uid_1": "[Long desc fr]",
         "uid_2": "[New in version fr]",
-        "uid_3": "[Saga features in fr]"
+        "uid_3": "[Saga features in fr]",
+        "uid_4": "[Name in fr]"
       },
       "de": {
         "uid_1": "[Long desc de]",
         "uid_2": "[New in version de]",
-        "uid_3": "[Saga features in de]"
+        "uid_3": "[Saga features in de]",
+        "uid_4": "[Name in ed]"
       }
     }
   }
