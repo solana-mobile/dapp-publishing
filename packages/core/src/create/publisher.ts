@@ -15,8 +15,6 @@ export const createPublisherJson = (
   const publisherMetadata = {
     schema_version: "0.2.0",
     name: publisher.name,
-    // TODO(Andrew): Determine where description comes from
-    description: "",
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: publisher.website,

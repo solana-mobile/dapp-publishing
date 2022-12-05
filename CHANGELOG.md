@@ -1,3 +1,7 @@
+## 0.2.3
+
+- Remove `description` from Publisher & App "Collection" JSON schemas
+
 ## 0.2.2
 
 - Move `saga_features_localized` to be along side other localized strings

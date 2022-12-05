@@ -8,7 +8,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 
 ```json
 {
-  "schema_version": "0.2.2",
+  "schema_version": "0.2.3",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -152,9 +152,8 @@ All releases for a dApp store entry will be grouped under a collection, which it
 
 ```json
 {
-  "schema_version": "0.2.2",
+  "schema_version": "0.2.3",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
-  "description": "Wallet-visible collection description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
     "category": "dApp [Metaplex compatibility]",
@@ -182,9 +181,8 @@ That said, all store-relevant publisher information will be managed in the relea
 
 ```json
 {
-  "schema_version": "0.2.2",
+  "schema_version": "0.2.3",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
-  "description": "Wallet-visible pub desc [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
     "category": "dApp [Metaplex compatibility]",
