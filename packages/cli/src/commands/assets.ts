@@ -6,8 +6,10 @@ import { createHash } from "crypto";
 import mime from "mime";
 import * as util from "util";
 import { exec } from "child_process";
+import { imageSize } from "image-size";
 
 const runExec = util.promisify(exec);
+const runImgSize = util.promisify(imageSize);
 
 const AaptPrefixes = {
   quoteRegex: "'(.*?)'",
@@ -37,9 +39,13 @@ export const parseAndValidateReleaseAssets = async (
     release.android_details = await getAndroidDetails(buildToolsPath, apkPath);
   }
 
-  const media = await Promise.all(release.media.map(async (item) => {
+  let media = await Promise.all(release.media.map(async (item) => {
     return await getMediaMetadata(item);
   }));
+
+  if (media.length > 12) {
+    media = media.slice(0, 11); // Enforcing constraint for no more than 12 media items
+  }
 
   const files = await Promise.all(release.files.map(async (item) => {
     return await getFileMetadata("files", item)
@@ -108,7 +114,14 @@ const getFileMetadata = async (type: "media" | "files", item: ReleaseFile | File
 const getMediaMetadata = async (item: ReleaseMedia): Promise<ReleaseMedia> => {
   const metadata = await getFileMetadata("media", item);
 
+  const imgFile = path.join(process.cwd(), "dapp-store", "media", item.path);
+
   //TODO: Parse image dimensions here as it was previous relying on the yaml
+
+  const dimensions = await runImgSize(imgFile);
+
+  console.log(`\n\n Your dimensions: ${dimensions?.width}, ${dimensions?.height} \n\n`);
+  throw new Error(":: Execution break ::");
 
   return {
     ...metadata,
