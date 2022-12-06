@@ -12,7 +12,7 @@ export const createAppJson = (
   publisherAddress: PublicKey
 ): AppJsonMetadata => {
   const appMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: app.name,
     // TODO(jon): Figure out where to get this image
     image: "",

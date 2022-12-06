@@ -124,7 +124,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "uid_1": "[Long desc de]",
         "uid_2": "[New in version de]",
         "uid_3": "[Saga features in de]",
-        "uid_4": "[Name in ed]"
+        "uid_4": "[Name in de]"
       }
     }
   }

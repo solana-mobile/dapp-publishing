@@ -77,7 +77,7 @@ export const createReleaseJson = async (
   }
 
   const releaseMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: releaseName,
     description: releaseDetails.catalog["en-US"].new_in_version,
     // TODO(jon): Figure out where to get this image

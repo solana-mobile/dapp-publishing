@@ -13,7 +13,7 @@ export const createPublisherJson = (
   publisher: Publisher
 ): PublisherJsonMetadata => {
   const publisherMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: publisher.name,
     // TODO(jon): Figure out where to get this image
     image: "",
