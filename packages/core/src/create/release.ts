@@ -77,9 +77,9 @@ export const createReleaseJson = async (
   }
 
   const releaseMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: releaseName,
-    description: releaseDetails.localized_resources["en-US"].new_in_version,
+    description: releaseDetails.catalog["en-US"].new_in_version,
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: appDetails.urls.website,
@@ -100,7 +100,6 @@ export const createReleaseJson = async (
           contact: publisherDetails.email,
         },
         release_details: {
-          name: releaseName,
           version: releaseDetails.version,
           updated_on: new Date().toISOString(),
           license_url: appDetails.urls.license_url,
@@ -111,6 +110,7 @@ export const createReleaseJson = async (
             long_description: "2",
             new_in_version: "3",
             saga_features_localized: "4",
+            name: "5",
           },
         },
         media,
@@ -119,10 +119,11 @@ export const createReleaseJson = async (
       },
       i18n: {
         "en-US": {
-          "1": releaseDetails.localized_resources["en-US"].short_description,
-          "2": releaseDetails.localized_resources["en-US"].long_description,
-          "3": releaseDetails.localized_resources["en-US"].new_in_version,
-          "4": releaseDetails.localized_resources["en-US"].saga_features_localized,
+          "1": releaseDetails.catalog["en-US"].short_description,
+          "2": releaseDetails.catalog["en-US"].long_description,
+          "3": releaseDetails.catalog["en-US"].new_in_version,
+          "4": releaseDetails.catalog["en-US"].saga_features_localized,
+          "5": releaseDetails.catalog["en-US"].name,
         },
       },
     },

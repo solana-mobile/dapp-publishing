@@ -12,10 +12,8 @@ export const createAppJson = (
   publisherAddress: PublicKey
 ): AppJsonMetadata => {
   const appMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: app.name,
-    // TODO(jon): Handle locale resources
-    description: app.description["en-US"],
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: app.urls.website,

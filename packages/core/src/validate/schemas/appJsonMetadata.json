@@ -7,9 +7,6 @@
     "name": {
       "type": "string"
     },
-    "description": {
-      "type": "string"
-    },
     "image": {
       "type": "string"
     },
