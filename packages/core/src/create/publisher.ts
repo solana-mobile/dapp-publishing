@@ -1,22 +1,25 @@
 import type { TransactionBuilder } from "@metaplex-foundation/js";
-import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
+import {
+  bundlrStorage,
+  keypairIdentity,
+  Metaplex,
+} from "@metaplex-foundation/js";
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
 import { validatePublisher } from "../validate/index.js";
 import { mintNft } from "../utils.js";
-import type { Context, Publisher, PublisherJsonMetadata } from "../types.js";
+import type { Context, Publisher, PublisherMetadata } from "../types.js";
 
 const debug = debugModule("PUBLISHER");
 
 export const createPublisherJson = (
   publisher: Publisher
-): PublisherJsonMetadata => {
+): PublisherMetadata => {
   const publisherMetadata = {
     schema_version: "0.2.3",
     name: publisher.name,
-    // TODO(jon): Figure out where to get this image
-    image: "",
+    image: publisher.icon,
     external_url: publisher.website,
     properties: {
       category: "dApp",

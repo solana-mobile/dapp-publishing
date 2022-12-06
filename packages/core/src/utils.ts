@@ -1,6 +1,8 @@
 import type {
   CreateNftInput,
+  JsonMetadata,
   Metaplex,
+  MetaplexFile,
   TransactionBuilder,
 } from "@metaplex-foundation/js";
 
@@ -11,10 +13,13 @@ export const truncateAddress = (address: string) => {
   )}`;
 };
 
+type JsonMetadataMetaplexFile = Omit<JsonMetadata, "image"> & {
+  image: string | MetaplexFile;
+};
+
 export const mintNft = async (
   metaplex: Metaplex,
-  // json: Required<UploadMetadataInput>,
-  json: { name: string },
+  json: JsonMetadataMetaplexFile,
   createNftInput: Omit<CreateNftInput, "uri" | "name" | "sellerFeeBasisPoints">
 ): Promise<TransactionBuilder> => {
   const { uri } = await metaplex.nfts().uploadMetadata(json);
@@ -25,6 +30,7 @@ export const mintNft = async (
     .create({
       ...createNftInput,
       uri,
+      // @ts-ignore
       name: json.name,
       sellerFeeBasisPoints: 0,
     });

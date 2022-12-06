@@ -7,12 +7,12 @@ import appSchema from "./schemas/appJsonMetadata.json";
 import releaseSchema from "./schemas/releaseJsonMetadata.json";
 
 import type {
-  AppJsonMetadata,
-  PublisherJsonMetadata,
+  AppMetadata,
+  PublisherMetadata,
   ReleaseJsonMetadata,
 } from "../types.js";
 
-export const validatePublisher = (publisherJson: PublisherJsonMetadata) => {
+export const validatePublisher = (publisherJson: PublisherMetadata) => {
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(publisherSchema);
 
@@ -24,7 +24,7 @@ export const validatePublisher = (publisherJson: PublisherJsonMetadata) => {
   return valid;
 };
 
-export const validateApp = (appJson: AppJsonMetadata) => {
+export const validateApp = (appJson: AppMetadata) => {
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(appSchema);
 

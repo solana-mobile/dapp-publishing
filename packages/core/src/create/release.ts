@@ -26,6 +26,7 @@ type Media = ArrayElement<Release["media"]>;
 const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   const file = path.join(process.cwd(), type, item.uri);
   debug({ file });
+  // TODO(jon): This stuff should be probably be in `packages/cli`
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");

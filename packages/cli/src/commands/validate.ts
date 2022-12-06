@@ -4,7 +4,7 @@ import {
   createReleaseJson,
   validateApp,
   validatePublisher,
-  validateRelease
+  validateRelease,
 } from "@solana-mobile/dapp-publishing-tools";
 import { debug, getConfigFile } from "../utils.js";
 
