@@ -34,7 +34,7 @@ export const parseAndValidateReleaseAssets = async (
   if (buildToolsPath && buildToolsPath.length > 0) {
     //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
     const apkSrc = release.files[0].path;
-    const apkPath = path.join(process.cwd(), "dapp-store", "files", apkSrc);
+    const apkPath = path.join(process.cwd(), "files", apkSrc);
 
     release.android_details = await getAndroidDetails(buildToolsPath, apkPath);
   }
@@ -93,7 +93,7 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 type File = ArrayElement<Release["files"]>;
 
 const getFileMetadata = async (type: "media" | "files", item: ReleaseFile | File): Promise<ReleaseFile> => {
-  const file = path.join(process.cwd(), "dapp-store", type, item.path);
+  const file = path.join(process.cwd(), type, item.path);
 
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
@@ -114,7 +114,7 @@ const getFileMetadata = async (type: "media" | "files", item: ReleaseFile | File
 const getMediaMetadata = async (item: ReleaseMedia): Promise<ReleaseMedia> => {
   const metadata = await getFileMetadata("media", item);
 
-  const imgFile = path.join(process.cwd(), "dapp-store", "media", item.path);
+  const imgFile = path.join(process.cwd(), "media", item.path);
 
   //TODO: Parse image dimensions here as it was previous relying on the yaml
 
