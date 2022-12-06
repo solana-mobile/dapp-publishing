@@ -57,6 +57,7 @@ export const createApp = async (
       connection.rpcEndpoint.includes("devnet")
         ? bundlrStorage({
             address: "https://devnet.bundlr.network",
+            providerUrl: "https://api.devnet.solana.com",
           })
         : bundlrStorage()
     );

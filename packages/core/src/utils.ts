@@ -22,6 +22,7 @@ export const mintNft = async (
   json: JsonMetadataMetaplexFile,
   createNftInput: Omit<CreateNftInput, "uri" | "name" | "sellerFeeBasisPoints">
 ): Promise<TransactionBuilder> => {
+  console.info({ json });
   const { uri } = await metaplex.nfts().uploadMetadata(json);
 
   const txBuilder = await metaplex

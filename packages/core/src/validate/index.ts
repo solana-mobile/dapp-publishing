@@ -15,14 +15,15 @@ import type {
 } from "../types.js";
 
 export const validatePublisher = (publisherJson: PublisherMetadata) => {
-  if (typeof publisherJson.image !== "string") {
-    publisherJson.image = publisherJson.image.fileName;
+  const jsonToValidate = { ...publisherJson };
+  if (typeof jsonToValidate.image !== "string") {
+    jsonToValidate.image = jsonToValidate.image.fileName;
   }
 
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(publisherSchema);
 
-  const valid = validate(publisherJson);
+  const valid = validate(jsonToValidate);
   if (!valid) {
     console.error(validate.errors);
     throw new Error("Publisher JSON not valid");
@@ -31,14 +32,15 @@ export const validatePublisher = (publisherJson: PublisherMetadata) => {
 };
 
 export const validateApp = (appJson: AppMetadata) => {
-  if (typeof appJson.image !== "string") {
-    appJson.image = appJson.image.fileName;
+  const jsonToValidate = { ...appJson };
+  if (typeof jsonToValidate.image !== "string") {
+    jsonToValidate.image = jsonToValidate.image.fileName;
   }
 
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(appSchema);
 
-  const valid = validate(appJson);
+  const valid = validate(jsonToValidate);
   if (!valid) {
     console.error(validate.errors);
     throw new Error("App JSON not valid");

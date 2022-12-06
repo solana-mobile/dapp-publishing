@@ -10,7 +10,7 @@ publisher:
       height: 512
 app:
   name: My new app name
-  address: 6U9nJXZao4PiVasE54ggoDTfw9X8Jjtwvowgw2mmijoV
+  address: 4xE4MDVHfFAXMKKzqrJ2v1HxcgYgdoV98nuvd8SRKhWP
   android_package: com.company.dapp
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
