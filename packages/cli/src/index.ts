@@ -1,21 +1,4 @@
 import { Command } from "commander";
-import Conf from "conf";
-import inquirer from "inquirer";
-import { validateCommand } from "./commands/index.js";
-import {
-  createAppCommand,
-  createPublisherCommand,
-  createReleaseCommand,
-} from "./commands/create/index.js";
-import {
-  publishRemoveCommand,
-  publishSubmitCommand,
-  publishSupportCommand,
-  publishUpdateCommand,
-} from "./commands/publish/index.js";
-import { parseKeypair } from "./utils.js";
-import * as dotenv from "dotenv";
-
 import { validateCommand } from "./commands/index.js";
 import {
   createAppCommand,
@@ -29,8 +12,8 @@ import {
   publishUpdateCommand,
 } from "./commands/publish/index.js";
 import { getConfigFile, parseKeypair } from "./utils.js";
-import { release } from "os";
 
+import * as dotenv from "dotenv";
 dotenv.config();
 
 const hasAddressInConfig = ({ address }: { address: string }) => {
