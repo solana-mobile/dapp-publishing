@@ -13,9 +13,6 @@ export type Context = {
 export type Publisher = {
   address: string;
   name: string;
-  description: {
-    "en-US": string;
-  };
   website: string;
   email: string;
 };
@@ -25,9 +22,6 @@ export type App = {
   address: string;
   publisherAddress: string;
   android_package: string;
-  description: {
-    "en-US": string;
-  };
   urls: {
     license_url: string;
     copyright_url: string;
@@ -46,8 +40,9 @@ export type Release = {
   media: ReleaseMedia[];
   files: ReleaseFile[];
   android_details: AndroidDetails;
-  localized_resources: {
+  catalog: {
     [locale: string]: {
+      name: string;
       short_description: string;
       long_description: string;
       new_in_version: string;
@@ -76,4 +71,9 @@ export type ReleaseFile = {
 export type ReleaseMedia = ReleaseFile & {
   width: number;
   height: number;
+};
+
+export type SolanaMobileDappPublisherPortal = {
+  google_store_package: string;
+  testing_instructions: string;
 };

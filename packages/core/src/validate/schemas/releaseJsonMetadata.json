@@ -57,9 +57,6 @@
             "release_details": {
               "type": "object",
               "properties": {
-                "name": {
-                  "type": "string"
-                },
                 "version": {
                   "type": "string"
                 },
@@ -86,13 +83,15 @@
                     },
                     "saga_features_localized": {
                       "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
                     }
                   },
-                  "required": ["long_description", "new_in_version"]
+                  "required": ["long_description", "new_in_version", "name"]
                 }
               },
               "required": [
-                "name",
                 "version",
                 "updated_on",
                 "license_url",

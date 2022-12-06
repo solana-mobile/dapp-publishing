@@ -86,24 +86,18 @@ However, it is by no means the only way to create these NFTs—all information a
 
 ## Configuration
 
-In `dapp-store/config.yaml`:
+In `config.yaml`:
 
 ```yaml
 publisher:
   name: My new publisher name
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
-  description:
-    en-US: |
-      A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
 app:
   name: My new app name
-  address: CSz8WVNH4UMc2dyzRPktkJKRYxXsmRCkEruL53UzF3bW
+  address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
   android_package: com.company.dapp
-  description:
-    en-US: |
-      My new app description
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
   urls:
@@ -111,17 +105,22 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
+
 release:
-  version: v1.0.4
+  version: 1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
       path: ./app_screenshot.png
+      width: 512
+      height: 512
   files:
     - purpose: install
       path: ./app-debug.apk
-  localized_resources:
+  catalog:
     en-US:
+      name: |
+        A nice, helpful dApp name
       short_description: |
         Some wonderful release notes
       long_description: |
@@ -130,16 +129,12 @@ release:
         Something new in this version
       saga_features_localized: |
         Some information about saga specific features
+
+solana_mobile_dapp_publisher_portal:
+  google_store_package: com.company.dapp.otherpkg
+  testing_instructions: >
+    Here are some steps informing Solana Mobile of how to test this dapp. You
+    can specify multiple lines of instructions. For example, if a login is
+    needed, you would add those details here.
 ```
 
-Since releases happen quite often, those are stored in the `dapp-store/releases` folder.
-
-For example, a release with version `v1.0.2` would look like:
-
-```
-dapp-store/releases
-└── v1.0.2
-    ├── app-debug.apk
-    ├── app_screenshot.png
-    └── release.yml
-```

@@ -27,7 +27,6 @@ export interface ReleaseJsonMetadata {
         [k: string]: unknown;
       };
       release_details: {
-        name: string;
         version: string;
         updated_on: string;
         license_url: string;
@@ -37,6 +36,7 @@ export interface ReleaseJsonMetadata {
           long_description: string;
           new_in_version: string;
           saga_features_localized: string;
+          name: string;
           [k: string]: unknown;
         };
         [k: string]: unknown;

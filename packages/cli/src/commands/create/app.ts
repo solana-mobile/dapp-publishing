@@ -1,4 +1,3 @@
-import fs from "fs";
 import type { App } from "@solana-mobile/dapp-publishing-tools";
 import { createApp } from "@solana-mobile/dapp-publishing-tools";
 import {
@@ -76,6 +75,7 @@ export const createAppCommand = async ({
     { dryRun }
   );
 
+  // TODO(sdlaver): dry-run should not modify config
   saveToConfig({ app: { address: appAddress } });
 
   return { appAddress };
