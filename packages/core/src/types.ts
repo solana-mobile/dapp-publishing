@@ -27,7 +27,7 @@ export type App = {
   name: string;
   address: string;
   publisherAddress: string;
-  androidPackage: string;
+  android_package: string;
   urls: {
     license_url: string;
     copyright_url: string;

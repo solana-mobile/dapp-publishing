@@ -75,7 +75,6 @@
   "required": [
     "schema_version",
     "name",
-    "description",
     "image",
     "properties",
     "extensions"
