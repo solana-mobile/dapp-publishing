@@ -16,7 +16,7 @@ export const validateCommand = async ({
   buildToolsPath,
 }: {
   signer: Keypair;
-  buildToolsPath: string;
+  buildToolsPath?: string;
 }) => {
   const {
     publisher: publisherDetails,
