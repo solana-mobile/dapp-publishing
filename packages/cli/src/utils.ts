@@ -5,14 +5,20 @@ import type {
   Release,
   SolanaMobileDappPublisherPortal,
 } from "@solana-mobile/dapp-publishing-tools";
-import { Keypair } from "@solana/web3.js";
+import { Connection, Keypair } from "@solana/web3.js";
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
-import { toMetaplexFile } from "@metaplex-foundation/js";
+import {
+  BundlrStorageDriver,
+  keypairIdentity,
+  Metaplex,
+  toMetaplexFile,
+} from "@metaplex-foundation/js";
+import { CachedStorageDriver } from "./upload/CachedStorageDriver";
 
 const runExec = util.promisify(exec);
 
@@ -175,4 +181,25 @@ export const saveToConfig = async ({
 
   // TODO(jon): Verify the contents of the YAML file
   fs.writeFileSync(`${process.cwd()}/config.yaml`, dump(newConfig));
+};
+
+export const getMetaplexInstance = (
+  connection: Connection,
+  keypair: Keypair
+) => {
+  const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
+
+  const bundlrStorageDriver = connection.rpcEndpoint.includes("devnet")
+    ? new BundlrStorageDriver(metaplex, {
+        address: "https://devnet.bundlr.network",
+        providerUrl: "https://api.devnet.solana.com",
+      })
+    : new BundlrStorageDriver(metaplex);
+
+  metaplex.storage().setDriver(
+    new CachedStorageDriver(bundlrStorageDriver, {
+      assetManifestPath: "./.asset-manifest.json",
+    })
+  );
+  return metaplex;
 };
