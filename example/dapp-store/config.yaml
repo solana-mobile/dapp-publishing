@@ -17,7 +17,7 @@ app:
     website: http://cdn.org
 
 release:
-  version: v1.0.4
+  version: 1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
