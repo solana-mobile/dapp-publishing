@@ -86,7 +86,7 @@ const createUpdateRequest = async (
     );
   }
 
-  if (solanaMobileDappPublisherPortalDetails.testing_instructions != undefined) {
+  if (solanaMobileDappPublisherPortalDetails.testing_instructions !== undefined) {
     request.fields.push(
       {
         objectTypeId: TICKET_OBJECT_ID,
