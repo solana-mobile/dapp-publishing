@@ -10,12 +10,20 @@ import { debug, getConfigFile } from "../utils.js";
 
 import type { Keypair } from "@solana/web3.js";
 
-export const validateCommand = async ({ signer }: { signer: Keypair }) => {
+export const validateCommand = async (
+  {
+    signer,
+    buildToolsPath
+  }: {
+    signer: Keypair,
+    buildToolsPath?: string
+  }
+) => {
   const {
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
-  } = await getConfigFile();
+  } = await getConfigFile(buildToolsPath);
 
   debug({ publisherDetails, appDetails, releaseDetails });
 

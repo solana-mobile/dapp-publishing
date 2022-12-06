@@ -10,6 +10,22 @@ import * as dotenv from "dotenv";
 const program = new Command();
 const conf = new Conf({ projectName: "dapp-store" });
 
+function resolveBuildToolsPath(buildToolsPath: string | undefined) {
+  // If a path was specified on the command line, use that
+  if (buildToolsPath !== undefined) {
+    return buildToolsPath;
+  }
+
+  // If a path is specified in a .env file, use that
+  dotenv.config();
+  if (process.env.ANDROID_TOOLS_DIR !== undefined) {
+    return process.env.ANDROID_TOOLS_DIR;
+  }
+
+  // No path was specified
+  return;
+}
+
 async function main() {
   program
     .name("dapp-store")
@@ -97,15 +113,8 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .option("-b, --build-tools-path <build-tools-path>", "Path to Android build tools which contains AAPT2")
     .action(async (version, { appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
-      dotenv.config();
-      const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
-
-      let buildTools = "";
-      if (toolsEnvDir && toolsEnvDir.length > 0) {
-        buildTools = toolsEnvDir;
-      } else if (buildToolsPath) {
-        buildTools = buildToolsPath;
-      } else {
+      const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
+      if (resolvedBuildToolsPath === undefined) {
         console.error("\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n");
         createCommand.showHelpAfterError()
         return;
@@ -130,7 +139,7 @@ async function main() {
         const result = await createReleaseCommand({
           appMintAddress: appMintAddress ?? conf.get("app"),
           version,
-          buildToolsPath: buildTools,
+          buildToolsPath: resolvedBuildToolsPath,
           signer,
           url,
           dryRun,
@@ -148,11 +157,22 @@ async function main() {
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
     )
-    .action(async ({ keypair }) => {
+    .option("-b, --build-tools-path <build-tools-path>", "Path to Android build tools which contains AAPT2")
+    .action(async ({ keypair, buildToolsPath }) => {
+      const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
+      if (resolvedBuildToolsPath === undefined) {
+        console.error("\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n");
+        createCommand.showHelpAfterError()
+        return;
+      }
+
       const signer = parseKeypair(keypair);
 
       if (signer) {
-        await validateCommand({ signer });
+        await validateCommand({
+          signer,
+          buildToolsPath: resolvedBuildToolsPath
+        });
       }
     });
 
