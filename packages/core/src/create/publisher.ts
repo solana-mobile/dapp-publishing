@@ -19,7 +19,7 @@ export const createPublisherJson = (
   const publisherMetadata = {
     schema_version: "0.2.3",
     name: publisher.name,
-    image: publisher.icon,
+    image: publisher.icon!,
     external_url: publisher.website,
     properties: {
       category: "dApp",

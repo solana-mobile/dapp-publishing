@@ -32,7 +32,7 @@ export type AndroidDetails = {
 export type Publisher = {
   address: string;
   name: string;
-  icon: string | MetaplexFile;
+  icon?: string | MetaplexFile;
   website: string;
   email: string;
   media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
@@ -40,7 +40,7 @@ export type Publisher = {
 
 export type App = {
   name: string;
-  icon: string | MetaplexFile;
+  icon?: string | MetaplexFile;
   address: string;
   publisherAddress: string;
   android_package: string;

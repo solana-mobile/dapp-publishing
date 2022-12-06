@@ -18,7 +18,7 @@ export const createAppJson = (
   const appMetadata = {
     schema_version: "0.2.3",
     name: app.name,
-    image: app.icon,
+    image: app.icon!,
     external_url: app.urls.website,
     properties: {
       category: "dApp",

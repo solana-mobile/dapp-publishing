@@ -152,6 +152,9 @@ export const saveToConfig = async ({
 }: SaveToConfigArgs) => {
   const currentConfig = await getConfigFile();
 
+  delete currentConfig.publisher.icon;
+  delete currentConfig.app.icon;
+
   const newConfig: CLIConfig = {
     publisher: {
       ...currentConfig.publisher,

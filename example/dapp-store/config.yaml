@@ -8,10 +8,9 @@ publisher:
       uri: ./publisher_icon.jpeg
       width: 512
       height: 512
-
 app:
   name: My new app name
-  address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
+  address: 6U9nJXZao4PiVasE54ggoDTfw9X8Jjtwvowgw2mmijoV
   android_package: com.company.dapp
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
@@ -25,7 +24,6 @@ app:
       uri: ./app_icon.jpeg
       width: 512
       height: 512
-
 release:
   version: 1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
@@ -49,7 +47,6 @@ release:
         Something new in this version
       saga_features_localized: |
         Some information about saga specific features
-
 solana_mobile_dapp_publisher_portal:
   google_store_package: com.company.dapp.otherpkg
   testing_instructions: >

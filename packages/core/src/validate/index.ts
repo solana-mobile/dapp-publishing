@@ -1,3 +1,5 @@
+import { MetaplexFile } from "@metaplex-foundation/js";
+
 import Ajv from "ajv";
 // eslint-disable-next-line require-extensions/require-extensions
 import publisherSchema from "./schemas/publisherJsonMetadata.json";
@@ -13,6 +15,10 @@ import type {
 } from "../types.js";
 
 export const validatePublisher = (publisherJson: PublisherMetadata) => {
+  if (typeof publisherJson.image !== "string") {
+    publisherJson.image = publisherJson.image.fileName;
+  }
+
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(publisherSchema);
 
@@ -25,6 +31,10 @@ export const validatePublisher = (publisherJson: PublisherMetadata) => {
 };
 
 export const validateApp = (appJson: AppMetadata) => {
+  if (typeof appJson.image !== "string") {
+    appJson.image = appJson.image.fileName;
+  }
+
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(appSchema);
 
