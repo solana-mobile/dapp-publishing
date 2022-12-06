@@ -1,9 +1,3 @@
-import {
-  bundlrStorage,
-  BundlrStorageDriver,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
 import type {
   App,
   Publisher,
@@ -93,7 +87,7 @@ export const createReleaseCommand = async ({
 
   if (!dryRun) {
     const { releaseAddress } = await createReleaseNft({
-      appMintAddress,
+      appMintAddress: app.address ?? appMintAddress,
       connection,
       publisher: signer,
       releaseDetails: {

@@ -42,7 +42,6 @@ export type App = {
   name: string;
   icon?: string | MetaplexFile;
   address: string;
-  publisherAddress: string;
   android_package: string;
   urls: {
     license_url: string;
@@ -58,8 +57,6 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 export type Release = {
   address: string;
   version: string;
-  appMintAddress: string;
-  publisherMintAddress: string;
   media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
   files: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["files"];
   android_details: AndroidDetails;

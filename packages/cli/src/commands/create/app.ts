@@ -68,13 +68,14 @@ export const createAppCommand = async ({
 }: CreateAppCommandInput) => {
   const connection = new Connection(url);
 
-  const { app: appDetails } = await getConfigFile();
+  const { app: appDetails, publisher: publisherDetails } =
+    await getConfigFile();
 
   const { appAddress } = await createAppNft(
     {
       connection,
       publisher: signer,
-      publisherMintAddress,
+      publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
       appDetails,
     },
     { dryRun }
