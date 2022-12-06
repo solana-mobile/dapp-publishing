@@ -1,7 +1,11 @@
 import { mintNft } from "../utils.js";
 import type { App, AppJsonMetadata, Context } from "../types.js";
 import type { PublicKey, Signer } from "@solana/web3.js";
-import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
+import {
+  bundlrStorage,
+  keypairIdentity,
+  Metaplex,
+} from "@metaplex-foundation/js";
 import debugModule from "debug";
 import { validateApp } from "../validate/index.js";
 

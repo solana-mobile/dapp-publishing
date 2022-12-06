@@ -29,23 +29,21 @@ type CreateReleaseCommandInput = {
   dryRun?: boolean;
 };
 
-const createReleaseNft = async (
-  {
-    appMintAddress,
-    releaseDetails,
-    appDetails,
-    publisherDetails,
-    connection,
-    publisher,
-  }: {
-    appMintAddress: string;
-    releaseDetails: Release;
-    appDetails: App;
-    publisherDetails: Publisher;
-    connection: Connection;
-    publisher: Keypair;
-  }
-) => {
+const createReleaseNft = async ({
+  appMintAddress,
+  releaseDetails,
+  appDetails,
+  publisherDetails,
+  connection,
+  publisher,
+}: {
+  appMintAddress: string;
+  releaseDetails: Release;
+  appDetails: App;
+  publisherDetails: Publisher;
+  connection: Connection;
+  publisher: Keypair;
+}) => {
   const releaseMintAddress = Keypair.generate();
 
   const metaplex = Metaplex.make(connection).use(keypairIdentity(publisher));
@@ -101,19 +99,17 @@ export const createReleaseCommand = async ({
   const { release, app, publisher } = await getConfigFile(buildToolsPath);
 
   if (!dryRun) {
-    const { releaseAddress } = await createReleaseNft(
-      {
-        appMintAddress,
-        connection,
-        publisher: signer,
-        releaseDetails: {
-          ...release,
-          version,
-        },
-        appDetails: app,
-        publisherDetails: publisher,
-      }
-    );
+    const { releaseAddress } = await createReleaseNft({
+      appMintAddress: app.address ?? appMintAddress,
+      connection,
+      publisher: signer,
+      releaseDetails: {
+        ...release,
+        version,
+      },
+      appDetails: app,
+      publisherDetails: publisher,
+    });
 
     saveToConfig({
       release: { address: releaseAddress, version },

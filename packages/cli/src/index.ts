@@ -1,4 +1,6 @@
 import { Command } from "commander";
+import * as dotenv from "dotenv";
+
 import { validateCommand } from "./commands/index.js";
 import {
   createAppCommand,
@@ -11,8 +13,14 @@ import {
   publishSupportCommand,
   publishUpdateCommand,
 } from "./commands/publish/index.js";
-import { parseKeypair } from "./utils.js";
-import * as dotenv from "dotenv";
+import { getConfigFile, parseKeypair } from "./utils.js";
+import { release } from "os";
+
+dotenv.config();
+
+const hasAddressInConfig = ({ address }: { address: string }) => {
+  return !!address;
+};
 
 const program = new Command();
 
@@ -57,8 +65,16 @@ async function main() {
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
-      const signer = parseKeypair(keypair);
+      const config = await getConfigFile();
+      if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
+        console.error(
+          "\n\n::: Either specify an publisher mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+        );
+        createCommand.showHelpAfterError();
+        return;
+      }
 
+      const signer = parseKeypair(keypair);
       if (signer) {
         await createAppCommand({
           publisherMintAddress: publisherMintAddress,
@@ -91,7 +107,6 @@ async function main() {
         version,
         { appMintAddress, keypair, url, dryRun, buildToolsPath }
       ) => {
-        dotenv.config();
         const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
 
         let buildTools = "";
@@ -102,6 +117,15 @@ async function main() {
         } else {
           console.error(
             "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+          );
+          createCommand.showHelpAfterError();
+          return;
+        }
+
+        const config = await getConfigFile();
+        if (!hasAddressInConfig(config.app) && !appMintAddress) {
+          console.error(
+            "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           createCommand.showHelpAfterError();
           return;
@@ -176,8 +200,16 @@ async function main() {
         requestorIsAuthorized,
         dryRun,
       }) => {
-        const signer = parseKeypair(keypair);
+        const config = await getConfigFile();
+        if (!hasAddressInConfig(config.publisher) && !release) {
+          console.error(
+            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+          );
+          publishCommand.showHelpAfterError();
+          return;
+        }
 
+        const signer = parseKeypair(keypair);
         if (signer) {
           await publishSubmitCommand({
             releaseMintAddress,
@@ -228,6 +260,15 @@ async function main() {
         critical,
         dryRun,
       }) => {
+        const config = await getConfigFile();
+        if (!hasAddressInConfig(config.publisher) && !release) {
+          console.error(
+            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+          );
+          publishCommand.showHelpAfterError();
+          return;
+        }
+
         const signer = parseKeypair(keypair);
 
         if (signer) {
@@ -276,6 +317,15 @@ async function main() {
         critical,
         dryRun,
       }) => {
+        const config = await getConfigFile();
+        if (!hasAddressInConfig(config.publisher) && !release) {
+          console.error(
+            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+          );
+          publishCommand.showHelpAfterError();
+          return;
+        }
+
         const signer = parseKeypair(keypair);
 
         if (signer) {
@@ -318,6 +368,15 @@ async function main() {
         requestDetails,
         { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
+        const config = await getConfigFile();
+        if (!hasAddressInConfig(config.publisher) && !release) {
+          console.error(
+            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+          );
+          publishCommand.showHelpAfterError();
+          return;
+        }
+
         const signer = parseKeypair(keypair);
 
         if (signer) {
