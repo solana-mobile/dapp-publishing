@@ -1,14 +1,20 @@
 import { Command } from "commander";
-import Conf from "conf";
-import inquirer from "inquirer";
 import { validateCommand } from "./commands/index.js";
-import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
-import { publishRemoveCommand, publishSubmitCommand, publishSupportCommand, publishUpdateCommand } from "./commands/publish/index.js";
+import {
+  createAppCommand,
+  createPublisherCommand,
+  createReleaseCommand,
+} from "./commands/create/index.js";
+import {
+  publishRemoveCommand,
+  publishSubmitCommand,
+  publishSupportCommand,
+  publishUpdateCommand,
+} from "./commands/publish/index.js";
 import { parseKeypair } from "./utils.js";
 import * as dotenv from "dotenv";
 
 const program = new Command();
-const conf = new Conf({ projectName: "dapp-store" });
 
 async function main() {
   program
@@ -34,9 +40,6 @@ async function main() {
 
       if (signer) {
         const result = await createPublisherCommand({ signer, url, dryRun });
-        if (result?.publisherAddress) {
-          conf.set("publisher", result.publisherAddress);
-        }
       }
     });
 
@@ -56,29 +59,13 @@ async function main() {
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       const signer = parseKeypair(keypair);
 
-      if (!publisherMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "publisherAddress",
-            message:
-              "Publisher address not provided. Use the previously created publisher address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create publisher` first",
-            default: conf.get("publisher"),
-          },
-        ]);
-        conf.set("publisher", answers.publisherAddress);
-      }
-
       if (signer) {
-        const result = await createAppCommand({
-          publisherMintAddress: publisherMintAddress ?? conf.get("publisher"),
+        await createAppCommand({
+          publisherMintAddress: publisherMintAddress,
           signer,
           url,
           dryRun,
         });
-        if (result?.appAddress) {
-          conf.set("app", result.appAddress);
-        }
       }
     });
 
@@ -95,51 +82,45 @@ async function main() {
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .option("-b, --build-tools-path <build-tools-path>", "Path to Android build tools which contains AAPT2")
-    .action(async (version, { appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
-      dotenv.config();
-      const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
+    .option(
+      "-b, --build-tools-path <build-tools-path>",
+      "Path to Android build tools which contains AAPT2"
+    )
+    .action(
+      async (
+        version,
+        { appMintAddress, keypair, url, dryRun, buildToolsPath }
+      ) => {
+        dotenv.config();
+        const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
 
-      let buildTools = "";
-      if (toolsEnvDir && toolsEnvDir.length > 0) {
-        buildTools = toolsEnvDir;
-      } else if (buildToolsPath) {
-        buildTools = buildToolsPath;
-      } else {
-        console.error("\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n");
-        createCommand.showHelpAfterError()
-        return;
-      }
+        let buildTools = "";
+        if (toolsEnvDir && toolsEnvDir.length > 0) {
+          buildTools = toolsEnvDir;
+        } else if (buildToolsPath) {
+          buildTools = buildToolsPath;
+        } else {
+          console.error(
+            "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+          );
+          createCommand.showHelpAfterError();
+          return;
+        }
 
-      const signer = parseKeypair(keypair);
+        const signer = parseKeypair(keypair);
 
-      if (!appMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "appAddress",
-            message:
-              "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
-            default: conf.get("app"),
-          },
-        ]);
-        conf.set("app", answers.appAddress);
-      }
-
-      if (signer) {
-        const result = await createReleaseCommand({
-          appMintAddress: appMintAddress ?? conf.get("app"),
-          version,
-          buildToolsPath: buildTools,
-          signer,
-          url,
-          dryRun,
-        });
-        if (result?.releaseAddress) {
-          conf.set("release", result.releaseAddress);
+        if (signer) {
+          const result = await createReleaseCommand({
+            appMintAddress: appMintAddress,
+            version,
+            buildToolsPath: buildTools,
+            signer,
+            url,
+            dryRun,
+          });
         }
       }
-    });
+    );
 
   program
     .command("validate")
@@ -158,7 +139,9 @@ async function main() {
 
   const publishCommand = program
     .command("publish")
-    .description("Submit a publishing request (`submit`, `update`, `remove`, or `support`) to the Solana Mobile dApp publisher portal");
+    .description(
+      "Submit a publishing request (`submit`, `update`, `remove`, or `support`) to the Solana Mobile dApp publisher portal"
+    );
 
   publishCommand
     .command("submit")
@@ -180,39 +163,39 @@ async function main() {
       "The mint address of the release NFT"
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async ({ releaseMintAddress, keypair, url, compliesWithSolanaDappStorePolicies, requestorIsAuthorized, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async ({
+        releaseMintAddress,
+        keypair,
+        url,
+        compliesWithSolanaDappStorePolicies,
+        requestorIsAuthorized,
+        dryRun,
+      }) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
+        if (signer) {
+          await publishSubmitCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            compliesWithSolanaDappStorePolicies,
+            requestorIsAuthorized,
+          });
+        }
       }
-
-      if (signer) {
-        await publishSubmitCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          compliesWithSolanaDappStorePolicies,
-          requestorIsAuthorized
-        });
-      }
-    });
+    );
 
   publishCommand
     .command("update")
-    .description("Update an existing app on the Solana Mobile dApp publisher portal")
+    .description(
+      "Update an existing app on the Solana Mobile dApp publisher portal"
+    )
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
@@ -231,40 +214,41 @@ async function main() {
     )
     .option("-c, --critical", "Flag for a critical app update request")
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async ({ releaseMintAddress, keypair, url, compliesWithSolanaDappStorePolicies, requestorIsAuthorized, critical, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async ({
+        releaseMintAddress,
+        keypair,
+        url,
+        compliesWithSolanaDappStorePolicies,
+        requestorIsAuthorized,
+        critical,
+        dryRun,
+      }) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
+        if (signer) {
+          await publishUpdateCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            compliesWithSolanaDappStorePolicies,
+            requestorIsAuthorized,
+            critical,
+          });
+        }
       }
-
-      if (signer) {
-        await publishUpdateCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          compliesWithSolanaDappStorePolicies,
-          requestorIsAuthorized,
-          critical
-        });
-      }
-    });
+    );
 
   publishCommand
     .command("remove")
-    .description("Remove an existing app from the Solana Mobile dApp publisher portal")
+    .description(
+      "Remove an existing app from the Solana Mobile dApp publisher portal"
+    )
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
@@ -279,39 +263,39 @@ async function main() {
     )
     .option("-c, --critical", "Flag for a critical app removal request")
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async ({ releaseMintAddress, keypair, url, requestorIsAuthorized, critical, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async ({
+        releaseMintAddress,
+        keypair,
+        url,
+        requestorIsAuthorized,
+        critical,
+        dryRun,
+      }) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
+        if (signer) {
+          await publishRemoveCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            requestorIsAuthorized,
+            critical,
+          });
+        }
       }
-
-      if (signer) {
-        await publishRemoveCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          requestorIsAuthorized,
-          critical
-        });
-      }
-    });
+    );
 
   publishCommand
     .command("support <request_details>")
-    .description("Submit a support request for an existing app on the Solana Mobile dApp publisher portal")
+    .description(
+      "Submit a support request for an existing app on the Solana Mobile dApp publisher portal"
+    )
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
@@ -325,35 +309,29 @@ async function main() {
       "The mint address of the release NFT"
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async (requestDetails, { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async (
+        requestDetails,
+        { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
+      ) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
+        if (signer) {
+          await publishSupportCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            requestorIsAuthorized,
+            requestDetails,
+          });
+        }
       }
-
-      if (signer) {
-        await publishSupportCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          requestorIsAuthorized,
-          requestDetails
-        });
-      }
-    });
+    );
 
   await program.parseAsync(process.argv);
 }
