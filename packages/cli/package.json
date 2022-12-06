@@ -33,6 +33,7 @@
     "@types/debug": "^4.1.7",
     "@types/inquirer": "^9.0.2",
     "@types/js-yaml": "^4.0.5",
+    "@types/mime": "^3.0.1",
     "shx": "^0.3.4"
   },
   "dependencies": {

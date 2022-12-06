@@ -1,11 +1,10 @@
+import type { App, Publisher, Release, SolanaMobileDappPublisherPortal } from "@solana-mobile/dapp-publishing-tools";
 import { Keypair } from "@solana/web3.js";
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
-import type { App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
 import * as util from "util";
 import { exec } from "child_process";
-import * as path from "path";
 
 const runExec = util.promisify(exec);
 
@@ -37,17 +36,6 @@ export const getConfigFile = async (
   const configFile = fs.readFileSync(configFilePath, "utf-8");
 
   console.info(`Pulling details from ${configFilePath}`);
-
-  const config = load(configFile) as CLIConfig;
-
-  if (buildToolsDir && buildToolsDir.length > 0) {
-    //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
-
-    const apkSrc = config.release.files[0].uri;
-    const apkPath = path.join(process.cwd(), "files", apkSrc);
-
-    config.release.android_details = await getAndroidDetails(buildToolsDir, apkPath);
-  }
 
   // TODO(jon): Verify the contents of the YAML file
   return load(configFile) as CLIConfig;

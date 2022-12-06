@@ -3,10 +3,10 @@ import { toMetaplexFile } from "@metaplex-foundation/js";
 import path from "path";
 import fs from "fs";
 import { createHash } from "crypto";
-import mime from "mime";
 import * as util from "util";
 import { exec } from "child_process";
 import { imageSize } from "image-size";
+import mime from "mime";
 
 const runExec = util.promisify(exec);
 const runImgSize = util.promisify(imageSize);

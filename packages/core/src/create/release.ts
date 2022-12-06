@@ -1,12 +1,8 @@
 import debugModule from "debug";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
-import { mintNft, truncateAddress } from "./utils.js";
-import { validateRelease } from "./validate/index.js";
-import { bundlrStorage, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
-import { mintNft, truncateAddress } from "../utils.js";
 import { validateRelease } from "../validate/index.js";
-
+import { mintNft, truncateAddress } from "../utils.js";
 import type { Keypair, PublicKey } from "@solana/web3.js";
 import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "../types.js";
 
