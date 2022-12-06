@@ -1,18 +1,12 @@
 publisher:
   name: My new publisher name
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
-  description:
-    en-US: |
-      A lot of extra information about my wonderful publisher
   website: https://solanamobile.com
   email: hello@solanamobile.com
 app:
   name: My new app name
   address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
   android_package: com.company.dapp
-  description:
-    en-US: |
-      My new app description
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
   urls:
@@ -21,8 +15,8 @@ app:
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
 release:
-  version: v1.0.4
-  address: 9fs5vMWeVoMcRcUv5PXpXrvoCPr6RYYanH7arqrEgGaQ
+  version: 1.0.4
+  address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
       uri: ./app_screenshot.png
@@ -31,8 +25,10 @@ release:
   files:
     - purpose: install
       uri: ./app-debug.apk
-  localized_resources:
+  catalog:
     en-US:
+      name: |
+        A nice, helpful dApp name
       short_description: |
         Some wonderful release notes
       long_description: |
@@ -41,15 +37,10 @@ release:
         Something new in this version
       saga_features_localized: |
         Some information about saga specific features
-  android_details:
-    android_package: com.company.dapp
-    min_sdk: 21
-    version_code: 5
-    permissions:
-      - android.permission.INTERNET
-      - android.permission.LOCATION_HARDWARE
-      - com.solanamobile.seedvault.ACCESS_SEED_VAULT
-    locales:
-      - en-US
-      - ja-JP
-      - it-IT
+
+solana_mobile_dapp_publisher_portal:
+  google_store_package: com.company.dapp.otherpkg
+  testing_instructions: >
+    Here are some steps informing Solana Mobile of how to test this dapp. You
+    can specify multiple lines of instructions. For example, if a login is
+    needed, you would add those details here.

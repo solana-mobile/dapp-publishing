@@ -1,15 +1,11 @@
 import type { TransactionBuilder } from "@metaplex-foundation/js";
-import {
-  bundlrStorage,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
+import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
-import { validatePublisher } from "./validate/index.js";
-import { mintNft } from "./utils.js";
-import type { Context, Publisher, PublisherJsonMetadata } from "./types.js";
+import { validatePublisher } from "../validate/index.js";
+import { mintNft } from "../utils.js";
+import type { Context, Publisher, PublisherJsonMetadata } from "../types.js";
 
 const debug = debugModule("PUBLISHER");
 
@@ -17,10 +13,8 @@ export const createPublisherJson = (
   publisher: Publisher
 ): PublisherJsonMetadata => {
   const publisherMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: publisher.name,
-    // TODO(jon): Handle locale resources
-    description: publisher.description["en-US"],
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: publisher.website,

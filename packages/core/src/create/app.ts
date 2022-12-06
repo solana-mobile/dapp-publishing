@@ -1,9 +1,9 @@
-import { mintNft } from "./utils.js";
-import type { App, AppJsonMetadata, Context } from "./types.js";
+import { mintNft } from "../utils.js";
+import type { App, AppJsonMetadata, Context } from "../types.js";
 import type { PublicKey, Signer } from "@solana/web3.js";
 import { bundlrStorage, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
 import debugModule from "debug";
-import { validateApp } from "./validate/index.js";
+import { validateApp } from "../validate/index.js";
 
 const debug = debugModule("APP");
 
@@ -12,10 +12,8 @@ export const createAppJson = (
   publisherAddress: PublicKey
 ): AppJsonMetadata => {
   const appMetadata = {
-    schema_version: "0.2.0",
+    schema_version: "0.2.3",
     name: app.name,
-    // TODO(jon): Handle locale resources
-    description: app.description["en-US"],
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: app.urls.website,

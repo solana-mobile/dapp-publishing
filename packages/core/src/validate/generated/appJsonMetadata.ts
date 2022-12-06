@@ -8,7 +8,6 @@
 export interface AppJsonMetadata {
   schema_version: string;
   name: string;
-  description: string;
   image: string;
   properties: {
     category: string;
