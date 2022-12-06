@@ -3,15 +3,25 @@ import type {
   App,
   Publisher,
   Release,
-  SolanaMobileDappPublisherPortal
+  SolanaMobileDappPublisherPortal,
 } from "@solana-mobile/dapp-publishing-tools";
 import { Keypair } from "@solana/web3.js";
+import type { Connection } from "@solana/web3.js";
+
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
+import {
+  BundlrStorageDriver,
+  keypairIdentity,
+  Metaplex,
+  toMetaplexFile,
+} from "@metaplex-foundation/js";
+
+import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
 const runExec = util.promisify(exec);
 
@@ -63,7 +73,31 @@ export const getConfigFile = async (
     const apkSrc = config.release.files[0].uri;
     const apkPath = path.join(process.cwd(), "files", apkSrc);
 
-    config.release.android_details = await getAndroidDetails(buildToolsDir, apkPath);
+    config.release.android_details = await getAndroidDetails(
+      buildToolsDir,
+      apkPath
+    );
+  }
+
+  const publisherIcon = config.publisher.media.find(
+    (asset: any) => asset.purpose === "icon"
+  )?.uri;
+  if (publisherIcon) {
+    const iconPath = path.join(process.cwd(), "media", publisherIcon);
+    const iconBuffer = await fs.promises.readFile(iconPath);
+    config.publisher.icon = toMetaplexFile(
+      iconBuffer,
+      path.join("media", publisherIcon)
+    );
+  }
+
+  const appIcon = config.app.media.find(
+    (asset: any) => asset.purpose === "icon"
+  )?.uri;
+  if (appIcon) {
+    const iconPath = path.join(process.cwd(), "media", appIcon);
+    const iconBuffer = await fs.promises.readFile(iconPath);
+    config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
   }
 
   // TODO(jon): Verify the contents of the YAML file
@@ -76,13 +110,23 @@ const getAndroidDetails = async (
 ): Promise<AndroidDetails> => {
   const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging ${apkPath}`);
 
-  const appPackage = new RegExp(AaptPrefixes.packagePrefix + AaptPrefixes.quoteRegex).exec(stdout);
-  const versionCode = new RegExp(AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex).exec(stdout);
+  const appPackage = new RegExp(
+    AaptPrefixes.packagePrefix + AaptPrefixes.quoteRegex
+  ).exec(stdout);
+  const versionCode = new RegExp(
+    AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex
+  ).exec(stdout);
   //TODO: Return this and use automatically replacing command line arg
   //const versionName = new RegExp(prefixes.verNamePrefix + prefixes.quoteRegex).exec(stdout);
-  const minSdk = new RegExp(AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex).exec(stdout);
-  const permissions = new RegExp(AaptPrefixes.permissionPrefix + AaptPrefixes.quoteNonLazyRegex).exec(stdout);
-  const locales = new RegExp(AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex).exec(stdout);
+  const minSdk = new RegExp(
+    AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
+  ).exec(stdout);
+  const permissions = new RegExp(
+    AaptPrefixes.permissionPrefix + AaptPrefixes.quoteNonLazyRegex
+  ).exec(stdout);
+  const locales = new RegExp(
+    AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
+  ).exec(stdout);
 
   let permissionArray = Array.from(permissions?.values() ?? []);
   if (permissionArray.length >= 2) {
@@ -110,8 +154,15 @@ type SaveToConfigArgs = {
   release?: Pick<Release, "address" | "version">;
 };
 
-export const saveToConfig = async ({ publisher, app, release }: SaveToConfigArgs) => {
+export const saveToConfig = async ({
+  publisher,
+  app,
+  release,
+}: SaveToConfigArgs) => {
   const currentConfig = await getConfigFile();
+
+  delete currentConfig.publisher.icon;
+  delete currentConfig.app.icon;
 
   const newConfig: CLIConfig = {
     publisher: {
@@ -127,9 +178,31 @@ export const saveToConfig = async ({ publisher, app, release }: SaveToConfigArgs
       address: release?.address ?? currentConfig.release.address,
       version: release?.version ?? currentConfig.release.version,
     },
-    solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal,
+    solana_mobile_dapp_publisher_portal:
+      currentConfig.solana_mobile_dapp_publisher_portal,
   };
 
   // TODO(jon): Verify the contents of the YAML file
   fs.writeFileSync(`${process.cwd()}/config.yaml`, dump(newConfig));
+};
+
+export const getMetaplexInstance = (
+  connection: Connection,
+  keypair: Keypair
+) => {
+  const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
+
+  const bundlrStorageDriver = connection.rpcEndpoint.includes("devnet")
+    ? new BundlrStorageDriver(metaplex, {
+        address: "https://devnet.bundlr.network",
+        providerUrl: "https://api.devnet.solana.com",
+      })
+    : new BundlrStorageDriver(metaplex);
+
+  metaplex.storage().setDriver(
+    new CachedStorageDriver(bundlrStorageDriver, {
+      assetManifestPath: "./.asset-manifest.json",
+    })
+  );
+  return metaplex;
 };

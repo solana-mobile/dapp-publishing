@@ -1,4 +1,19 @@
 import { Command } from "commander";
+import Conf from "conf";
+import inquirer from "inquirer";
+import { validateCommand } from "./commands/index.js";
+import {
+  createAppCommand,
+  createPublisherCommand,
+  createReleaseCommand,
+} from "./commands/create/index.js";
+import {
+  publishRemoveCommand,
+  publishSubmitCommand,
+  publishSupportCommand,
+  publishUpdateCommand,
+} from "./commands/publish/index.js";
+import { parseKeypair } from "./utils.js";
 import * as dotenv from "dotenv";
 
 import { validateCommand } from "./commands/index.js";
@@ -23,6 +38,22 @@ const hasAddressInConfig = ({ address }: { address: string }) => {
 };
 
 const program = new Command();
+
+function resolveBuildToolsPath(buildToolsPath: string | undefined) {
+  // If a path was specified on the command line, use that
+  if (buildToolsPath !== undefined) {
+    return buildToolsPath;
+  }
+
+  // If a path is specified in a .env file, use that
+  dotenv.config();
+  if (process.env.ANDROID_TOOLS_DIR !== undefined) {
+    return process.env.ANDROID_TOOLS_DIR;
+  }
+
+  // No path was specified
+  return;
+}
 
 async function main() {
   program
@@ -153,11 +184,27 @@ async function main() {
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
     )
-    .action(async ({ keypair }) => {
+    .option(
+      "-b, --build-tools-path <build-tools-path>",
+      "Path to Android build tools which contains AAPT2"
+    )
+    .action(async ({ keypair, buildToolsPath }) => {
+      const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
+      if (resolvedBuildToolsPath === undefined) {
+        console.error(
+          "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+        );
+        createCommand.showHelpAfterError();
+        return;
+      }
+
       const signer = parseKeypair(keypair);
 
       if (signer) {
-        await validateCommand({ signer });
+        await validateCommand({
+          signer,
+          buildToolsPath: resolvedBuildToolsPath,
+        });
       }
     });
 
@@ -201,7 +248,7 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
-        if (!hasAddressInConfig(config.publisher) && !release) {
+        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
@@ -261,7 +308,7 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
-        if (!hasAddressInConfig(config.publisher) && !release) {
+        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
@@ -318,7 +365,7 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
-        if (!hasAddressInConfig(config.publisher) && !release) {
+        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
@@ -369,7 +416,7 @@ async function main() {
         { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
         const config = await getConfigFile();
-        if (!hasAddressInConfig(config.publisher) && !release) {
+        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );

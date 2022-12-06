@@ -7,7 +7,11 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 
-import { getConfigFile, saveToConfig } from "../../utils.js";
+import {
+  getConfigFile,
+  getMetaplexInstance,
+  saveToConfig,
+} from "../../utils.js";
 
 const createAppNft = async (
   {
@@ -24,13 +28,14 @@ const createAppNft = async (
   { dryRun }: { dryRun?: boolean }
 ) => {
   const mintAddress = Keypair.generate();
+  const metaplex = getMetaplexInstance(connection, publisher);
   const txBuilder = await createApp(
     {
       publisherMintAddress: new PublicKey(publisherMintAddress),
       mintAddress,
       appDetails,
     },
-    { connection, publisher }
+    { metaplex, publisher }
   );
 
   const blockhash = await connection.getLatestBlockhash();

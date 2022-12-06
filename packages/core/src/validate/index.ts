@@ -1,3 +1,5 @@
+import { MetaplexFile } from "@metaplex-foundation/js";
+
 import Ajv from "ajv";
 // eslint-disable-next-line require-extensions/require-extensions
 import publisherSchema from "./schemas/publisherJsonMetadata.json";
@@ -7,16 +9,21 @@ import appSchema from "./schemas/appJsonMetadata.json";
 import releaseSchema from "./schemas/releaseJsonMetadata.json";
 
 import type {
-  AppJsonMetadata,
-  PublisherJsonMetadata,
+  AppMetadata,
+  PublisherMetadata,
   ReleaseJsonMetadata,
 } from "../types.js";
 
-export const validatePublisher = (publisherJson: PublisherJsonMetadata) => {
+export const validatePublisher = (publisherJson: PublisherMetadata) => {
+  const jsonToValidate = { ...publisherJson };
+  if (typeof jsonToValidate.image !== "string") {
+    jsonToValidate.image = jsonToValidate.image.fileName;
+  }
+
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(publisherSchema);
 
-  const valid = validate(publisherJson);
+  const valid = validate(jsonToValidate);
   if (!valid) {
     console.error(validate.errors);
     throw new Error("Publisher JSON not valid");
@@ -24,11 +31,16 @@ export const validatePublisher = (publisherJson: PublisherJsonMetadata) => {
   return valid;
 };
 
-export const validateApp = (appJson: AppJsonMetadata) => {
+export const validateApp = (appJson: AppMetadata) => {
+  const jsonToValidate = { ...appJson };
+  if (typeof jsonToValidate.image !== "string") {
+    jsonToValidate.image = jsonToValidate.image.fileName;
+  }
+
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(appSchema);
 
-  const valid = validate(appJson);
+  const valid = validate(jsonToValidate);
   if (!valid) {
     console.error(validate.errors);
     throw new Error("App JSON not valid");

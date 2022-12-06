@@ -3,7 +3,7 @@ import fs from "fs";
 import { createHash } from "crypto";
 import mime from "mime";
 import debugModule from "debug";
-import type { Metaplex, MetaplexFile } from "@metaplex-foundation/js";
+import type { MetaplexFile } from "@metaplex-foundation/js";
 import { toMetaplexFile } from "@metaplex-foundation/js";
 import { mintNft, truncateAddress } from "../utils.js";
 import { validateRelease } from "../validate/index.js";
@@ -26,6 +26,7 @@ type Media = ArrayElement<Release["media"]>;
 const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   const file = path.join(process.cwd(), type, item.uri);
   debug({ file });
+  // TODO(jon): This stuff should be probably be in `packages/cli`
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
@@ -155,8 +156,7 @@ export const createRelease = async (
     appDetails,
     publisherDetails,
   }: CreateReleaseInput,
-  // We're going to assume that the publisher is the signer
-  { publisher, metaplex }: Context & { metaplex: Metaplex }
+  { publisher, metaplex }: Context
 ) => {
   debug(`Minting release NFT for: ${appMintAddress.toBase58()}`);
 

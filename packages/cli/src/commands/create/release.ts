@@ -1,9 +1,3 @@
-import {
-  bundlrStorage,
-  BundlrStorageDriver,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
 import type {
   App,
   Publisher,
@@ -18,7 +12,11 @@ import {
 } from "@solana/web3.js";
 import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
 
-import { getConfigFile, saveToConfig } from "../../utils.js";
+import {
+  getConfigFile,
+  getMetaplexInstance,
+  saveToConfig,
+} from "../../utils.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -46,18 +44,7 @@ const createReleaseNft = async ({
 }) => {
   const releaseMintAddress = Keypair.generate();
 
-  const metaplex = Metaplex.make(connection).use(keypairIdentity(publisher));
-  metaplex.storage().setDriver(
-    new CachedStorageDriver(
-      new BundlrStorageDriver(metaplex, {
-        address: "https://devnet.bundlr.network",
-        providerUrl: "https://api.devnet.solana.com",
-      }),
-      {
-        assetManifestPath: "./.asset-manifest.json",
-      }
-    )
-  );
+  const metaplex = getMetaplexInstance(connection, publisher);
 
   const { txBuilder } = await createRelease(
     {
@@ -67,7 +54,7 @@ const createReleaseNft = async ({
       appDetails,
       publisherDetails,
     },
-    { connection, metaplex, publisher }
+    { metaplex, publisher }
   );
 
   const blockhash = await connection.getLatestBlockhash();
