@@ -1,4 +1,4 @@
-# Release NFT Metadata Spec v0.2.0
+# Release NFT Metadata Spec v0.2.3
 
 This is the official spec of the off-chain metadata that will be created for the NFT release management system.
 
@@ -101,8 +101,8 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
           "com.solanamobile.seedvault.ACCESS_SEED_VAULT"
         ],
         "locales": [
-          "en-US", 
-          "ja-JP", 
+          "en-US",
+          "ja-JP",
           "it-IT"
         ]
       }
