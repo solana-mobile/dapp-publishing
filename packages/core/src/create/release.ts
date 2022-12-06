@@ -3,13 +3,19 @@ import fs from "fs";
 import { createHash } from "crypto";
 import mime from "mime";
 import debugModule from "debug";
-import type { MetaplexFile } from "@metaplex-foundation/js";
-import { bundlrStorage, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
+import type { Metaplex, MetaplexFile } from "@metaplex-foundation/js";
+import { toMetaplexFile } from "@metaplex-foundation/js";
 import { mintNft, truncateAddress } from "../utils.js";
 import { validateRelease } from "../validate/index.js";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
-import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "../types.js";
+import type {
+  App,
+  Context,
+  Publisher,
+  Release,
+  ReleaseJsonMetadata,
+} from "../types.js";
 
 const debug = debugModule("RELEASE");
 
@@ -25,7 +31,7 @@ const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
   const metadata = {
     purpose: item.purpose,
-    uri: toMetaplexFile(mediaBuffer, item.uri),
+    uri: toMetaplexFile(mediaBuffer, path.join(type, item.uri)),
     mime: mime.getType(item.uri) || "",
     size,
     sha256: hash,
@@ -66,7 +72,7 @@ export const createReleaseJson = async (
 
   const media = [];
   debug({ media: releaseDetails.media });
-  for await (const item of releaseDetails.media) {
+  for await (const item of releaseDetails.media || []) {
     media.push(await getMediaMetadata(item));
   }
 
@@ -150,20 +156,9 @@ export const createRelease = async (
     publisherDetails,
   }: CreateReleaseInput,
   // We're going to assume that the publisher is the signer
-  { publisher, connection }: Context
+  { publisher, metaplex }: Context & { metaplex: Metaplex }
 ) => {
   debug(`Minting release NFT for: ${appMintAddress.toBase58()}`);
-
-  const metaplex = Metaplex.make(connection)
-    .use(keypairIdentity(publisher))
-    .use(
-      connection.rpcEndpoint.includes("devnet")
-        ? bundlrStorage({
-            address: "https://devnet.bundlr.network",
-            providerUrl: "https://api.devnet.solana.com",
-          })
-        : bundlrStorage()
-    );
 
   const releaseJson = await createReleaseJson(
     { releaseDetails, appDetails, publisherDetails },
