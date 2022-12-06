@@ -5,7 +5,9 @@ import type {
   Release,
   SolanaMobileDappPublisherPortal,
 } from "@solana-mobile/dapp-publishing-tools";
-import { Connection, Keypair } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
+import type { Connection } from "@solana/web3.js";
+
 import fs from "fs";
 import debugModule from "debug";
 import { dump, load } from "js-yaml";
@@ -18,7 +20,8 @@ import {
   Metaplex,
   toMetaplexFile,
 } from "@metaplex-foundation/js";
-import { CachedStorageDriver } from "./upload/CachedStorageDriver";
+
+import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
 const runExec = util.promisify(exec);
 
