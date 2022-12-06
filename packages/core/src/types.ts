@@ -1,5 +1,5 @@
 import type { Metaplex, MetaplexFile } from "@metaplex-foundation/js";
-import type { Connection, Keypair } from "@solana/web3.js";
+import type { Keypair } from "@solana/web3.js";
 import type {
   ReleaseJsonMetadata,
   AppJsonMetadata,
@@ -18,7 +18,7 @@ export type AppMetadata = Omit<AppJsonMetadata, "image"> & {
 
 export type Context = {
   publisher: Keypair;
-  connection: Connection;
+  metaplex: Metaplex;
 };
 
 export type AndroidDetails = {

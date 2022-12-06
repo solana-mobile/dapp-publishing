@@ -18,7 +18,11 @@ import {
 } from "@solana/web3.js";
 import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
 
-import { getConfigFile, saveToConfig } from "../../utils.js";
+import {
+  getConfigFile,
+  getMetaplexInstance,
+  saveToConfig,
+} from "../../utils.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -29,37 +33,24 @@ type CreateReleaseCommandInput = {
   dryRun?: boolean;
 };
 
-const createReleaseNft = async (
-  {
-    appMintAddress,
-    releaseDetails,
-    appDetails,
-    publisherDetails,
-    connection,
-    publisher,
-  }: {
-    appMintAddress: string;
-    releaseDetails: Release;
-    appDetails: App;
-    publisherDetails: Publisher;
-    connection: Connection;
-    publisher: Keypair;
-  }
-) => {
+const createReleaseNft = async ({
+  appMintAddress,
+  releaseDetails,
+  appDetails,
+  publisherDetails,
+  connection,
+  publisher,
+}: {
+  appMintAddress: string;
+  releaseDetails: Release;
+  appDetails: App;
+  publisherDetails: Publisher;
+  connection: Connection;
+  publisher: Keypair;
+}) => {
   const releaseMintAddress = Keypair.generate();
 
-  const metaplex = Metaplex.make(connection).use(keypairIdentity(publisher));
-  metaplex.storage().setDriver(
-    new CachedStorageDriver(
-      new BundlrStorageDriver(metaplex, {
-        address: "https://devnet.bundlr.network",
-        providerUrl: "https://api.devnet.solana.com",
-      }),
-      {
-        assetManifestPath: "./.asset-manifest.json",
-      }
-    )
-  );
+  const metaplex = getMetaplexInstance(connection, publisher);
 
   const { txBuilder } = await createRelease(
     {
@@ -69,7 +60,7 @@ const createReleaseNft = async (
       appDetails,
       publisherDetails,
     },
-    { connection, metaplex, publisher }
+    { metaplex, publisher }
   );
 
   const blockhash = await connection.getLatestBlockhash();
@@ -101,19 +92,17 @@ export const createReleaseCommand = async ({
   const { release, app, publisher } = await getConfigFile(buildToolsPath);
 
   if (!dryRun) {
-    const { releaseAddress } = await createReleaseNft(
-      {
-        appMintAddress,
-        connection,
-        publisher: signer,
-        releaseDetails: {
-          ...release,
-          version,
-        },
-        appDetails: app,
-        publisherDetails: publisher,
-      }
-    );
+    const { releaseAddress } = await createReleaseNft({
+      appMintAddress,
+      connection,
+      publisher: signer,
+      releaseDetails: {
+        ...release,
+        version,
+      },
+      appDetails: app,
+      publisherDetails: publisher,
+    });
 
     saveToConfig({
       release: { address: releaseAddress, version },

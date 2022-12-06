@@ -1,9 +1,4 @@
 import type { TransactionBuilder } from "@metaplex-foundation/js";
-import {
-  bundlrStorage,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
@@ -31,7 +26,6 @@ export const createPublisherJson = (
       ],
     },
     extensions: {
-      // TODO(jon): What is the name of this actually?
       solana_dapp_store: {
         publisher_details: {
           name: publisher.name,
@@ -52,20 +46,9 @@ type CreatePublisherInput = {
 
 export const createPublisher = async (
   { mintAddress, publisherDetails }: CreatePublisherInput,
-  { connection, publisher }: Context
+  { metaplex }: Context
 ): Promise<TransactionBuilder> => {
   debug(`Minting publisher NFT`);
-
-  // This is a little leaky
-  const metaplex = Metaplex.make(connection)
-    .use(keypairIdentity(publisher))
-    .use(
-      connection.rpcEndpoint.includes("devnet")
-        ? bundlrStorage({
-            address: "https://devnet.bundlr.network",
-          })
-        : bundlrStorage()
-    );
 
   const publisherJson = createPublisherJson(publisherDetails);
   validatePublisher(publisherJson);

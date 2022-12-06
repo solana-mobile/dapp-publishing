@@ -2,8 +2,17 @@ import { Command } from "commander";
 import Conf from "conf";
 import inquirer from "inquirer";
 import { validateCommand } from "./commands/index.js";
-import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
-import { publishRemoveCommand, publishSubmitCommand, publishSupportCommand, publishUpdateCommand } from "./commands/publish/index.js";
+import {
+  createAppCommand,
+  createPublisherCommand,
+  createReleaseCommand,
+} from "./commands/create/index.js";
+import {
+  publishRemoveCommand,
+  publishSubmitCommand,
+  publishSupportCommand,
+  publishUpdateCommand,
+} from "./commands/publish/index.js";
 import { parseKeypair } from "./utils.js";
 import * as dotenv from "dotenv";
 
@@ -120,20 +129,20 @@ async function main() {
         return;
       }
 
-      const signer = parseKeypair(keypair);
+        const signer = parseKeypair(keypair);
 
-      if (!appMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "appAddress",
-            message:
-              "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
-            default: conf.get("app"),
-          },
-        ]);
-        conf.set("app", answers.appAddress);
-      }
+        if (!appMintAddress) {
+          const answers = await inquirer.prompt([
+            {
+              type: "input",
+              name: "appAddress",
+              message:
+                "App address not provided. Use the previously created app address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create app` first",
+              default: conf.get("app"),
+            },
+          ]);
+          conf.set("app", answers.appAddress);
+        }
 
       if (signer) {
         const result = await createReleaseCommand({
@@ -148,7 +157,7 @@ async function main() {
           conf.set("release", result.releaseAddress);
         }
       }
-    });
+    );
 
   program
     .command("validate")
@@ -178,7 +187,9 @@ async function main() {
 
   const publishCommand = program
     .command("publish")
-    .description("Submit a publishing request (`submit`, `update`, `remove`, or `support`) to the Solana Mobile dApp publisher portal");
+    .description(
+      "Submit a publishing request (`submit`, `update`, `remove`, or `support`) to the Solana Mobile dApp publisher portal"
+    );
 
   publishCommand
     .command("submit")
@@ -200,39 +211,53 @@ async function main() {
       "The mint address of the release NFT"
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async ({ releaseMintAddress, keypair, url, compliesWithSolanaDappStorePolicies, requestorIsAuthorized, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async ({
+        releaseMintAddress,
+        keypair,
+        url,
+        compliesWithSolanaDappStorePolicies,
+        requestorIsAuthorized,
+        dryRun,
+      }) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
-      }
+        if (!releaseMintAddress) {
+          const answers = await inquirer.prompt([
+            {
+              type: "input",
+              name: "releaseAddress",
+              message:
+                "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
+              default: conf.get("release"),
+            },
+          ]);
+          conf.set("release", answers.releaseAddress);
+          releaseMintAddress = answers.releaseAddress;
+        }
 
-      if (signer) {
-        await publishSubmitCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          compliesWithSolanaDappStorePolicies,
-          requestorIsAuthorized
-        });
+        if (signer) {
+          await publishSubmitCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            compliesWithSolanaDappStorePolicies,
+            requestorIsAuthorized,
+          });
+        }
       }
-    });
+    );
 
   publishCommand
     .command("update")
-    .description("Update an existing app on the Solana Mobile dApp publisher portal")
+    .description(
+      "Update an existing app on the Solana Mobile dApp publisher portal"
+    )
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
@@ -251,40 +276,55 @@ async function main() {
     )
     .option("-c, --critical", "Flag for a critical app update request")
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async ({ releaseMintAddress, keypair, url, compliesWithSolanaDappStorePolicies, requestorIsAuthorized, critical, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async ({
+        releaseMintAddress,
+        keypair,
+        url,
+        compliesWithSolanaDappStorePolicies,
+        requestorIsAuthorized,
+        critical,
+        dryRun,
+      }) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
-      }
+        if (!releaseMintAddress) {
+          const answers = await inquirer.prompt([
+            {
+              type: "input",
+              name: "releaseAddress",
+              message:
+                "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
+              default: conf.get("release"),
+            },
+          ]);
+          conf.set("release", answers.releaseAddress);
+          releaseMintAddress = answers.releaseAddress;
+        }
 
-      if (signer) {
-        await publishUpdateCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          compliesWithSolanaDappStorePolicies,
-          requestorIsAuthorized,
-          critical
-        });
+        if (signer) {
+          await publishUpdateCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            compliesWithSolanaDappStorePolicies,
+            requestorIsAuthorized,
+            critical,
+          });
+        }
       }
-    });
+    );
 
   publishCommand
     .command("remove")
-    .description("Remove an existing app from the Solana Mobile dApp publisher portal")
+    .description(
+      "Remove an existing app from the Solana Mobile dApp publisher portal"
+    )
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
@@ -299,39 +339,53 @@ async function main() {
     )
     .option("-c, --critical", "Flag for a critical app removal request")
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async ({ releaseMintAddress, keypair, url, requestorIsAuthorized, critical, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async ({
+        releaseMintAddress,
+        keypair,
+        url,
+        requestorIsAuthorized,
+        critical,
+        dryRun,
+      }) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
-      }
+        if (!releaseMintAddress) {
+          const answers = await inquirer.prompt([
+            {
+              type: "input",
+              name: "releaseAddress",
+              message:
+                "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
+              default: conf.get("release"),
+            },
+          ]);
+          conf.set("release", answers.releaseAddress);
+          releaseMintAddress = answers.releaseAddress;
+        }
 
-      if (signer) {
-        await publishRemoveCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          requestorIsAuthorized,
-          critical
-        });
+        if (signer) {
+          await publishRemoveCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            requestorIsAuthorized,
+            critical,
+          });
+        }
       }
-    });
+    );
 
   publishCommand
     .command("support <request_details>")
-    .description("Submit a support request for an existing app on the Solana Mobile dApp publisher portal")
+    .description(
+      "Submit a support request for an existing app on the Solana Mobile dApp publisher portal"
+    )
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
@@ -345,35 +399,43 @@ async function main() {
       "The mint address of the release NFT"
     )
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
-    .option("-d, --dry-run", "Flag for dry run. Doesn't submit the request to the publisher portal.")
-    .action(async (requestDetails, { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }) => {
-      const signer = parseKeypair(keypair);
+    .option(
+      "-d, --dry-run",
+      "Flag for dry run. Doesn't submit the request to the publisher portal."
+    )
+    .action(
+      async (
+        requestDetails,
+        { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
+      ) => {
+        const signer = parseKeypair(keypair);
 
-      if (!releaseMintAddress) {
-        const answers = await inquirer.prompt([
-          {
-            type: "input",
-            name: "releaseAddress",
-            message:
-              "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
-            default: conf.get("release"),
-          },
-        ]);
-        conf.set("release", answers.releaseAddress);
-        releaseMintAddress = answers.releaseAddress;
-      }
+        if (!releaseMintAddress) {
+          const answers = await inquirer.prompt([
+            {
+              type: "input",
+              name: "releaseAddress",
+              message:
+                "Release address not provided. Use the previously created release address? NOTE: This is not the same as your keypair's public key! Make sure to run `dapp-store create release` first",
+              default: conf.get("release"),
+            },
+          ]);
+          conf.set("release", answers.releaseAddress);
+          releaseMintAddress = answers.releaseAddress;
+        }
 
-      if (signer) {
-        await publishSupportCommand({
-          releaseMintAddress,
-          signer,
-          url,
-          dryRun,
-          requestorIsAuthorized,
-          requestDetails
-        });
+        if (signer) {
+          await publishSupportCommand({
+            releaseMintAddress,
+            signer,
+            url,
+            dryRun,
+            requestorIsAuthorized,
+            requestDetails,
+          });
+        }
       }
-    });
+    );
 
   await program.parseAsync(process.argv);
 }

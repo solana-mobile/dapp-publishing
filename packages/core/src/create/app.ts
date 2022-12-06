@@ -1,11 +1,6 @@
 import { mintNft } from "../utils.js";
 import type { App, AppMetadata, Context } from "../types.js";
 import type { PublicKey, Signer } from "@solana/web3.js";
-import {
-  bundlrStorage,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
 import debugModule from "debug";
 import { validateApp } from "../validate/index.js";
 
@@ -47,20 +42,9 @@ type CreateAppInput = {
 
 export const createApp = async (
   { publisherMintAddress, mintAddress, appDetails }: CreateAppInput,
-  { connection, publisher }: Context
+  { metaplex, publisher }: Context
 ) => {
   debug(`Minting app NFT for publisher: ${publisherMintAddress.toBase58()}`);
-
-  const metaplex = Metaplex.make(connection)
-    .use(keypairIdentity(publisher))
-    .use(
-      connection.rpcEndpoint.includes("devnet")
-        ? bundlrStorage({
-            address: "https://devnet.bundlr.network",
-            providerUrl: "https://api.devnet.solana.com",
-          })
-        : bundlrStorage()
-    );
 
   const appJson = createAppJson(appDetails, publisher.publicKey);
   validateApp(appJson);

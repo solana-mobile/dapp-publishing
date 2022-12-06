@@ -6,7 +6,11 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 
-import { getConfigFile, saveToConfig } from "../../utils.js";
+import {
+  getConfigFile,
+  getMetaplexInstance,
+  saveToConfig,
+} from "../../utils.js";
 
 const createPublisherNft = async (
   {
@@ -21,12 +25,13 @@ const createPublisherNft = async (
   { dryRun }: { dryRun: boolean }
 ) => {
   const mintAddress = Keypair.generate();
+  const metaplex = getMetaplexInstance(connection, publisher);
   console.info(
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
   );
   const txBuilder = await createPublisher(
     { mintAddress, publisherDetails },
-    { connection, publisher }
+    { metaplex, publisher }
   );
 
   const blockhash = await connection.getLatestBlockhash();
