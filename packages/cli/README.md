@@ -86,7 +86,7 @@ However, it is by no means the only way to create these NFTs—all information a
 
 ## Configuration
 
-In `dapp-store/config.yaml`:
+In `config.yaml`:
 
 ```yaml
 publisher:
@@ -108,7 +108,7 @@ app:
     website: http://cdn.org
 
 release:
-  version: v1.0.4
+  version: 1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
@@ -118,8 +118,10 @@ release:
   files:
     - purpose: install
       uri: ./app-debug.apk
-  localized_resources:
+  catalog:
     en-US:
+      name: |
+        A nice, helpful dApp name
       short_description: |
         Some wonderful release notes
       long_description: |
@@ -128,18 +130,6 @@ release:
         Something new in this version
       saga_features_localized: |
         Some information about saga specific features
-  android_details:
-    android_package: com.company.dapp
-    min_sdk: 21
-    version_code: 5
-    permissions:
-      - android.permission.INTERNET
-      - android.permission.LOCATION_HARDWARE
-      - com.solanamobile.seedvault.ACCESS_SEED_VAULT
-    locales:
-      - en-US
-      - ja-JP
-      - it-IT
 
 solana_mobile_dapp_publisher_portal:
   google_store_package: com.company.dapp.otherpkg
@@ -149,14 +139,3 @@ solana_mobile_dapp_publisher_portal:
     needed, you would add those details here.
 ```
 
-Since releases happen quite often, those are stored in the `dapp-store/releases` folder.
-
-For example, a release with version `v1.0.2` would look like:
-
-```
-dapp-store/releases
-└── v1.0.2
-    ├── app-debug.apk
-    ├── app_screenshot.png
-    └── release.yml
-```
