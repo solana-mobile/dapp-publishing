@@ -19,7 +19,10 @@ export type AssetManifestSchema = {
 
 // TODO(jon): We need to manage the removal / replacement of assets in the manifest
 export class CachedStorageDriver implements StorageDriver {
-  static readonly SCHEMA_VERSION = "0.2.2";
+  // NOTE: this schema version is independent of the publishing JSON schema. It should be updated
+  // when the AssetManifestSchema or Asset types are updated.
+  static readonly SCHEMA_VERSION = "0.1";
+
   assetManifest: AssetManifestSchema;
   assetManifestPath: string;
   storageDriver: StorageDriver;
