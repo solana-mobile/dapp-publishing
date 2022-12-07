@@ -40,6 +40,7 @@ importers:
       '@types/commander': ^2.12.2
       '@types/debug': ^4.1.7
       '@types/js-yaml': ^4.0.5
+      ajv: ^8.11.0
       commander: ^9.4.1
       debug: ^4.3.4
       dotenv: ^16.0.3
@@ -50,6 +51,7 @@ importers:
     dependencies:
       '@solana-mobile/dapp-publishing-tools': link:../core
       '@solana/web3.js': 1.68.0
+      ajv: 8.11.0
       commander: 9.4.1
       debug: 4.3.4
       dotenv: 16.0.3

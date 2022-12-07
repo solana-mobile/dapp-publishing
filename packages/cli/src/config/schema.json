@@ -1,0 +1,228 @@
+{
+  "type": "object",
+  "properties": {
+    "publisher": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "media": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "purpose": {
+                  "type": "string"
+                },
+                "uri": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                }
+              },
+              "required": ["purpose", "uri", "width", "height"]
+            }
+          ]
+        }
+      },
+      "required": ["name", "website", "email", "media"]
+    },
+    "app": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "android_package": {
+          "type": "string"
+        },
+        "creators": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "urls": {
+          "type": "object",
+          "properties": {
+            "license_url": {
+              "type": "string"
+            },
+            "copyright_url": {
+              "type": "string"
+            },
+            "privacy_policy_url": {
+              "type": "string"
+            },
+            "website": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "license_url",
+            "copyright_url",
+            "privacy_policy_url",
+            "website"
+          ]
+        },
+        "media": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "purpose": {
+                  "type": "string"
+                },
+                "uri": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                }
+              },
+              "required": ["purpose", "uri", "width", "height"]
+            }
+          ]
+        }
+      },
+      "required": ["name", "android_package", "creators", "urls", "media"]
+    },
+    "release": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "media": {
+          "type": "array",
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "purpose": {
+                  "type": "string"
+                },
+                "uri": {
+                  "type": "string"
+                },
+                "width": {
+                  "type": "integer"
+                },
+                "height": {
+                  "type": "integer"
+                }
+              },
+              "required": ["purpose", "uri", "width", "height"]
+            }
+          ]
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "contains": {
+            "type": "object",
+            "properties": {
+              "purpose": {
+                "type": "string",
+                "const": "install"
+              }
+            }
+          },
+          "items": [
+            {
+              "type": "object",
+              "properties": {
+                "purpose": {
+                  "type": "string"
+                },
+                "uri": {
+                  "type": "string"
+                }
+              },
+              "required": ["purpose", "uri"]
+            }
+          ]
+        },
+        "catalog": {
+          "type": "object",
+          "properties": {
+            "en-US": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "short_description": {
+                  "type": "string"
+                },
+                "long_description": {
+                  "type": "string"
+                },
+                "new_in_version": {
+                  "type": "string"
+                },
+                "saga_features_localized": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "short_description",
+                "long_description",
+                "new_in_version",
+                "saga_features_localized"
+              ]
+            }
+          },
+          "required": ["en-US"]
+        }
+      },
+      "required": ["version", "media", "files", "catalog"]
+    },
+    "solana_mobile_dapp_publisher_portal": {
+      "type": "object",
+      "properties": {
+        "google_store_package": {
+          "type": "string"
+        },
+        "testing_instructions": {
+          "type": "string"
+        }
+      },
+      "required": ["google_store_package", "testing_instructions"]
+    }
+  },
+  "required": [
+    "publisher",
+    "app",
+    "release",
+    "solana_mobile_dapp_publisher_portal"
+  ]
+}

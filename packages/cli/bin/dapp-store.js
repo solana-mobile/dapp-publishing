@@ -1,3 +1,3 @@
-#!/usr/bin/env node --experimental-json-modules
+#!/usr/bin/env node
 
 import "../lib/esm/index.js";

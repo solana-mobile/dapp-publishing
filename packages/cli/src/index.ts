@@ -1,19 +1,16 @@
 import { Command } from "commander";
 import { validateCommand } from "./commands/index.js";
-import {
-  createAppCommand,
-  createPublisherCommand,
-  createReleaseCommand,
-} from "./commands/create/index.js";
+import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import {
   publishRemoveCommand,
   publishSubmitCommand,
   publishSupportCommand,
-  publishUpdateCommand,
+  publishUpdateCommand
 } from "./commands/publish/index.js";
-import { getConfigFile, parseKeypair } from "./utils.js";
+import { getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
 
 import * as dotenv from "dotenv";
+
 dotenv.config();
 
 const hasAddressInConfig = ({ address }: { address: string }) => {
@@ -29,7 +26,6 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   }
 
   // If a path is specified in a .env file, use that
-  dotenv.config();
   if (process.env.ANDROID_TOOLS_DIR !== undefined) {
     return process.env.ANDROID_TOOLS_DIR;
   }
@@ -80,9 +76,11 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       const config = await getConfigFile();
+      if (!config.isValid) return;
+
       if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-        console.error(
-          "\n\n::: Either specify an publisher mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+        showUserErrorMessage(
+          "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
         );
         createCommand.showHelpAfterError();
         return;
@@ -129,7 +127,7 @@ async function main() {
         } else if (buildToolsPath) {
           buildTools = buildToolsPath;
         } else {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
           );
           createCommand.showHelpAfterError();
@@ -137,8 +135,10 @@ async function main() {
         }
 
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.app) && !appMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           createCommand.showHelpAfterError();
@@ -174,8 +174,8 @@ async function main() {
     .action(async ({ keypair, buildToolsPath }) => {
       const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
       if (resolvedBuildToolsPath === undefined) {
-        console.error(
-          "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+        showUserErrorMessage(
+          "Please specify an Android build tools directory in the .env file or via the command line argument."
         );
         createCommand.showHelpAfterError();
         return;
@@ -231,8 +231,10 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();
@@ -291,8 +293,10 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();
@@ -348,8 +352,10 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();
@@ -399,8 +405,10 @@ async function main() {
         { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();

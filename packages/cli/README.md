@@ -94,10 +94,12 @@ publisher:
   address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
   website: https://solanamobile.com
   email: hello@solanamobile.com
-
+  media:
+    - purpose: icon
+      uri: ./media/publisher_icon.jpeg
 app:
   name: My new app name
-  address: 3Pvi6wKUiN2jujQQdGKB41dG1m6nAKLL67GeA8q3Vuj8
+  address: 4xE4MDVHfFAXMKKzqrJ2v1HxcgYgdoV98nuvd8SRKhWP
   android_package: com.company.dapp
   creators:
     - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
@@ -106,18 +108,18 @@ app:
     copyright_url: http://cdn.org/copyright.html
     privacy_policy_url: http://cdn.org/privacy.html
     website: http://cdn.org
-
+  media:
+    - purpose: icon
+      uri: ./media/app_icon.jpeg
 release:
   version: 1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
-      uri: ./app_screenshot.png
-      width: 512
-      height: 512
+      uri: ./media/app_screenshot.png
   files:
     - purpose: install
-      uri: ./app-debug.apk
+      uri: ./files/app-debug.apk
   catalog:
     en-US:
       name: |
@@ -130,7 +132,6 @@ release:
         Something new in this version
       saga_features_localized: |
         Some information about saga specific features
-
 solana_mobile_dapp_publisher_portal:
   google_store_package: com.company.dapp.otherpkg
   testing_instructions: >

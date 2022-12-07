@@ -1,28 +1,21 @@
-import type {
-  AndroidDetails,
-  App,
-  Publisher,
-  Release,
-  SolanaMobileDappPublisherPortal,
-} from "@solana-mobile/dapp-publishing-tools";
-import { Keypair } from "@solana/web3.js";
-import type { Connection } from "@solana/web3.js";
-
 import fs from "fs";
+import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
+import type { Connection } from "@solana/web3.js";
+import { Keypair } from "@solana/web3.js";
+import type { CLIConfig } from "./config/index.js";
+import { getConfig } from "./config/index.js";
 import debugModule from "debug";
-import { dump, load } from "js-yaml";
+import { dump } from "js-yaml";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
-import {
-  BundlrStorageDriver,
-  keypairIdentity,
-  Metaplex,
-  toMetaplexFile,
-} from "@metaplex-foundation/js";
+import { BundlrStorageDriver, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
+import { imageSize } from "image-size";
+import * from "path";
 
+const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
 
 export const debug = debugModule("CLI");
@@ -49,29 +42,27 @@ const AaptPrefixes = {
   localePrefix: "locales: ",
 };
 
-// TODO: Add version number return here
-interface CLIConfig {
-  publisher: Publisher;
-  app: App;
-  release: Release;
-  solana_mobile_dapp_publisher_portal: SolanaMobileDappPublisherPortal;
-}
-
 export const getConfigFile = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/config.yaml`;
-  const configFile = fs.readFileSync(configFilePath, "utf-8");
+
+  const config = await getConfig(configFilePath);
+  config.isValid = true;
 
   console.info(`Pulling details from ${configFilePath}`);
 
-  const config = load(configFile) as CLIConfig;
-
-  if (buildToolsDir && buildToolsDir.length > 0) {
-    //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
-
-    const apkSrc = config.release.files[0].uri;
-    const apkPath = path.join(process.cwd(), apkSrc);
+  if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
+    // We validate that the config is going to have at least one installable asset
+    const apkEntry = config.release.files.find(
+      (asset) => asset.purpose === "install"
+    )!;
+    const apkPath = path.join(process.cwd(), apkEntry?.uri);
+    if (!fs.existsSync(apkPath)) {
+      showUserErrorMessage("Invalid path to APK file.");
+      config.isValid = false;
+      return config;
+    }
 
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
@@ -84,8 +75,24 @@ export const getConfigFile = async (
   )?.uri;
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
+    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
+      showUserErrorMessage("Please check the path to your Publisher icon ensure the file is a jpeg, png, or webp file.");
+      config.isValid = false;
+      return config;
+    }
+
     const iconBuffer = await fs.promises.readFile(iconPath);
-    config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
+
+    if (await checkIconDimensions(iconPath)) {
+      showUserErrorMessage("Icons must have square dimensions and be no greater than 512px by 512px.");
+      config.isValid = false;
+      return config;
+    }
+
+    config.publisher.icon = toMetaplexFile(
+      iconBuffer,
+      path.join("media", publisherIcon)
+    );
   }
 
   const appIcon = config.app.media?.find(
@@ -93,13 +100,51 @@ export const getConfigFile = async (
   )?.uri;
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
+    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
+      showUserErrorMessage("Please check the path to your App icon ensure the file is a jpeg, png, or webp file.");
+      config.isValid = false;
+      return config;
+    }
+
     const iconBuffer = await fs.promises.readFile(iconPath);
-    config.app.icon = toMetaplexFile(iconBuffer, appIcon);
+
+    if (await checkIconDimensions(iconPath)) {
+      showUserErrorMessage("Icons must have square dimensions and be no greater than 512px by 512px.");
+      config.isValid = false;
+      return config;
+    }
+
+    config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
   }
 
-  // TODO(jon): Verify the contents of the YAML file
+  config.release.media.forEach((item) => {
+    const imagePath = path.join(process.cwd(), item.uri);
+    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath) ) {
+      showUserErrorMessage(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
+      config.isValid = false;
+      return config;
+    }
+  });
+
   return config;
 };
+
+const checkImageExtension = (uri: string): boolean => {
+  const fileExt = path.extname(uri).toLowerCase();
+  return fileExt == ".png" || fileExt == ".jpg" || fileExt == ".jpeg" || fileExt == ".webp";
+};
+
+export const showUserErrorMessage = (msg: string) => {
+  console.error("\n:::: Solana Publish CLI: Error Message ::::");
+  console.error(msg);
+  console.error("");
+};
+
+const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
+  const size = await runImgSize(iconPath);
+
+  return size?.width != size?.height || (size?.width ?? 0) > 512;
+}
 
 const getAndroidDetails = async (
   aaptDir: string,
@@ -177,6 +222,7 @@ export const saveToConfig = async ({
     },
     solana_mobile_dapp_publisher_portal:
       currentConfig.solana_mobile_dapp_publisher_portal,
+    isValid: currentConfig.isValid,
   };
 
   // TODO(jon): Verify the contents of the YAML file
