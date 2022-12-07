@@ -20,7 +20,6 @@ import {
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
-  version: string;
   buildToolsPath: string;
   signer: Keypair;
   url: string;
@@ -75,7 +74,6 @@ const createReleaseNft = async ({
 
 export const createReleaseCommand = async ({
   appMintAddress,
-  version,
   buildToolsPath,
   signer,
   url,
@@ -92,14 +90,13 @@ export const createReleaseCommand = async ({
       publisher: signer,
       releaseDetails: {
         ...release,
-        version,
       },
       appDetails: app,
       publisherDetails: publisher,
     });
 
     saveToConfig({
-      release: { address: releaseAddress, version },
+      release: { address: releaseAddress },
     });
 
     return { releaseAddress };
