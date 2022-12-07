@@ -29,12 +29,12 @@ release:
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
-      uri: ./app_screenshot.png
+      uri: ./media/app_screenshot.png
       width: 512
       height: 512
   files:
     - purpose: install
-      uri: ./app-debug.apk
+      uri: ./files/app-debug.apk
   catalog:
     en-US:
       name: |
