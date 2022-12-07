@@ -6,17 +6,14 @@ import debugModule from "debug";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { toMetaplexFile } from "@metaplex-foundation/js";
 import { mintNft, truncateAddress } from "../utils.js";
+import * as util from "util";
 import { validateRelease } from "../validate/index.js";
+import { imageSize } from "image-size";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
-import type {
-  App,
-  Context,
-  Publisher,
-  Release,
-  ReleaseJsonMetadata,
-} from "../types.js";
+import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "../types.js";
 
+const runImgSize = util.promisify(imageSize);
 const debug = debugModule("RELEASE");
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
@@ -42,11 +39,13 @@ const getFileMetadata = async (item: Media | File) => {
 };
 
 const getMediaMetadata = async (item: Media) => {
+  const size = await runImgSize(item.uri);
   const metadata = await getFileMetadata(item);
+
   return {
     ...metadata,
-    width: item.width,
-    height: item.height,
+    width: size?.width ?? 0,
+    height: size?.height ?? 0,
   };
 };
 
