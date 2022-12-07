@@ -32,7 +32,7 @@ export class CachedStorageDriver implements StorageDriver {
     console.info({ loading: true });
     this.assetManifest = this.loadAssetManifest(assetManifestPath) ?? {
       schema_version: CachedStorageDriver.SCHEMA_VERSION,
-      assets: [],
+      assets: {},
     };
     this.storageDriver = storageDriver;
   }
@@ -41,12 +41,15 @@ export class CachedStorageDriver implements StorageDriver {
     return this.storageDriver.getUploadPrice(bytes);
   }
 
-  loadAssetManifest(filename: string): AssetManifestSchema {
-    const assetManifest = JSON.parse(
-      fs.readFileSync(filename, "utf-8")
-    ) as AssetManifestSchema;
-
-    return assetManifest;
+  loadAssetManifest(filename: string): AssetManifestSchema | undefined {
+    try {
+      return JSON.parse(
+        fs.readFileSync(filename, "utf-8")
+      ) as AssetManifestSchema;
+    } catch (error) {
+      console.warn(`Failed opening ${filename}; initializing with a blank asset manifest`);
+      return;
+    }
   }
 
   uploadedAsset(filename: string, { sha256 }: { sha256: string }) {
