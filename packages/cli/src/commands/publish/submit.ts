@@ -1,6 +1,6 @@
 import { Connection, Keypair } from "@solana/web3.js";
-import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-publishing-tools";
-import { publishSubmit } from "@solana-mobile/dapp-publishing-tools";
+import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
+import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
 import { getConfigFile } from "../../utils.js";
 
@@ -19,22 +19,27 @@ export const publishSubmitCommand = async ({
   url,
   dryRun = false,
   compliesWithSolanaDappStorePolicies = false,
-  requestorIsAuthorized = false
+  requestorIsAuthorized = false,
 }: PublishSubmitCommandInput) => {
   if (!compliesWithSolanaDappStorePolicies) {
-    console.error("ERROR: Cannot submit a request for which the requestor does not attest that it complies with Solana dApp Store policies");
+    console.error(
+      "ERROR: Cannot submit a request for which the requestor does not attest that it complies with Solana dApp Store policies"
+    );
     return;
   } else if (!requestorIsAuthorized) {
-    console.error("ERROR: Cannot submit a request for which the requestor does not attest they are authorized to do so");
+    console.error(
+      "ERROR: Cannot submit a request for which the requestor does not attest they are authorized to do so"
+    );
     return;
   }
 
   const connection = new Connection(url);
   const {
     publisher: publisherDetails,
-    solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails
+    solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigFile();
-  const sign = ((buf: Buffer) => nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
+  const sign = ((buf: Buffer) =>
+    nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
   await publishSubmit(
     { connection, sign },
@@ -45,5 +50,6 @@ export const publishSubmitCommand = async ({
       compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
     },
-    dryRun);
+    dryRun
+  );
 };

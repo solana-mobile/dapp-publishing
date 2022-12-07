@@ -1,6 +1,6 @@
 import { Connection, Keypair } from "@solana/web3.js";
-import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-publishing-tools";
-import { publishRemove } from "@solana-mobile/dapp-publishing-tools";
+import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
+import { publishRemove } from "@solana-mobile/dapp-store-publishing-tools";
 import { getConfigFile } from "../../utils.js";
 import nacl from "tweetnacl";
 
@@ -19,16 +19,19 @@ export const publishRemoveCommand = async ({
   url,
   dryRun = false,
   requestorIsAuthorized = false,
-  critical = false
+  critical = false,
 }: PublishRemoveCommandInput) => {
   if (!requestorIsAuthorized) {
-    console.error("ERROR: Cannot submit a request for which the requestor does not attest they are authorized to do so");
+    console.error(
+      "ERROR: Cannot submit a request for which the requestor does not attest they are authorized to do so"
+    );
     return;
   }
 
   const connection = new Connection(url);
   const { publisher: publisherDetails } = await getConfigFile();
-  const sign = ((buf: Buffer) => nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
+  const sign = ((buf: Buffer) =>
+    nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
   await publishRemove(
     { connection, sign },
@@ -38,5 +41,6 @@ export const publishRemoveCommand = async ({
       requestorIsAuthorized,
       criticalUpdate: critical,
     },
-    dryRun);
+    dryRun
+  );
 };

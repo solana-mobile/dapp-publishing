@@ -2,8 +2,8 @@ import type {
   App,
   Publisher,
   Release,
-} from "@solana-mobile/dapp-publishing-tools";
-import { createRelease } from "@solana-mobile/dapp-publishing-tools";
+} from "@solana-mobile/dapp-store-publishing-tools";
+import { createRelease } from "@solana-mobile/dapp-store-publishing-tools";
 import {
   Connection,
   Keypair,

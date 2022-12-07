@@ -1,5 +1,5 @@
-import type { Publisher } from "@solana-mobile/dapp-publishing-tools";
-import { createPublisher } from "@solana-mobile/dapp-publishing-tools";
+import type { Publisher } from "@solana-mobile/dapp-store-publishing-tools";
+import { createPublisher } from "@solana-mobile/dapp-store-publishing-tools";
 import {
   Connection,
   Keypair,

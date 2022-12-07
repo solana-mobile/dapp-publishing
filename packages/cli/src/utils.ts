@@ -4,7 +4,7 @@ import type {
   App,
   Publisher,
   Release,
-} from "@solana-mobile/dapp-publishing-tools";
+} from "@solana-mobile/dapp-store-publishing-tools";
 import type { Connection } from "@solana/web3.js";
 import { Keypair } from "@solana/web3.js";
 import type { CLIConfig } from "./config/index.js";
