@@ -1,19 +1,16 @@
 import { Command } from "commander";
 import { validateCommand } from "./commands/index.js";
-import {
-  createAppCommand,
-  createPublisherCommand,
-  createReleaseCommand,
-} from "./commands/create/index.js";
+import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import {
   publishRemoveCommand,
   publishSubmitCommand,
   publishSupportCommand,
-  publishUpdateCommand,
+  publishUpdateCommand
 } from "./commands/publish/index.js";
 import { getConfigFile, parseKeypair } from "./utils.js";
 
 import * as dotenv from "dotenv";
+
 dotenv.config();
 
 const hasAddressInConfig = ({ address }: { address: string }) => {
@@ -79,6 +76,8 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       const config = await getConfigFile();
+      if (!config.isValid) return;
+
       if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
         console.error(
           "\n\n::: Either specify an publisher mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
@@ -136,6 +135,8 @@ async function main() {
         }
 
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.app) && !appMintAddress) {
           console.error(
             "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
@@ -230,6 +231,8 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
@@ -290,6 +293,8 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
@@ -347,6 +352,8 @@ async function main() {
         dryRun,
       }) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
@@ -398,6 +405,8 @@ async function main() {
         { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
         const config = await getConfigFile();
+        if (!config.isValid) return;
+
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
           console.error(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
