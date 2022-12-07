@@ -27,15 +27,9 @@
                 },
                 "uri": {
                   "type": "string"
-                },
-                "width": {
-                  "type": "integer"
-                },
-                "height": {
-                  "type": "integer"
                 }
               },
-              "required": ["purpose", "uri", "width", "height"]
+              "required": ["purpose", "uri"]
             }
           ]
         }
@@ -88,15 +82,9 @@
                 },
                 "uri": {
                   "type": "string"
-                },
-                "width": {
-                  "type": "integer"
-                },
-                "height": {
-                  "type": "integer"
                 }
               },
-              "required": ["purpose", "uri", "width", "height"]
+              "required": ["purpose", "uri"]
             }
           ]
         }
@@ -120,15 +108,9 @@
                 },
                 "uri": {
                   "type": "string"
-                },
-                "width": {
-                  "type": "integer"
-                },
-                "height": {
-                  "type": "integer"
                 }
               },
-              "required": ["purpose", "uri", "width", "height"]
+              "required": ["purpose", "uri"]
             }
           ]
         },

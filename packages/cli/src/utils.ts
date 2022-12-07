@@ -72,7 +72,7 @@ export const getConfigFile = async (
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      throw new Error("Please check the path to your Publisher icon ensure the file is a jpeg, png, or webp file.");
+      throw new Error("Please check the path to your Publisher icon and ensure the file is a jpeg, png, or webp file.");
     }
 
     const iconBuffer = await fs.promises.readFile(iconPath);
@@ -93,7 +93,7 @@ export const getConfigFile = async (
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      throw new Error("Please check the path to your App icon ensure the file is a jpeg, png, or webp file.")
+      throw new Error("Please check the path to your App icon and ensure the file is a jpeg, png, or webp file.")
     }
 
     const iconBuffer = await fs.promises.readFile(iconPath);
