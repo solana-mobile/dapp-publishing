@@ -116,6 +116,15 @@ export const getConfigFile = async (
     config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
   }
 
+  config.release.media.forEach((item) => {
+    const imagePath = path.join(process.cwd(), item.uri);
+    if (!fs.existsSync(imagePath)) {
+      showUserErrorMessage(`Invalid media path: ${item.uri}`);
+      config.isValid = false;
+      return config;
+    }
+  });
+
   return config;
 };
 

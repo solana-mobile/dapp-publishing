@@ -29,7 +29,7 @@ release:
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
-      uri: ./media/app_screeeeeeenshot.png
+      uri: ./media/app_screenshot.png
       width: 512
       height: 512
   files:
