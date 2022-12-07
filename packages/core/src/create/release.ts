@@ -11,7 +11,13 @@ import { validateRelease } from "../validate/index.js";
 import { imageSize } from "image-size";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
-import type { App, Context, Publisher, Release, ReleaseJsonMetadata } from "../types.js";
+import type {
+  App,
+  Context,
+  Publisher,
+  Release,
+  ReleaseJsonMetadata,
+} from "../types.js";
 
 const runImgSize = util.promisify(imageSize);
 const debug = debugModule("RELEASE");
@@ -125,11 +131,11 @@ export const createReleaseJson = async (
         files,
         android_details: releaseDetails.android_details,
       },
-      i18n: {}
+      i18n: {},
     },
   };
 
-  for (const [ locale, strings ] of Object.entries(releaseDetails.catalog)) {
+  for (const [locale, strings] of Object.entries(releaseDetails.catalog)) {
     releaseMetadata.extensions.i18n[locale] = {
       "1": strings.short_description,
       "2": strings.long_description,

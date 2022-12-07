@@ -1,5 +1,10 @@
 import fs from "fs";
-import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-publishing-tools";
+import type {
+  AndroidDetails,
+  App,
+  Publisher,
+  Release,
+} from "@solana-mobile/dapp-publishing-tools";
 import type { Connection } from "@solana/web3.js";
 import { Keypair } from "@solana/web3.js";
 import type { CLIConfig } from "./config/index.js";
@@ -9,11 +14,15 @@ import { dump } from "js-yaml";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
-import { BundlrStorageDriver, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
+import {
+  BundlrStorageDriver,
+  keypairIdentity,
+  Metaplex,
+  toMetaplexFile,
+} from "@metaplex-foundation/js";
+import { imageSize } from "image-size";
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
-import { imageSize } from "image-size";
-import * from "path";
 
 const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
@@ -44,7 +53,7 @@ const AaptPrefixes = {
 
 export const getConfigFile = async (
   buildToolsDir: string | null = null
-): Promise<CLIConfig> => {
+): Promise<CLIConfig & { isValid: boolean }> => {
   const configFilePath = `${process.cwd()}/config.yaml`;
 
   const config = await getConfig(configFilePath);
@@ -55,7 +64,7 @@ export const getConfigFile = async (
   if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
     // We validate that the config is going to have at least one installable asset
     const apkEntry = config.release.files.find(
-      (asset) => asset.purpose === "install"
+      (asset: CLIConfig["release"]["files"][0]) => asset.purpose === "install"
     )!;
     const apkPath = path.join(process.cwd(), apkEntry?.uri);
     if (!fs.existsSync(apkPath)) {
@@ -76,7 +85,9 @@ export const getConfigFile = async (
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      showUserErrorMessage("Please check the path to your Publisher icon ensure the file is a jpeg, png, or webp file.");
+      showUserErrorMessage(
+        "Please check the path to your Publisher icon ensure the file is a jpeg, png, or webp file."
+      );
       config.isValid = false;
       return config;
     }
@@ -84,7 +95,9 @@ export const getConfigFile = async (
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
-      showUserErrorMessage("Icons must have square dimensions and be no greater than 512px by 512px.");
+      showUserErrorMessage(
+        "Icons must have square dimensions and be no greater than 512px by 512px."
+      );
       config.isValid = false;
       return config;
     }
@@ -101,7 +114,9 @@ export const getConfigFile = async (
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      showUserErrorMessage("Please check the path to your App icon ensure the file is a jpeg, png, or webp file.");
+      showUserErrorMessage(
+        "Please check the path to your App icon ensure the file is a jpeg, png, or webp file."
+      );
       config.isValid = false;
       return config;
     }
@@ -109,7 +124,9 @@ export const getConfigFile = async (
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
-      showUserErrorMessage("Icons must have square dimensions and be no greater than 512px by 512px.");
+      showUserErrorMessage(
+        "Icons must have square dimensions and be no greater than 512px by 512px."
+      );
       config.isValid = false;
       return config;
     }
@@ -117,10 +134,12 @@ export const getConfigFile = async (
     config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
   }
 
-  config.release.media.forEach((item) => {
+  config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
     const imagePath = path.join(process.cwd(), item.uri);
-    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath) ) {
-      showUserErrorMessage(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
+    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
+      showUserErrorMessage(
+        `Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`
+      );
       config.isValid = false;
       return config;
     }
@@ -131,7 +150,12 @@ export const getConfigFile = async (
 
 const checkImageExtension = (uri: string): boolean => {
   const fileExt = path.extname(uri).toLowerCase();
-  return fileExt == ".png" || fileExt == ".jpg" || fileExt == ".jpeg" || fileExt == ".webp";
+  return (
+    fileExt == ".png" ||
+    fileExt == ".jpg" ||
+    fileExt == ".jpeg" ||
+    fileExt == ".webp"
+  );
 };
 
 export const showUserErrorMessage = (msg: string) => {
@@ -144,7 +168,7 @@ const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
   const size = await runImgSize(iconPath);
 
   return size?.width != size?.height || (size?.width ?? 0) > 512;
-}
+};
 
 const getAndroidDetails = async (
   aaptDir: string,
