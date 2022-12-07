@@ -32,6 +32,12 @@ importers:
       shx: 0.3.4
       typescript: 4.8.4
 
+  example:
+    specifiers:
+      '@solana-mobile/dapp-store-cli': workspace:0.1.1-0
+    dependencies:
+      '@solana-mobile/dapp-store-cli': link:../packages/cli
+
   packages/cli:
     specifiers:
       '@metaplex-foundation/js': ^0.17.1
