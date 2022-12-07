@@ -71,13 +71,9 @@ export interface ReleaseJsonMetadata {
     i18n: {
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
-       * via the `patternProperty` "([A-Za-z0-9\-]+)\w+/gi".
+       * via the `patternProperty` "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{2,8})*$".
        */
       [k: string]: {
-        /**
-         * This interface was referenced by `undefined`'s JSON-Schema definition
-         * via the `patternProperty` "([A-Za-z0-9\-]+)\w+/gi".
-         */
         [k: string]: string;
       };
     };

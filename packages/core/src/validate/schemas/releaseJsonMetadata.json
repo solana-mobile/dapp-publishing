@@ -190,15 +190,14 @@
         "i18n": {
           "type": "object",
           "patternProperties": {
-            "([A-Za-z0-9\\-]+)\\w+/gi": {
+            "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{2,8})*$": {
               "type": "object",
-              "patternProperties": {
-                "([A-Za-z0-9\\-]+)\\w+/gi": {
-                  "type": "string"
-                }
+              "additionalProperties": {
+                "type": "string"
               }
             }
-          }
+          },
+          "additionalProperties": false
         }
       },
       "required": ["solana_dapp_store", "i18n"]
