@@ -57,6 +57,11 @@ export const getConfigFile = async (
       (asset) => asset.purpose === "install"
     )!;
     const apkPath = path.join(process.cwd(), apkEntry?.uri);
+    if (!fs.existsSync(apkPath)) {
+      showUserErrorMessage("Invalid path to APK file.");
+      config.isValid = false;
+      return config;
+    }
 
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
@@ -69,6 +74,12 @@ export const getConfigFile = async (
   )?.uri;
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
+    if (!fs.existsSync(iconPath)) {
+      showUserErrorMessage("Invalid path to Publisher icon file.");
+      config.isValid = false;
+      return config;
+    }
+
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
@@ -88,6 +99,12 @@ export const getConfigFile = async (
   )?.uri;
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
+    if (!fs.existsSync(iconPath)) {
+      showUserErrorMessage("Invalid path to App icon file.");
+      config.isValid = false;
+      return config;
+    }
+
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
@@ -103,9 +120,9 @@ export const getConfigFile = async (
 };
 
 export const showUserErrorMessage = (msg: string) => {
-  console.error("\n----- Solana Publish CLI: Error Message -----");
+  console.error("\n:::: Solana Publish CLI: Error Message ::::");
   console.error(msg);
-  console.error("-----------------------------------------------\n");
+  console.error("");
 };
 
 const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
