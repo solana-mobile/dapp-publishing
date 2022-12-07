@@ -34,7 +34,7 @@ importers:
 
   example:
     specifiers:
-      '@solana-mobile/dapp-store-cli': workspace:0.1.1-0
+      '@solana-mobile/dapp-store-cli': workspace:0.1.1-1
     dependencies:
       '@solana-mobile/dapp-store-cli': link:../packages/cli
 
