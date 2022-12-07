@@ -71,7 +71,7 @@ export const getConfigFile = async (
     //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
 
     const apkSrc = config.release.files[0].uri;
-    const apkPath = path.join(process.cwd(), "files", apkSrc);
+    const apkPath = path.join(process.cwd(), apkSrc);
 
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
@@ -83,21 +83,18 @@ export const getConfigFile = async (
     (asset: any) => asset.purpose === "icon"
   )?.uri;
   if (publisherIcon) {
-    const iconPath = path.join(process.cwd(), "media", publisherIcon);
+    const iconPath = path.join(process.cwd(), publisherIcon);
     const iconBuffer = await fs.promises.readFile(iconPath);
-    config.publisher.icon = toMetaplexFile(
-      iconBuffer,
-      path.join("media", publisherIcon)
-    );
+    config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
   }
 
   const appIcon = config.app.media?.find(
     (asset: any) => asset.purpose === "icon"
   )?.uri;
   if (appIcon) {
-    const iconPath = path.join(process.cwd(), "media", appIcon);
+    const iconPath = path.join(process.cwd(), appIcon);
     const iconBuffer = await fs.promises.readFile(iconPath);
-    config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
+    config.app.icon = toMetaplexFile(iconBuffer, appIcon);
   }
 
   // TODO(jon): Verify the contents of the YAML file
