@@ -1,4 +1,9 @@
-import type { App, Publisher, Release, SolanaMobileDappPublisherPortal } from "@solana-mobile/dapp-publishing-tools";
+import type {
+  App,
+  Publisher,
+  Release,
+  SolanaMobileDappPublisherPortal,
+} from "@solana-mobile/dapp-store-publishing-tools";
 import fs from "fs/promises";
 import { load } from "js-yaml";
 

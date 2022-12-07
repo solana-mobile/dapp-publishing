@@ -5,7 +5,7 @@ import {
   validateApp,
   validatePublisher,
   validateRelease,
-} from "@solana-mobile/dapp-publishing-tools";
+} from "@solana-mobile/dapp-store-publishing-tools";
 import { debug, getConfigFile } from "../utils.js";
 
 import type { Keypair } from "@solana/web3.js";

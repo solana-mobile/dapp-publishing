@@ -1,5 +1,5 @@
-import type { App } from "@solana-mobile/dapp-publishing-tools";
-import { createApp } from "@solana-mobile/dapp-publishing-tools";
+import type { App } from "@solana-mobile/dapp-store-publishing-tools";
+import { createApp } from "@solana-mobile/dapp-store-publishing-tools";
 import {
   Connection,
   Keypair,
