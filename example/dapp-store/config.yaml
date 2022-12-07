@@ -5,7 +5,7 @@ publisher:
   email: hello@solanamobile.com
   media:
     - purpose: icon
-      uri: ./publisher_icon.jpeg
+      uri: ./media/publisher_icon.jpeg
       width: 512
       height: 512
 app:
@@ -21,7 +21,7 @@ app:
     website: http://cdn.org
   media:
     - purpose: icon
-      uri: ./app_icon.jpeg
+      uri: ./media/app_icon.jpeg
       width: 512
       height: 512
 release:
@@ -29,7 +29,7 @@ release:
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
-      uri: ./media/app_screenshot.png
+      uri: ./media/app_screeeeeeenshot.png
       width: 512
       height: 512
   files:
