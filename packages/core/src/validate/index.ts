@@ -17,7 +17,7 @@ import type {
 export const validatePublisher = (publisherJson: PublisherMetadata) => {
   const jsonToValidate = { ...publisherJson };
   if (typeof jsonToValidate.image !== "string") {
-    jsonToValidate.image = jsonToValidate.image.fileName;
+    jsonToValidate.image = jsonToValidate.image?.fileName;
   }
 
   const ajv = new Ajv({ strictTuples: false });
@@ -34,7 +34,7 @@ export const validatePublisher = (publisherJson: PublisherMetadata) => {
 export const validateApp = (appJson: AppMetadata) => {
   const jsonToValidate = { ...appJson };
   if (typeof jsonToValidate.image !== "string") {
-    jsonToValidate.image = jsonToValidate.image.fileName;
+    jsonToValidate.image = jsonToValidate.image?.fileName;
   }
 
   const ajv = new Ajv({ strictTuples: false });
