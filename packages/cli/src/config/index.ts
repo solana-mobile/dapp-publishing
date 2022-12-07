@@ -2,7 +2,7 @@ import type {
   App,
   Publisher,
   Release,
-  SolanaMobileDappPublisherPortal,
+  SolanaMobileDappPublisherPortal
 } from "@solana-mobile/dapp-store-publishing-tools";
 import fs from "fs/promises";
 import { load } from "js-yaml";
@@ -18,7 +18,6 @@ export interface CLIConfig {
   app: App;
   release: Release;
   solana_mobile_dapp_publisher_portal: SolanaMobileDappPublisherPortal;
-  isValid: boolean;
 }
 
 const ajv = new Ajv({ strictTuples: false });

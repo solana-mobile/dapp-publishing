@@ -75,25 +75,28 @@ async function main() {
     .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
-      const config = await getConfigFile();
-      if (!config.isValid) return;
+      try {
+        const config = await getConfigFile();
 
-      if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-        showUserErrorMessage(
-          "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
-        );
-        createCommand.showHelpAfterError();
-        return;
-      }
+        if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
+          showUserErrorMessage(
+            "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
+          );
+          createCommand.showHelpAfterError();
+          return;
+        }
 
-      const signer = parseKeypair(keypair);
-      if (signer) {
-        await createAppCommand({
-          publisherMintAddress: publisherMintAddress,
-          signer,
-          url,
-          dryRun,
-        });
+        const signer = parseKeypair(keypair);
+        if (signer) {
+          await createAppCommand({
+            publisherMintAddress: publisherMintAddress,
+            signer,
+            url,
+            dryRun,
+          });
+        }
+      } catch (e) {
+        showUserErrorMessage((e as Error | null)?.message ?? "");
       }
     });
 
@@ -115,42 +118,45 @@ async function main() {
       "Path to Android build tools which contains AAPT2"
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
-        const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
+        try {
+          const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
 
-        let buildTools = "";
-        if (toolsEnvDir && toolsEnvDir.length > 0) {
-          buildTools = toolsEnvDir;
-        } else if (buildToolsPath) {
-          buildTools = buildToolsPath;
-        } else {
-          showUserErrorMessage(
-            "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
-          );
-          createCommand.showHelpAfterError();
-          return;
-        }
+          let buildTools = "";
+          if (toolsEnvDir && toolsEnvDir.length > 0) {
+            buildTools = toolsEnvDir;
+          } else if (buildToolsPath) {
+            buildTools = buildToolsPath;
+          } else {
+            showUserErrorMessage(
+              "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+            );
+            createCommand.showHelpAfterError();
+            return;
+          }
 
-        const config = await getConfigFile();
-        if (!config.isValid) return;
+          const config = await getConfigFile();
 
-        if (!hasAddressInConfig(config.app) && !appMintAddress) {
-          showUserErrorMessage(
-            "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-          );
-          createCommand.showHelpAfterError();
-          return;
-        }
+          if (!hasAddressInConfig(config.app) && !appMintAddress) {
+            showUserErrorMessage(
+              "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+            );
+            createCommand.showHelpAfterError();
+            return;
+          }
 
-        const signer = parseKeypair(keypair);
+          const signer = parseKeypair(keypair);
 
-        if (signer) {
-          const result = await createReleaseCommand({
-            appMintAddress: appMintAddress,
-            buildToolsPath: buildTools,
-            signer,
-            url,
-            dryRun,
-          });
+          if (signer) {
+            const result = await createReleaseCommand({
+              appMintAddress: appMintAddress,
+              buildToolsPath: buildTools,
+              signer,
+              url,
+              dryRun,
+            });
+          }
+        } catch (e) {
+          showUserErrorMessage((e as Error | null)?.message ?? "");
         }
       }
     );
@@ -225,27 +231,30 @@ async function main() {
         requestorIsAuthorized,
         dryRun,
       }) => {
-        const config = await getConfigFile();
-        if (!config.isValid) return;
+        try {
+          const config = await getConfigFile();
 
-        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          showUserErrorMessage(
-            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-          );
-          publishCommand.showHelpAfterError();
-          return;
-        }
+          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+            showUserErrorMessage(
+              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+            );
+            publishCommand.showHelpAfterError();
+            return;
+          }
 
-        const signer = parseKeypair(keypair);
-        if (signer) {
-          await publishSubmitCommand({
-            releaseMintAddress,
-            signer,
-            url,
-            dryRun,
-            compliesWithSolanaDappStorePolicies,
-            requestorIsAuthorized,
-          });
+          const signer = parseKeypair(keypair);
+          if (signer) {
+            await publishSubmitCommand({
+              releaseMintAddress,
+              signer,
+              url,
+              dryRun,
+              compliesWithSolanaDappStorePolicies,
+              requestorIsAuthorized,
+            });
+          }
+        } catch (e) {
+          showUserErrorMessage((e as Error | null)?.message ?? "");
         }
       }
     );
@@ -287,29 +296,32 @@ async function main() {
         critical,
         dryRun,
       }) => {
-        const config = await getConfigFile();
-        if (!config.isValid) return;
+        try {
+          const config = await getConfigFile();
 
-        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          showUserErrorMessage(
-            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-          );
-          publishCommand.showHelpAfterError();
-          return;
-        }
+          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+            showUserErrorMessage(
+              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+            );
+            publishCommand.showHelpAfterError();
+            return;
+          }
 
-        const signer = parseKeypair(keypair);
+          const signer = parseKeypair(keypair);
 
-        if (signer) {
-          await publishUpdateCommand({
-            releaseMintAddress,
-            signer,
-            url,
-            dryRun,
-            compliesWithSolanaDappStorePolicies,
-            requestorIsAuthorized,
-            critical,
-          });
+          if (signer) {
+            await publishUpdateCommand({
+              releaseMintAddress,
+              signer,
+              url,
+              dryRun,
+              compliesWithSolanaDappStorePolicies,
+              requestorIsAuthorized,
+              critical,
+            });
+          }
+        } catch (e) {
+          showUserErrorMessage((e as Error | null)?.message ?? "");
         }
       }
     );
@@ -346,28 +358,31 @@ async function main() {
         critical,
         dryRun,
       }) => {
-        const config = await getConfigFile();
-        if (!config.isValid) return;
+        try {
+          const config = await getConfigFile();
 
-        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          showUserErrorMessage(
-            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-          );
-          publishCommand.showHelpAfterError();
-          return;
-        }
+          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+            showUserErrorMessage(
+              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+            );
+            publishCommand.showHelpAfterError();
+            return;
+          }
 
-        const signer = parseKeypair(keypair);
+          const signer = parseKeypair(keypair);
 
-        if (signer) {
-          await publishRemoveCommand({
-            releaseMintAddress,
-            signer,
-            url,
-            dryRun,
-            requestorIsAuthorized,
-            critical,
-          });
+          if (signer) {
+            await publishRemoveCommand({
+              releaseMintAddress,
+              signer,
+              url,
+              dryRun,
+              requestorIsAuthorized,
+              critical,
+            });
+          }
+        } catch (e) {
+          showUserErrorMessage((e as Error | null)?.message ?? "");
         }
       }
     );
@@ -399,28 +414,31 @@ async function main() {
         requestDetails,
         { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
-        const config = await getConfigFile();
-        if (!config.isValid) return;
+        try {
+          const config = await getConfigFile();
 
-        if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          showUserErrorMessage(
-            "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-          );
-          publishCommand.showHelpAfterError();
-          return;
-        }
+          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+            showUserErrorMessage(
+              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+            );
+            publishCommand.showHelpAfterError();
+            return;
+          }
 
-        const signer = parseKeypair(keypair);
+          const signer = parseKeypair(keypair);
 
-        if (signer) {
-          await publishSupportCommand({
-            releaseMintAddress,
-            signer,
-            url,
-            dryRun,
-            requestorIsAuthorized,
-            requestDetails,
-          });
+          if (signer) {
+            await publishSupportCommand({
+              releaseMintAddress,
+              signer,
+              url,
+              dryRun,
+              requestorIsAuthorized,
+              requestDetails,
+            });
+          }
+        } catch (e) {
+          showUserErrorMessage((e as Error | null)?.message ?? "");
         }
       }
     );
