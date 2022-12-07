@@ -7,7 +7,7 @@ import {
   publishSupportCommand,
   publishUpdateCommand
 } from "./commands/publish/index.js";
-import { getConfigFile, parseKeypair } from "./utils.js";
+import { getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
 
 import * as dotenv from "dotenv";
 
@@ -79,8 +79,8 @@ async function main() {
       if (!config.isValid) return;
 
       if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-        console.error(
-          "\n\n::: Either specify an publisher mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+        showUserErrorMessage(
+          "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
         );
         createCommand.showHelpAfterError();
         return;
@@ -127,7 +127,7 @@ async function main() {
         } else if (buildToolsPath) {
           buildTools = buildToolsPath;
         } else {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
           );
           createCommand.showHelpAfterError();
@@ -138,7 +138,7 @@ async function main() {
         if (!config.isValid) return;
 
         if (!hasAddressInConfig(config.app) && !appMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           createCommand.showHelpAfterError();
@@ -174,8 +174,8 @@ async function main() {
     .action(async ({ keypair, buildToolsPath }) => {
       const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
       if (resolvedBuildToolsPath === undefined) {
-        console.error(
-          "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+        showUserErrorMessage(
+          "Please specify an Android build tools directory in the .env file or via the command line argument."
         );
         createCommand.showHelpAfterError();
         return;
@@ -234,7 +234,7 @@ async function main() {
         if (!config.isValid) return;
 
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();
@@ -296,7 +296,7 @@ async function main() {
         if (!config.isValid) return;
 
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();
@@ -355,7 +355,7 @@ async function main() {
         if (!config.isValid) return;
 
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();
@@ -408,7 +408,7 @@ async function main() {
         if (!config.isValid) return;
 
         if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
-          console.error(
+          showUserErrorMessage(
             "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
           );
           publishCommand.showHelpAfterError();

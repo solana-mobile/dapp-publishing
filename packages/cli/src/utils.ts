@@ -102,7 +102,7 @@ export const getConfigFile = async (
   return config;
 };
 
-const showUserErrorMessage = (msg: string) => {
+export const showUserErrorMessage = (msg: string) => {
   console.error("\n----- Solana Publish CLI: Error Message -----");
   console.error(msg);
   console.error("-----------------------------------------------\n");
