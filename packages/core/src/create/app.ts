@@ -11,7 +11,7 @@ export const createAppJson = (
   publisherAddress: PublicKey
 ): AppMetadata => {
   const appMetadata = {
-    schema_version: "0.2.3",
+    schema_version: "0.2.4",
     name: app.name,
     image: app.icon!,
     external_url: app.urls.website,

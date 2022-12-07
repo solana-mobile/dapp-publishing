@@ -54,14 +54,6 @@
         "android_package": {
           "type": "string"
         },
-        "creators": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            }
-          ]
-        },
         "urls": {
           "type": "object",
           "properties": {
@@ -109,14 +101,11 @@
           ]
         }
       },
-      "required": ["name", "android_package", "creators", "urls", "media"]
+      "required": ["name", "android_package", "urls", "media"]
     },
     "release": {
       "type": "object",
       "properties": {
-        "version": {
-          "type": "string"
-        },
         "address": {
           "type": "string"
         },
@@ -172,8 +161,8 @@
         },
         "catalog": {
           "type": "object",
-          "properties": {
-            "en-US": {
+          "patternProperties": {
+            "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{2,8})*$": {
               "type": "object",
               "properties": {
                 "name": {
@@ -188,7 +177,7 @@
                 "new_in_version": {
                   "type": "string"
                 },
-                "saga_features_localized": {
+                "saga_features": {
                   "type": "string"
                 }
               },
@@ -197,14 +186,14 @@
                 "short_description",
                 "long_description",
                 "new_in_version",
-                "saga_features_localized"
+                "saga_features"
               ]
             }
           },
-          "required": ["en-US"]
+          "additionalProperties": false
         }
       },
-      "required": ["version", "media", "files", "catalog"]
+      "required": ["media", "files", "catalog"]
     },
     "solana_mobile_dapp_publisher_portal": {
       "type": "object",

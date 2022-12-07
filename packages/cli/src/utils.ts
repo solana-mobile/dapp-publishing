@@ -182,8 +182,9 @@ const getAndroidDetails = async (
   const versionCode = new RegExp(
     AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex
   ).exec(stdout);
-  //TODO: Return this and use automatically replacing command line arg
-  //const versionName = new RegExp(prefixes.verNamePrefix + prefixes.quoteRegex).exec(stdout);
+  const versionName = new RegExp(
+    AaptPrefixes.verNamePrefix + AaptPrefixes.quoteRegex
+  ).exec(stdout);
   const minSdk = new RegExp(
     AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
   ).exec(stdout);
@@ -209,6 +210,7 @@ const getAndroidDetails = async (
     android_package: appPackage?.[1] ?? "",
     min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
     version_code: parseInt(versionCode?.[1] ?? "0", 10),
+    version: versionName?.[1] ?? "0",
     permissions: permissionArray,
     locales: localeArray,
   };
@@ -217,7 +219,7 @@ const getAndroidDetails = async (
 type SaveToConfigArgs = {
   publisher?: Pick<Publisher, "address">;
   app?: Pick<App, "address">;
-  release?: Pick<Release, "address" | "version">;
+  release?: Pick<Release, "address">;
 };
 
 export const saveToConfig = async ({
@@ -242,7 +244,6 @@ export const saveToConfig = async ({
     release: {
       ...currentConfig.release,
       address: release?.address ?? currentConfig.release.address,
-      version: release?.version ?? currentConfig.release.version,
     },
     solana_mobile_dapp_publisher_portal:
       currentConfig.solana_mobile_dapp_publisher_portal,

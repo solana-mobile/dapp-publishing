@@ -1,4 +1,4 @@
-# Release NFT Metadata Spec v0.2.3
+# Release NFT Metadata Spec v0.2.4
 
 This is the official spec of the off-chain metadata that will be created for the NFT release management system.
 
@@ -8,7 +8,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 
 ```json
 {
-  "schema_version": "0.2.3",
+  "schema_version": "0.2.4",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -28,7 +28,6 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "contact": "contact@company.com"
       },
       "release_details": {
-        "version": "1.0.2",
         "updated_on": "2018-12-10T13:45:00.000Z",
         "license_url": "http://cdn.org/license.html",
         "copyright_url": "http://cdn.org/copyright.html",
@@ -36,7 +35,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "localized_resources": {
           "long_description": "uid_1",
           "new_in_version": "uid_2",
-          "saga_features_localized": "uid_3",
+          "saga_features": "uid_3",
           "name": "uid_4"
         }
       },
@@ -93,7 +92,8 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
       ],
       "android_details": {
         "android_package": "com.company.dapp",
-        "version_code": 5,
+        "version": "1.0",
+        "version_code": 1,
         "min_sdk": 21,
         "permissions": [
           "android.permission.INTERNET",
@@ -155,7 +155,7 @@ All releases for a dApp store entry will be grouped under a collection, which it
 
 ```json
 {
-  "schema_version": "0.2.3",
+  "schema_version": "0.2.4",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
@@ -184,7 +184,7 @@ That said, all store-relevant publisher information will be managed in the relea
 
 ```json
 {
-  "schema_version": "0.2.3",
+  "schema_version": "0.2.4",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
