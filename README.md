@@ -2,6 +2,10 @@
 
 This is the official spec of the off-chain metadata that will be created for the NFT release management system.
 
+## Getting Started
+
+If you want to get started with publishing an app to the Solana dApp Store, please see our [publishing walkthrough guide](PUBLISHING.md).
+
 ## Release NFT JSON Overview
 
 The following is a JSON file for a dApp NFT release with readable sample data filled in.
@@ -108,7 +112,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
       }
     },
     "i18n": {
-      "en-US": {
+      "en": {
         "uid_1": "[Long desc en]",
         "uid_2": "[New in version en]",
         "uid_3": "[Saga features in en]",

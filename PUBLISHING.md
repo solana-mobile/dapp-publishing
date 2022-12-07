@@ -1,0 +1,160 @@
+# Publishing to the Solana dApp Store
+
+## Status
+The Solana dApp Store is currently in the **PILOT** phase, and only accepting submissions by invited parties. Other submissions will be (politely) rejected.
+
+## Overview
+Publishing a dApp to the Solana dApp Store involves two steps:
+1. Create a set of NFTs describing the app, publisher, and release on-chain
+1. Submit a request to the Solana dApp Store publisher portal requesting that Solana Mobile process the dApp's release NFT
+
+The publishing tool is designed for CI/CD usage - all steps, including submitting publish portal requests, can be integrated into your app release workflows. All files used during the NFT creation and publishing request submission steps can be committed to source control.
+
+## Setup
+Please follow the instructions in [README.md](packages/cli/README.md) to set up the `dapp-store` CLI tooling
+
+## Step-by-step walkthrough of dApp publishing
+
+### Where do the files for my dApp go?
+
+It is recommended that you put your dApp publishing files next to your app, and source control them together. This guide assumes that your dApp is built with Android Studio, and the root directory for the project which builds your APKs is `${APP_ROOT}`.
+
+### Create `config.yaml` for your dApp
+
+1. Create `${APP_ROOT}/dapp-store`
+   ```
+   mkdir dapp-store
+   cd dapp-store
+   ```
+1. Populate the initial contents of `${APP_ROOT}/dapp-store/config.yaml`
+   ```
+   echo \
+   "publisher:
+     address: _ # will be replaced with the publisher NFT account address
+     name: [[YOUR_PUBLISHER_NAME]] # (max 32 chars) This appears only when viewing the publisher NFT metadata; it is not part of the submission to the Solana dApp Store
+     website: [[URL_OF_PUBLISHER_WEBSITE]]
+     email: [[EMAIL_ADDRESS_TO_CONTACT_PUBLISHER]]
+     media:
+       - purpose: icon
+         uri: [[RELATIVE_PATH_TO_PUBLISHER_ICON]] # for e.g., media/publisher_icon.png
+   app:
+     address: _ # will be replaced with the app NFT account address
+     name: [[APP_NAME]] # (max 32 chars) This appears only when viewing the app NFT metadata; it is not part of the submission to the Solana dApp Store
+     android_package: [[ANDROID_PACKAGE_NAME]]
+     urls:
+       license_url: [[URL_OF_APP_LICENSE_OR_TERMS_OF_SERVICE]]
+       copyright_url: [[URL_OF_COPYRIGHT_DETAILS_FOR_APP]]
+       privacy_policy_url: [[URL_OF_APP_PRIVACY_POLICY]]
+       website: [[URL_OF_APP_WEBSITE]]
+     media:
+       - purpose: icon
+         uri: [[RELATIVE_PATH_TO_APP_ICON]] # for e.g., media/app_icon.png
+   release:
+     address: _ # will be replaced with the release NFT account address
+     version: '[[RELEASE_VERSION]]'
+     catalog:
+       en:
+         name: >-
+           [[APP_NAME]]
+         short_description: >-
+           [[SHORT_APP_DESCRIPTION]]
+         long_description: >-
+           [[LONG_APP_DESCRIPTION]]
+         new_in_version: >-
+           [[WHATS_NEW_IN_THIS_VERSION]]
+         saga_features_localized: >- # optional
+           [[ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA]]
+     media:
+       - purpose: icon
+         uri: [[RELATIVE_PATH_TO_APP_ICON]] # for e.g., media/app_icon.png
+       - purpose: screenshot
+         uri: [[RELATIVE_PATH_TO_SCREENSHOT]] # for e.g., media/app_screenshot_1.png
+         width: 1080 # (optional) if you want this asset displayed at other than it's native width
+         height: 1920 # (optional) same, but for native height
+       # Add more media files here
+     files:
+       - purpose: install
+         uri: [[RELATIVE_PATH_TO_APK]] # for e.g., ../build/outputs/apk/release/myapp-release.apk
+   solana_mobile_dapp_publisher_portal:
+     google_store_package: [[ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION_IF_DIFFERENT]] # (optional) the package name of this app on the Google Play Store, if it differs from the package name used in the Solana dApp Store
+     testing_instructions: >-
+       [[TESTING_INSTRUCTIONS]]
+   " > config.yaml
+   ```
+   Replace all fields in `[[ ]]` with details for your dApp. Remove any fields that don't apply (for e.g., `saga_features_localized`, `google_store_package`, etc).
+1. \[Optional\] Localize strings within `config.yaml` for all desired locales.
+   Anywhere there is a string in `config.yaml` with an `en` key, you can provide additional localizations. For e.g.,
+   ```
+   release: {
+     ...
+     catalog: {
+       ...
+       fr-FR: {
+         ...
+         name: >-
+           [[NAME_OF_APP_IN_FRENCH_(FRANCE)]]
+         ...
+       }
+       ...
+     }
+   }
+   ```
+
+### Create a keypair for your dapp
+**IMPORTANT: this keypair is a critical secret for your dApp. Whomever possesses it is able to create new releases of your dApp and submit them to the Solana dApp Store. It should be safeguarded with appropriate technical measures.**
+
+See the [File System Wallet](https://docs.solana.com/wallet-guide/file-system-wallet) instructions to create a new keypair for publishing your dApp. You'll need to fund your account with some SOL to mint the necessary publisher, app, and release NFTs. For testing purposes, you can use devnet or testnet, and airdrop some SOL to this wallet.
+
+### Validate your `config.yaml`
+To validate your `config.yaml`,
+```
+npx dapp-store validate -k <path_to_your_keypair> -b <path_to_your_android_sdk_build_tools>
+```
+
+On success, you should see output similar to:
+```
+Publisher JSON valid!
+App JSON valid!
+Release JSON valid!
+```
+
+### Mint the NFTs
+1. Create the publisher NFT
+   ```
+   npx dapp-store create publisher -k <path_to_your_keypair>
+   ```
+   _NOTE: this is a one-time operation. Once you have created your publisher, the mint address is recorded in your `config.yaml`_.
+1. Create the app NFT
+   ```
+   npx dapp-store create app -k <path_to_your_keypair>
+   ```
+   _NOTE: this is a one-time operation. Once you have created your app, the mint address is recorded in your `config.yaml`_.
+1. Create the release NFT
+   ```
+   npx dapp-store create release -k <path_to_your_keypair> -b <path_to_your_android_sdk_build_tools> <release_version>
+   ```
+   _NOTE: this will be repeated each time you have a new version to release. The mint address of the latest release is recorded in your `config.yaml`_.
+
+### Submit your dApp
+After minting a compelte set of NFTs (publisher, app, and release) to represent your app on-chain, you may choose to submit them to the Solana dApp Publisher Portal, as a candidate for inclusion in the Solana dApp Store catalog.
+```
+npx dapp-store publish submit -k <path_to_your_keypair> --requestor-is-authorized --complies-with-solana-dapp-store-policies
+```
+After submitting, please check the email address specified in the `publisher` section of `config.yaml`; you will receive correspondence from the Solana dApp Publisher Portal to that account.
+
+### What files should I commit to source control?
+You should source control `.asset-manifest.json`, `config.yaml`, and any other files you would like to store alongside the publishing configuration (for e.g., icon and screenshot media files). These files should be committed each time you mint new NFT(s) for your app; the history of these files will serve as a record of all the NFTs ever minted to represent your app.
+
+**IMPORTANT: Do NOT commit your keypair directly to source control. If your CI/CD environment has the capability to manage secrets, you can use this to manage and deploy the keypair for use in your publishing workflow.**
+
+## Updating your dApp
+To submit an update for your dApp to the Solana dApp Publisher Portal:
+1. Edit the `release` and `solana_mobile_dapp_publisher_portal` sections of your `config.yaml` to reflect any changes
+1. Repeat the "Create the release NFT" step from the [Mint the NFTs](#mint-the-nfts) section
+1. Submit the update to the Solana dApp Publisher Portal
+   ```
+   npx dapp-store publish update -k <path_to_your_keypair> --requestor-is-authorized --complies-with-solana-dapp-store-policies
+   ```
+
+## Support and feedback
+In the **PILOT** phase, support will be provided via direct communications with Solana Mobile. Please see the details of your invitation for details of how to get in touch.

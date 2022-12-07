@@ -21,6 +21,7 @@
 
 - Node 16+
 - PNPM
+- Android SDK build tools
 
 If you have Node 16+, you can [activate PNPM with Corepack](https://pnpm.io/installation#using-corepack):
 
@@ -34,6 +35,8 @@ Corepack requires a version to enable, so if you don't have [jq](https://stedola
 ```shell
 corepack prepare pnpm@7.13.4 --activate
 ```
+
+You must have the Android SDK build tools available for use by the `dapp-store` CLI. If you have Android Studio, these tools are available as part of that installation (for e.g., on MacOS, they can be found in ~/Library/Android/sdk/build-tools/<version>). If you do not have Android Studio installed, or wish to use a standalone version of the Android SDK build tools, please follow the instructions [here](https://developer.android.com/studio/intro/update#sdk-manager).
 
 ## Usage
 
@@ -73,10 +76,10 @@ Publishers, applications, and releases on the Saga Dapp Store are all represente
 
 A typical publishing flow might look like:
 
-1. Create a publisher (`dapp-store create publisher`)
-2. Create an app (`dapp-store create app`)
-3. Create a release (`dapp-store create release`)
-4. Submit an app for review (`dapp-store submit-for-review`)
+1. Create a publisher (`dapp-store create publisher ...`)
+2. Create an app (`dapp-store create app ...`)
+3. Create a release (`dapp-store create release ...`)
+4. Submit an app for review (`dapp-store publish submit ...`)
 
 Repeat steps 3. and 4. as needed!
 
