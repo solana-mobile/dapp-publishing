@@ -72,7 +72,7 @@ export const getConfigFile = async (
     );
   }
 
-  const publisherIcon = config.publisher.media.find(
+  const publisherIcon = config.publisher.media?.find(
     (asset: any) => asset.purpose === "icon"
   )?.uri;
   if (publisherIcon) {
@@ -84,7 +84,7 @@ export const getConfigFile = async (
     );
   }
 
-  const appIcon = config.app.media.find(
+  const appIcon = config.app.media?.find(
     (asset: any) => asset.purpose === "icon"
   )?.uri;
   if (appIcon) {

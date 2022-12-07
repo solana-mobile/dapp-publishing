@@ -28,7 +28,7 @@ export const validateCommand = async ({
 
   const publisherJson = createPublisherJson(publisherDetails);
   if (typeof publisherJson.image !== "string") {
-    publisherJson.image = (publisherJson.image as MetaplexFile).fileName;
+    publisherJson.image = (publisherJson.image as MetaplexFile)?.fileName;
   }
   debug(JSON.stringify({ publisherJson }, null, 2));
 
@@ -41,7 +41,7 @@ export const validateCommand = async ({
 
   const appJson = createAppJson(appDetails, signer.publicKey);
   if (typeof appJson.image !== "string") {
-    appJson.image = (appJson.image as MetaplexFile).fileName;
+    appJson.image = (appJson.image as MetaplexFile)?.fileName;
   }
   debug(JSON.stringify({ appJson }, null, 2));
 
