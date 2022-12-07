@@ -12,7 +12,7 @@ export const createPublisherJson = (
   publisher: Publisher
 ): PublisherMetadata => {
   const publisherMetadata = {
-    schema_version: "0.2.3",
+    schema_version: "0.2.4",
     name: publisher.name,
     image: publisher.icon!,
     external_url: publisher.website,

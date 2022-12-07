@@ -25,6 +25,7 @@ export type AndroidDetails = {
   android_package: string;
   min_sdk: number;
   version_code: number;
+  version: string;
   permissions: string[];
   locales: string[];
 };
@@ -56,7 +57,6 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 export type Release = {
   address: string;
-  version: string;
   media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
   files: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["files"];
   android_details: AndroidDetails;
@@ -66,7 +66,7 @@ export type Release = {
       short_description: string;
       long_description: string;
       new_in_version: string;
-      saga_features_localized: string;
+      saga_features: string;
     };
   };
 };

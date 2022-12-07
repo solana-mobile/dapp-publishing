@@ -74,7 +74,7 @@ export const createReleaseJson = async (
 ): Promise<MetaplexFileReleaseJsonMetadata> => {
   const truncatedAppMintAddress = truncateAddress(appDetails.address);
 
-  const releaseName = `${Object.values(releaseDetails.catalog)[0].name} ${releaseDetails.version}`;
+  const releaseName = `${Object.values(releaseDetails.catalog)[0].name} ${releaseDetails.android_details.version}`;
 
   const media = [];
   debug({ media: releaseDetails.media });
@@ -89,7 +89,7 @@ export const createReleaseJson = async (
   }
 
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
-    schema_version: "0.2.3",
+    schema_version: "0.2.4",
     name: releaseName,
     description: Object.values(releaseDetails.catalog)[0].short_description,
     // TODO(jon): Figure out where to get this image
@@ -112,7 +112,6 @@ export const createReleaseJson = async (
           contact: publisherDetails.email,
         },
         release_details: {
-          version: releaseDetails.version,
           updated_on: new Date().toISOString(),
           license_url: appDetails.urls.license_url,
           copyright_url: appDetails.urls.copyright_url,
@@ -121,7 +120,7 @@ export const createReleaseJson = async (
             short_description: "1",
             long_description: "2",
             new_in_version: "3",
-            saga_features_localized: "4",
+            saga_features: "4",
             name: "5",
           },
         },
@@ -140,7 +139,7 @@ export const createReleaseJson = async (
       "1": strings.short_description,
       "2": strings.long_description,
       "3": strings.new_in_version,
-      "4": strings.saga_features_localized,
+      "4": strings.saga_features,
       "5": strings.name,
     };
   }

@@ -1,3 +1,8 @@
+## 0.2.4
+
+- Rename `saga_features_localized` to `saga_features`
+- Move `version` field from top level of release NFT to the `android_details` section, and derive it from the APK
+
 ## 0.2.3
 
 - Remove `description` from Publisher & App "Collection" JSON schemas

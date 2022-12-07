@@ -57,9 +57,6 @@
             "release_details": {
               "type": "object",
               "properties": {
-                "version": {
-                  "type": "string"
-                },
                 "updated_on": {
                   "type": "string"
                 },
@@ -81,7 +78,7 @@
                     "new_in_version": {
                       "type": "string"
                     },
-                    "saga_features_localized": {
+                    "saga_features": {
                       "type": "string"
                     },
                     "name": {
@@ -92,7 +89,6 @@
                 }
               },
               "required": [
-                "version",
                 "updated_on",
                 "license_url",
                 "copyright_url",
@@ -154,6 +150,9 @@
                 "version_code": {
                   "type": "integer"
                 },
+                "version": {
+                  "type": "string"
+                },
                 "min_sdk": {
                   "type": "integer"
                 },
@@ -173,6 +172,7 @@
               "required": [
                 "android_package",
                 "version_code",
+                "version",
                 "min_sdk",
                 "permissions",
                 "locales"

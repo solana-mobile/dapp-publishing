@@ -98,7 +98,7 @@ async function main() {
     });
 
   createCommand
-    .command("release <version>")
+    .command("release")
     .description("Create a release")
     .requiredOption(
       "-k, --keypair <path-to-keypair-file>",
@@ -114,11 +114,7 @@ async function main() {
       "-b, --build-tools-path <build-tools-path>",
       "Path to Android build tools which contains AAPT2"
     )
-    .action(
-      async (
-        version,
-        { appMintAddress, keypair, url, dryRun, buildToolsPath }
-      ) => {
+    .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
         const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
 
         let buildTools = "";
@@ -150,7 +146,6 @@ async function main() {
         if (signer) {
           const result = await createReleaseCommand({
             appMintAddress: appMintAddress,
-            version,
             buildToolsPath: buildTools,
             signer,
             url,

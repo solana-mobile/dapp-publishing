@@ -130,7 +130,7 @@ release:
         Some wonderful release notes, in long-form
       new_in_version: |
         Something new in this version
-      saga_features_localized: |
+      saga_features: |
         Some information about saga specific features
 solana_mobile_dapp_publisher_portal:
   google_store_package: com.company.dapp.otherpkg
