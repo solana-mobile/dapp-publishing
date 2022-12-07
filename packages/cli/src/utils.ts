@@ -1,16 +1,16 @@
+import fs from "fs";
 import type {
   AndroidDetails,
   App,
   Publisher,
   Release,
-  SolanaMobileDappPublisherPortal,
 } from "@solana-mobile/dapp-publishing-tools";
-import { Keypair } from "@solana/web3.js";
 import type { Connection } from "@solana/web3.js";
+import type { CLIConfig } from "./config/index.js";
 
-import fs from "fs";
+import { Keypair } from "@solana/web3.js";
 import debugModule from "debug";
-import { dump, load } from "js-yaml";
+import { dump } from "js-yaml";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
@@ -22,6 +22,7 @@ import {
 } from "@metaplex-foundation/js";
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
+import { getConfig } from "./config/index.js";
 
 const runExec = util.promisify(exec);
 
@@ -49,29 +50,21 @@ const AaptPrefixes = {
   localePrefix: "locales: ",
 };
 
-// TODO: Add version number return here
-interface CLIConfig {
-  publisher: Publisher;
-  app: App;
-  release: Release;
-  solana_mobile_dapp_publisher_portal: SolanaMobileDappPublisherPortal;
-}
-
 export const getConfigFile = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/config.yaml`;
-  const configFile = fs.readFileSync(configFilePath, "utf-8");
+
+  const config = await getConfig(configFilePath);
 
   console.info(`Pulling details from ${configFilePath}`);
 
-  const config = load(configFile) as CLIConfig;
-
-  if (buildToolsDir && buildToolsDir.length > 0) {
-    //TODO: Currently assuming the first file is the APK; should actually filter for the "install" entry
-
-    const apkSrc = config.release.files[0].uri;
-    const apkPath = path.join(process.cwd(), "files", apkSrc);
+  if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
+    // We validate that the config is going to have at least one installable asset
+    const apkEntry = config.release.files.find(
+      (asset) => asset.purpose === "install"
+    )!;
+    const apkPath = path.join(process.cwd(), "files", apkEntry?.uri);
 
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
@@ -100,7 +93,6 @@ export const getConfigFile = async (
     config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
   }
 
-  // TODO(jon): Verify the contents of the YAML file
   return config;
 };
 

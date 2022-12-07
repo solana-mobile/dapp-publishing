@@ -29,7 +29,6 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   }
 
   // If a path is specified in a .env file, use that
-  dotenv.config();
   if (process.env.ANDROID_TOOLS_DIR !== undefined) {
     return process.env.ANDROID_TOOLS_DIR;
   }

@@ -38,6 +38,7 @@
   "dependencies": {
     "@solana-mobile/dapp-publishing-tools": "workspace:^0.1.0",
     "@solana/web3.js": "1.68.0",
+    "ajv": "^8.11.0",
     "commander": "^9.4.1",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",

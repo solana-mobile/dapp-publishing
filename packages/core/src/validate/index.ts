@@ -1,18 +1,18 @@
-import { MetaplexFile } from "@metaplex-foundation/js";
-
+import fs from "fs";
 import Ajv from "ajv";
-// eslint-disable-next-line require-extensions/require-extensions
-import publisherSchema from "./schemas/publisherJsonMetadata.json";
-// eslint-disable-next-line require-extensions/require-extensions
-import appSchema from "./schemas/appJsonMetadata.json";
-// eslint-disable-next-line require-extensions/require-extensions
-import releaseSchema from "./schemas/releaseJsonMetadata.json";
 
 import type {
   AppMetadata,
   PublisherMetadata,
   ReleaseJsonMetadata,
 } from "../types.js";
+
+// eslint-disable-next-line require-extensions/require-extensions
+import publisherSchema from "./schemas/publisherJsonMetadata.json";
+// eslint-disable-next-line require-extensions/require-extensions
+import appSchema from "./schemas/appJsonMetadata.json";
+// eslint-disable-next-line require-extensions/require-extensions
+import releaseSchema from "./schemas/releaseJsonMetadata.json";
 
 export const validatePublisher = (publisherJson: PublisherMetadata) => {
   const jsonToValidate = { ...publisherJson };
