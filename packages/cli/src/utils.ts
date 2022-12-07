@@ -102,10 +102,7 @@ export const getConfigFile = async (
       return config;
     }
 
-    config.publisher.icon = toMetaplexFile(
-      iconBuffer,
-      path.join("media", publisherIcon)
-    );
+    config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
   }
 
   const appIcon = config.app.media?.find(
@@ -131,7 +128,7 @@ export const getConfigFile = async (
       return config;
     }
 
-    config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
+    config.app.icon = toMetaplexFile(iconBuffer, appIcon);
   }
 
   config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
