@@ -13,6 +13,7 @@ import { BundlrStorageDriver, keypairIdentity, Metaplex, toMetaplexFile } from "
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 import { imageSize } from "image-size";
+import * from "path";
 
 const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
@@ -74,8 +75,8 @@ export const getConfigFile = async (
   )?.uri;
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
-    if (!fs.existsSync(iconPath)) {
-      showUserErrorMessage("Invalid path to Publisher icon file.");
+    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
+      showUserErrorMessage("Please check the path to your Publisher icon ensure the file is a jpeg, png, or webp file.");
       config.isValid = false;
       return config;
     }
@@ -99,8 +100,8 @@ export const getConfigFile = async (
   )?.uri;
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
-    if (!fs.existsSync(iconPath)) {
-      showUserErrorMessage("Invalid path to App icon file.");
+    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
+      showUserErrorMessage("Please check the path to your App icon ensure the file is a jpeg, png, or webp file.");
       config.isValid = false;
       return config;
     }
@@ -118,14 +119,19 @@ export const getConfigFile = async (
 
   config.release.media.forEach((item) => {
     const imagePath = path.join(process.cwd(), item.uri);
-    if (!fs.existsSync(imagePath)) {
-      showUserErrorMessage(`Invalid media path: ${item.uri}`);
+    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath) ) {
+      showUserErrorMessage(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
       config.isValid = false;
       return config;
     }
   });
 
   return config;
+};
+
+const checkImageExtension = (uri: string): boolean => {
+  const fileExt = path.extname(uri).toLowerCase();
+  return fileExt == ".png" || fileExt == ".jpg" || fileExt == ".jpeg" || fileExt == ".webp";
 };
 
 export const showUserErrorMessage = (msg: string) => {
