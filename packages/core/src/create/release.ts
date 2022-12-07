@@ -74,7 +74,7 @@ export const createReleaseJson = async (
 ): Promise<MetaplexFileReleaseJsonMetadata> => {
   const truncatedAppMintAddress = truncateAddress(appDetails.address);
 
-  const releaseName = `${truncatedAppMintAddress} ${releaseDetails.version}`;
+  const releaseName = `${Object.values(releaseDetails.catalog)[0].name} ${releaseDetails.version}`;
 
   const media = [];
   debug({ media: releaseDetails.media });
