@@ -1,10 +1,5 @@
 import fs from "fs";
-import type {
-  AndroidDetails,
-  App,
-  Publisher,
-  Release,
-} from "@solana-mobile/dapp-store-publishing-tools";
+import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-store-publishing-tools";
 import type { Connection } from "@solana/web3.js";
 import { Keypair } from "@solana/web3.js";
 import type { CLIConfig } from "./config/index.js";
@@ -14,12 +9,7 @@ import { dump } from "js-yaml";
 import * as util from "util";
 import { exec } from "child_process";
 import * as path from "path";
-import {
-  BundlrStorageDriver,
-  keypairIdentity,
-  Metaplex,
-  toMetaplexFile,
-} from "@metaplex-foundation/js";
+import { BundlrStorageDriver, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
 import { imageSize } from "image-size";
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
@@ -53,11 +43,10 @@ const AaptPrefixes = {
 
 export const getConfigFile = async (
   buildToolsDir: string | null = null
-): Promise<CLIConfig & { isValid: boolean }> => {
+): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/config.yaml`;
 
   const config = await getConfig(configFilePath);
-  config.isValid = true;
 
   console.info(`Pulling details from ${configFilePath}`);
 
@@ -68,9 +57,7 @@ export const getConfigFile = async (
     )!;
     const apkPath = path.join(process.cwd(), apkEntry?.uri);
     if (!fs.existsSync(apkPath)) {
-      showUserErrorMessage("Invalid path to APK file.");
-      config.isValid = false;
-      return config;
+      throw new Error("Invalid path to APK file.");
     }
 
     config.release.android_details = await getAndroidDetails(
@@ -85,21 +72,13 @@ export const getConfigFile = async (
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      showUserErrorMessage(
-        "Please check the path to your Publisher icon ensure the file is a jpeg, png, or webp file."
-      );
-      config.isValid = false;
-      return config;
+      throw new Error("Please check the path to your Publisher icon and ensure the file is a jpeg, png, or webp file.");
     }
 
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
-      showUserErrorMessage(
-        "Icons must have square dimensions and be no greater than 512px by 512px."
-      );
-      config.isValid = false;
-      return config;
+      throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
     }
 
     config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
@@ -111,21 +90,13 @@ export const getConfigFile = async (
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      showUserErrorMessage(
-        "Please check the path to your App icon ensure the file is a jpeg, png, or webp file."
-      );
-      config.isValid = false;
-      return config;
+      throw new Error("Please check the path to your App icon and ensure the file is a jpeg, png, or webp file.")
     }
 
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
-      showUserErrorMessage(
-        "Icons must have square dimensions and be no greater than 512px by 512px."
-      );
-      config.isValid = false;
-      return config;
+      throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
     }
 
     config.app.icon = toMetaplexFile(iconBuffer, appIcon);
@@ -134,11 +105,7 @@ export const getConfigFile = async (
   config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
     const imagePath = path.join(process.cwd(), item.uri);
     if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
-      showUserErrorMessage(
-        `Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`
-      );
-      config.isValid = false;
-      return config;
+      throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`)
     }
   });
 
@@ -244,7 +211,6 @@ export const saveToConfig = async ({
     },
     solana_mobile_dapp_publisher_portal:
       currentConfig.solana_mobile_dapp_publisher_portal,
-    isValid: currentConfig.isValid,
   };
 
   // TODO(jon): Verify the contents of the YAML file
