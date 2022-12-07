@@ -83,10 +83,10 @@ export const createReleaseJson = async (
     files.push(await getFileMetadata("files", item));
   }
 
-  const releaseMetadata = {
+  const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
     schema_version: "0.2.3",
     name: releaseName,
-    description: releaseDetails.catalog["en-US"].new_in_version,
+    description: Object.values(releaseDetails.catalog)[0].short_description,
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: appDetails.urls.website,
@@ -120,23 +120,26 @@ export const createReleaseJson = async (
             name: "5",
           },
         },
+        // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
         media,
+        // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.files.uri type
         files,
         android_details: releaseDetails.android_details,
       },
-      i18n: {
-        "en-US": {
-          "1": releaseDetails.catalog["en-US"].short_description,
-          "2": releaseDetails.catalog["en-US"].long_description,
-          "3": releaseDetails.catalog["en-US"].new_in_version,
-          "4": releaseDetails.catalog["en-US"].saga_features_localized,
-          "5": releaseDetails.catalog["en-US"].name,
-        },
-      },
+      i18n: {}
     },
   };
 
-  // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
+  for (const [ locale, strings ] of Object.entries(releaseDetails.catalog)) {
+    releaseMetadata.extensions.i18n[locale] = {
+      "1": strings.short_description,
+      "2": strings.long_description,
+      "3": strings.new_in_version,
+      "4": strings.saga_features_localized,
+      "5": strings.name,
+    };
+  }
+
   return releaseMetadata;
 };
 
