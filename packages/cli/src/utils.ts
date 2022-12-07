@@ -81,10 +81,7 @@ export const getConfigFile = async (
       throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
     }
 
-    config.publisher.icon = toMetaplexFile(
-      iconBuffer,
-      path.join("media", publisherIcon)
-    );
+    config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
   }
 
   const appIcon = config.app.media?.find(
@@ -102,7 +99,7 @@ export const getConfigFile = async (
       throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
     }
 
-    config.app.icon = toMetaplexFile(iconBuffer, path.join("media", appIcon));
+    config.app.icon = toMetaplexFile(iconBuffer, appIcon);
   }
 
   config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
