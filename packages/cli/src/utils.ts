@@ -56,7 +56,7 @@ export const getConfigFile = async (
     const apkEntry = config.release.files.find(
       (asset) => asset.purpose === "install"
     )!;
-    const apkPath = path.join(process.cwd(), "files", apkEntry?.uri);
+    const apkPath = path.join(process.cwd(), apkEntry?.uri);
 
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
@@ -68,7 +68,7 @@ export const getConfigFile = async (
     (asset: any) => asset.purpose === "icon"
   )?.uri;
   if (publisherIcon) {
-    const iconPath = path.join(process.cwd(), "media", publisherIcon);
+    const iconPath = path.join(process.cwd(), publisherIcon);
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {
@@ -87,7 +87,7 @@ export const getConfigFile = async (
     (asset: any) => asset.purpose === "icon"
   )?.uri;
   if (appIcon) {
-    const iconPath = path.join(process.cwd(), "media", appIcon);
+    const iconPath = path.join(process.cwd(), appIcon);
     const iconBuffer = await fs.promises.readFile(iconPath);
 
     if (await checkIconDimensions(iconPath)) {

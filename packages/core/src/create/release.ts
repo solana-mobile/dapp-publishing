@@ -23,8 +23,8 @@ type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 type File = ArrayElement<Release["files"]>;
 type Media = ArrayElement<Release["media"]>;
 
-const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
-  const file = path.join(process.cwd(), type, item.uri);
+const getFileMetadata = async (item: Media | File) => {
+  const file = path.join(process.cwd(), item.uri);
   debug({ file });
   // TODO(jon): This stuff should be probably be in `packages/cli`
   const mediaBuffer = await fs.promises.readFile(file);
@@ -32,7 +32,7 @@ const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
   const metadata = {
     purpose: item.purpose,
-    uri: toMetaplexFile(mediaBuffer, path.join(type, item.uri)),
+    uri: toMetaplexFile(mediaBuffer, item.uri),
     mime: mime.getType(item.uri) || "",
     size,
     sha256: hash,
@@ -42,7 +42,7 @@ const getFileMetadata = async (type: "media" | "files", item: Media | File) => {
 };
 
 const getMediaMetadata = async (item: Media) => {
-  const metadata = await getFileMetadata("media", item);
+  const metadata = await getFileMetadata(item);
   return {
     ...metadata,
     width: item.width,
@@ -80,7 +80,7 @@ export const createReleaseJson = async (
   const files = [];
   debug({ files: releaseDetails.files });
   for await (const item of releaseDetails.files) {
-    files.push(await getFileMetadata("files", item));
+    files.push(await getFileMetadata(item));
   }
 
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
