@@ -119,16 +119,10 @@ async function main() {
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
         try {
-          const toolsEnvDir = process.env.ANDROID_TOOLS_DIR ?? "";
-
-          let buildTools = "";
-          if (toolsEnvDir && toolsEnvDir.length > 0) {
-            buildTools = toolsEnvDir;
-          } else if (buildToolsPath) {
-            buildTools = buildToolsPath;
-          } else {
+          const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
+          if (resolvedBuildToolsPath === undefined) {
             showUserErrorMessage(
-              "\n\n::: Please specify an Android build tools directory in the .env file or via the command line argument. :::\n\n"
+              "Please specify an Android build tools directory in the .env file or via the command line argument."
             );
             createCommand.showHelpAfterError();
             return;
@@ -149,7 +143,7 @@ async function main() {
           if (signer) {
             const result = await createReleaseCommand({
               appMintAddress: appMintAddress,
-              buildToolsPath: buildTools,
+              buildToolsPath: resolvedBuildToolsPath,
               signer,
               url,
               dryRun,
