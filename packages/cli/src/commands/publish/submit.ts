@@ -36,6 +36,7 @@ export const publishSubmitCommand = async ({
   const connection = new Connection(url);
   const {
     publisher: publisherDetails,
+    release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigFile();
   const sign = ((buf: Buffer) =>
@@ -44,7 +45,7 @@ export const publishSubmitCommand = async ({
   await publishSubmit(
     { connection, sign },
     {
-      releaseMintAddress,
+      releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
       publisherDetails,
       solanaMobileDappPublisherPortalDetails,
       compliesWithSolanaDappStorePolicies,

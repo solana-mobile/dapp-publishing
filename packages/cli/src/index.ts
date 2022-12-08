@@ -228,7 +228,7 @@ async function main() {
         try {
           const config = await getConfigFile();
 
-          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+          if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
               "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
             );
@@ -293,7 +293,7 @@ async function main() {
         try {
           const config = await getConfigFile();
 
-          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+          if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
               "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
             );
@@ -355,7 +355,7 @@ async function main() {
         try {
           const config = await getConfigFile();
 
-          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+          if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
               "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
             );
@@ -411,7 +411,7 @@ async function main() {
         try {
           const config = await getConfigFile();
 
-          if (!hasAddressInConfig(config.publisher) && !releaseMintAddress) {
+          if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
               "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
             );

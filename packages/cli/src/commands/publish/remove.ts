@@ -29,14 +29,17 @@ export const publishRemoveCommand = async ({
   }
 
   const connection = new Connection(url);
-  const { publisher: publisherDetails } = await getConfigFile();
+  const {
+    publisher: publisherDetails,
+    release: releaseDetails,
+  } = await getConfigFile();
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
   await publishRemove(
     { connection, sign },
     {
-      releaseMintAddress,
+      releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
       publisherDetails,
       requestorIsAuthorized,
       criticalUpdate: critical,
