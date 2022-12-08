@@ -11,7 +11,6 @@
   - S3 URL -->
 - when we run the release, SHA hash the previous files and commit to an `.asset-cache`
 
-
 ## Publishing Notes
 
 - https://developer.android.com/guide/topics/resources/multilingual-support#specify-the-languages-your-app-supports
@@ -36,23 +35,29 @@ Corepack requires a version to enable, so if you don't have [jq](https://stedola
 corepack prepare pnpm@7.13.4 --activate
 ```
 
-## Setup
-
-```shell
-git clone https://github.com/solana-mobile/app-publishing-spec
-cd app-publishing-spec
-pnpm install
-pnpm run build
-pnpm link .
-```
-
 ## Usage
 
 In your application folder (e.g., `example`):
 
 ```shell
 cd example
-pnpm link <path-to-app-publishing-spec>/packages/cli
+pnpm install --save-dev @solana-mobile/dapp-store-cli
+npx dapp-store --help
+```
+
+or with `yarn`
+
+```shell
+cd example
+yarn add @solana-mobile/dapp-store-cli
+yarn run dapp-store --help
+```
+
+or with `npm`
+
+```shell
+cd example
+npm install --save-dev @solana-mobile/dapp-store-cli
 npx dapp-store --help
 ```
 
@@ -139,4 +144,3 @@ solana_mobile_dapp_publisher_portal:
     can specify multiple lines of instructions. For example, if a login is
     needed, you would add those details here.
 ```
-
