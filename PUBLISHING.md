@@ -6,7 +6,7 @@ The Solana dApp Store is currently in the **PILOT** phase, and only accepting su
 ## Overview
 Publishing a dApp to the Solana dApp Store involves two steps:
 1. Create a set of NFTs describing the app, publisher, and release on-chain
-1. Submit a request to the Solana dApp Store publisher portal requesting that Solana Mobile process the dApp's release NFT
+1. Submit a request to the Solana dApp Store publisher portal requesting that Solana Mobile team review the dApp's release NFT
 
 The publishing tool is designed for CI/CD usage - all steps, including submitting publish portal requests, can be integrated into your app release workflows. All files used during the NFT creation and publishing request submission steps can be committed to source control.
 
@@ -51,7 +51,6 @@ It is recommended that you put your dApp publishing files next to your app, and 
          uri: [[RELATIVE_PATH_TO_APP_ICON]] # for e.g., media/app_icon.png
    release:
      address: _ # will be replaced with the release NFT account address
-     version: '[[RELEASE_VERSION]]'
      catalog:
        en:
          name: >-
@@ -62,15 +61,13 @@ It is recommended that you put your dApp publishing files next to your app, and 
            [[LONG_APP_DESCRIPTION]]
          new_in_version: >-
            [[WHATS_NEW_IN_THIS_VERSION]]
-         saga_features_localized: >- # optional
+         saga_features: >- # this property may be blank if there are no Saga-specific features
            [[ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA]]
      media:
        - purpose: icon
          uri: [[RELATIVE_PATH_TO_APP_ICON]] # for e.g., media/app_icon.png
        - purpose: screenshot
          uri: [[RELATIVE_PATH_TO_SCREENSHOT]] # for e.g., media/app_screenshot_1.png
-         width: 1080 # (optional) if you want this asset displayed at other than it's native width
-         height: 1920 # (optional) same, but for native height
        # Add more media files here
      files:
        - purpose: install
@@ -83,22 +80,23 @@ It is recommended that you put your dApp publishing files next to your app, and 
    ```
    Replace all fields in `[[ ]]` with details for your dApp. Remove any fields that don't apply (for e.g., `saga_features_localized`, `google_store_package`, etc).
 1. \[Optional\] Localize strings within `config.yaml` for all desired locales.
-   Anywhere there is a string in `config.yaml` with an `en` key, you can provide additional localizations. For e.g.,
+   Anywhere there is a string in `config.yaml` with an `en` key, you can provide additional localizations. For e.g., here's how you'd localize the strings for French (France):
    ```
-   release: {
-     ...
-     catalog: {
-       ...
-       fr-FR: {
-         ...
+   release:
+     catalog:
+       fr-FR:
          name: >-
            [[NAME_OF_APP_IN_FRENCH_(FRANCE)]]
-         ...
-       }
-       ...
-     }
-   }
+         short_description: >-
+           [[SHORT_APP_DESCRIPTION_IN_FRENCH_(FRANCE)]]
+         long_description: >-
+           [[LONG_APP_DESCRIPTION_IN_FRENCH_(FRANCE)]]
+         new_in_version: >-
+           [[WHATS_NEW_IN_THIS_VERSION_IN_FRENCH_(FRANCE)]]
+         saga_features: >-
+           [[ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA_IN_FRENCH_(FRANCE)]]
    ```
+   A tip: make sure that your app is also localized properly, and that your build.gradle file identifies the languages & locales that your app supports. See [the Android developer documentation](https://developer.android.com/guide/topics/resources/multilingual-support#specify-the-languages-your-app-supports) for more details.
 
 ### Create a keypair for your dapp
 **IMPORTANT: this keypair is a critical secret for your dApp. Whomever possesses it is able to create new releases of your dApp and submit them to the Solana dApp Store. It should be safeguarded with appropriate technical measures.**
@@ -135,12 +133,15 @@ Release JSON valid!
    ```
    _NOTE: this will be repeated each time you have a new version to release. The mint address of the latest release is recorded in your `config.yaml`_.
 
+#### Again, but for real this time
+By default, the above commands will mint the NFTs on **devnet**. After you've tested it there, repeat the above process, adding `-u https://api.mainnet-beta.solana.com` to each `npx dapp-store create ...` command.
+
 ### Submit your dApp
-After minting a compelte set of NFTs (publisher, app, and release) to represent your app on-chain, you may choose to submit them to the Solana dApp Publisher Portal, as a candidate for inclusion in the Solana dApp Store catalog.
+After minting a complete set of NFTs (publisher, app, and release) to represent your app on-chain, you may choose to submit them to the Solana dApp Publisher Portal, as a candidate for inclusion in the Solana dApp Store catalog.
 ```
-npx dapp-store publish submit -k <path_to_your_keypair> --requestor-is-authorized --complies-with-solana-dapp-store-policies
+npx dapp-store publish submit -k <path_to_your_keypair> -u https://api.mainnet-beta.solana.com --requestor-is-authorized --complies-with-solana-dapp-store-policies
 ```
-After submitting, please check the email address specified in the `publisher` section of `config.yaml`; you will receive correspondence from the Solana dApp Publisher Portal to that account.
+The two flags for this command (`--requestor-is-authorized` and `--complies-with-solana-dapp-store-policies`) are attestations from the requestor that this dApp is compliant with Solana dApp Store policies, and that they are authorized to submit this request to the Solana dApp Publisher Portal. After submitting, please check the email address specified in the `publisher` section of `config.yaml`; you will receive correspondence from the Solana dApp Publisher Portal to that account.
 
 ### What files should I commit to source control?
 You should source control `.asset-manifest.json`, `config.yaml`, and any other files you would like to store alongside the publishing configuration (for e.g., icon and screenshot media files). These files should be committed each time you mint new NFT(s) for your app; the history of these files will serve as a record of all the NFTs ever minted to represent your app.
@@ -153,8 +154,8 @@ To submit an update for your dApp to the Solana dApp Publisher Portal:
 1. Repeat the "Create the release NFT" step from the [Mint the NFTs](#mint-the-nfts) section
 1. Submit the update to the Solana dApp Publisher Portal
    ```
-   npx dapp-store publish update -k <path_to_your_keypair> --requestor-is-authorized --complies-with-solana-dapp-store-policies
+   npx dapp-store publish update -k <path_to_your_keypair> -u https://api.mainnet-beta.solana.com --requestor-is-authorized --complies-with-solana-dapp-store-policies
    ```
 
 ## Support and feedback
-In the **PILOT** phase, support will be provided via direct communications with Solana Mobile. Please see the details of your invitation for details of how to get in touch.
+In the **PILOT** phase, support will be provided via direct communications with the Solana Mobile team. Please see the details of your invitation for details of how to get in touch.

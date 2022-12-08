@@ -36,7 +36,10 @@ Corepack requires a version to enable, so if you don't have [jq](https://stedola
 corepack prepare pnpm@7.13.4 --activate
 ```
 
-You must have the Android SDK build tools available for use by the `dapp-store` CLI. If you have Android Studio, these tools are available as part of that installation (for e.g., on MacOS, they can be found in ~/Library/Android/sdk/build-tools/<version>). If you do not have Android Studio installed, or wish to use a standalone version of the Android SDK build tools, please follow the instructions [here](https://developer.android.com/studio/intro/update#sdk-manager).
+You must have the Android SDK build tools available for use by the `dapp-store` CLI. If you have Android Studio, these tools are available as part of that installation (for e.g., on MacOS, they can be found in ~/Library/Android/sdk/build-tools/<version>). If you do not have Android Studio installed, or wish to use a standalone version of the Android SDK build tools, please follow the instructions [here](https://developer.android.com/studio/intro/update#sdk-manager). The path to the SDK build tools can be provided either directly to subcommands that require it with the `-b` option, or indirectly via a `.env` file:
+```
+echo "ANDROID_TOOLS_DIR=<path_to_android_sdk_build_tools_dir>" > .env
+```
 
 ## Usage
 
@@ -85,12 +88,7 @@ Repeat steps 3. and 4. as needed!
 
 ## Editor's Note
 
-The `dapp-store` CLI:
-
-- takes an opinionated approach to file structure optimizing for source control
-- handles rote tasks like uploading assets to immutable file storage and i18n
-
-However, it is by no means the only way to create these NFTs—all information about the requirements are specified in this repository, and the packages have been designed to be portable to other client contexts besides the CLI
+The `dapp-store` CLI handles rote tasks like uploading assets to immutable file storage and i18n. However, it is by no means the only way to create these NFTs—all information about the requirements are specified in this repository, and the packages have been designed to be portable to other client contexts besides the CLI.
 
 ## Configuration
 
@@ -109,8 +107,6 @@ app:
   name: My new app name
   address: 4xE4MDVHfFAXMKKzqrJ2v1HxcgYgdoV98nuvd8SRKhWP
   android_package: com.company.dapp
-  creators:
-    - 7pF18kRbv4mWdLPNMa8CjqLotQpznxzzRJqwdMibMitE
   urls:
     license_url: http://cdn.org/license.html
     copyright_url: http://cdn.org/copyright.html
@@ -120,7 +116,6 @@ app:
     - purpose: icon
       uri: ./media/app_icon.jpeg
 release:
-  version: 1.0.4
   address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
   media:
     - purpose: screenshot
