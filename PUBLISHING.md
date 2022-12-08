@@ -13,6 +13,10 @@ The publishing tool is designed for CI/CD usage - all steps, including submittin
 ## Setup
 Please follow the instructions in [README.md](packages/cli/README.md) to set up the `dapp-store` CLI tooling
 
+## RPC endpoints
+
+By default, the `dapp-store` CLI interacts with **Devnet**. This facilitates experimentation and testing, before you are ready to publish your app on Mainnet Beta. To publish to Mainnet Beta, add the `-u <mainnet_beta_rpc_url>` parameter to all commands below. If you have a private RPC URL, it is strongly recommended that you use that. If you do not yet have a private RPC URL, you can make use of the [public endpoint](https://docs.solana.com/cluster/rpc-endpoints#mainnet-beta) (but be cognizant of the rate and usage limits).
+
 ## Step-by-step walkthrough of dApp publishing
 
 ### Where do the files for my dApp go?
@@ -78,7 +82,7 @@ It is recommended that you put your dApp publishing files next to your app, and 
        [[TESTING_INSTRUCTIONS]]
    " > config.yaml
    ```
-   Replace all fields in `[[ ]]` with details for your dApp. Remove any fields that don't apply (for e.g., `saga_features_localized`, `google_store_package`, etc).
+   Replace all fields in `[[ ]]` with details for your dApp. Remove any fields that don't apply (for e.g., `saga_features`, `google_store_package`, etc).
 1. \[Optional\] Localize strings within `config.yaml` for all desired locales.
    Anywhere there is a string in `config.yaml` with an `en` key, you can provide additional localizations. For e.g., here's how you'd localize the strings for French (France):
    ```
@@ -119,27 +123,24 @@ Release JSON valid!
 ### Mint the NFTs
 1. Create the publisher NFT
    ```
-   npx dapp-store create publisher -k <path_to_your_keypair>
+   npx dapp-store create publisher -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
    ```
    _NOTE: this is a one-time operation. Once you have created your publisher, the mint address is recorded in your `config.yaml`_.
 1. Create the app NFT
    ```
-   npx dapp-store create app -k <path_to_your_keypair>
+   npx dapp-store create app -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
    ```
    _NOTE: this is a one-time operation. Once you have created your app, the mint address is recorded in your `config.yaml`_.
 1. Create the release NFT
    ```
-   npx dapp-store create release -k <path_to_your_keypair> -b <path_to_your_android_sdk_build_tools> <release_version>
+   npx dapp-store create release -k <path_to_your_keypair> -b <path_to_your_android_sdk_build_tools> [-u <mainnet_beta_rpc_url>]
    ```
    _NOTE: this will be repeated each time you have a new version to release. The mint address of the latest release is recorded in your `config.yaml`_.
-
-#### Again, but for real this time
-By default, the above commands will mint the NFTs on **devnet**. After you've tested it there, repeat the above process, adding `-u https://api.mainnet-beta.solana.com` to each `npx dapp-store create ...` command.
 
 ### Submit your dApp
 After minting a complete set of NFTs (publisher, app, and release) to represent your app on-chain, you may choose to submit them to the Solana dApp Publisher Portal, as a candidate for inclusion in the Solana dApp Store catalog.
 ```
-npx dapp-store publish submit -k <path_to_your_keypair> -u https://api.mainnet-beta.solana.com --requestor-is-authorized --complies-with-solana-dapp-store-policies
+npx dapp-store publish submit -k <path_to_your_keypair> -u <mainnet_beta_rpc_url> --requestor-is-authorized --complies-with-solana-dapp-store-policies
 ```
 The two flags for this command (`--requestor-is-authorized` and `--complies-with-solana-dapp-store-policies`) are attestations from the requestor that this dApp is compliant with Solana dApp Store policies, and that they are authorized to submit this request to the Solana dApp Publisher Portal. After submitting, please check the email address specified in the `publisher` section of `config.yaml`; you will receive correspondence from the Solana dApp Publisher Portal to that account.
 
@@ -154,7 +155,7 @@ To submit an update for your dApp to the Solana dApp Publisher Portal:
 1. Repeat the "Create the release NFT" step from the [Mint the NFTs](#mint-the-nfts) section
 1. Submit the update to the Solana dApp Publisher Portal
    ```
-   npx dapp-store publish update -k <path_to_your_keypair> -u https://api.mainnet-beta.solana.com --requestor-is-authorized --complies-with-solana-dapp-store-policies
+   npx dapp-store publish update -k <path_to_your_keypair> -u <mainnet_beta_rpc_url> --requestor-is-authorized --complies-with-solana-dapp-store-policies
    ```
 
 ## Support and feedback
