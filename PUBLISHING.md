@@ -34,7 +34,7 @@ It is recommended that you put your dApp publishing files next to your app, and 
    ```
    echo \
    "publisher:
-     address: _ # will be replaced with the publisher NFT account address
+     address: '' # will be replaced with the publisher NFT account address
      name: [[YOUR_PUBLISHER_NAME]] # (max 32 chars) This appears only when viewing the publisher NFT metadata; it is not part of the submission to the Solana dApp Store
      website: [[URL_OF_PUBLISHER_WEBSITE]]
      email: [[EMAIL_ADDRESS_TO_CONTACT_PUBLISHER]]
@@ -42,7 +42,7 @@ It is recommended that you put your dApp publishing files next to your app, and 
        - purpose: icon
          uri: [[RELATIVE_PATH_TO_PUBLISHER_ICON]] # for e.g., media/publisher_icon.png
    app:
-     address: _ # will be replaced with the app NFT account address
+     address: '' # will be replaced with the app NFT account address
      name: [[APP_NAME]] # (max 32 chars) This appears only when viewing the app NFT metadata; it is not part of the submission to the Solana dApp Store
      android_package: [[ANDROID_PACKAGE_NAME]]
      urls:
@@ -54,7 +54,7 @@ It is recommended that you put your dApp publishing files next to your app, and 
        - purpose: icon
          uri: [[RELATIVE_PATH_TO_APP_ICON]] # for e.g., media/app_icon.png
    release:
-     address: _ # will be replaced with the release NFT account address
+     address: '' # will be replaced with the release NFT account address
      catalog:
        en:
          name: >-
@@ -121,6 +121,8 @@ Release JSON valid!
 ```
 
 ### Mint the NFTs
+**IMPORTANT: when switching between clusters (e.g. Devnet and Mainnet Beta), please delete `.asset-manifest.json`. This ensures that assets are uploaded to the appropriate arweave environment.**
+
 1. Create the publisher NFT
    ```
    npx dapp-store create publisher -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
