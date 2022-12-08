@@ -51,7 +51,7 @@ async function main() {
       "-k, --keypair <path-to-keypair-file>",
       "Path to keypair file"
     )
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
       const signer = parseKeypair(keypair);
@@ -72,7 +72,7 @@ async function main() {
       "-p, --publisher-mint-address <publisher-mint-address>",
       "The mint address of the publisher NFT"
     )
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       try {
@@ -111,7 +111,7 @@ async function main() {
       "-a, --app-mint-address <app-mint-address>",
       "The mint address of the app NFT"
     )
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .option(
       "-b, --build-tools-path <build-tools-path>",
@@ -211,7 +211,7 @@ async function main() {
       "-r, --release-mint-address <release-mint-address>",
       "The mint address of the release NFT"
     )
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
       "-d, --dry-run",
       "Flag for dry run. Doesn't submit the request to the publisher portal."
@@ -275,7 +275,7 @@ async function main() {
       "The mint address of the release NFT"
     )
     .option("-c, --critical", "Flag for a critical app update request")
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
       "-d, --dry-run",
       "Flag for dry run. Doesn't submit the request to the publisher portal."
@@ -338,7 +338,7 @@ async function main() {
       "The mint address of the release NFT"
     )
     .option("-c, --critical", "Flag for a critical app removal request")
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
       "-d, --dry-run",
       "Flag for dry run. Doesn't submit the request to the publisher portal."
@@ -398,7 +398,7 @@ async function main() {
       "-r, --release-mint-address <release-mint-address>",
       "The mint address of the release NFT"
     )
-    .option("-u, --url", "RPC URL", "https://devnet.genesysgo.net")
+    .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
       "-d, --dry-run",
       "Flag for dry run. Doesn't submit the request to the publisher portal."
