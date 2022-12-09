@@ -222,8 +222,9 @@ export const getMetaplexInstance = (
   keypair: Keypair
 ) => {
   const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
+  const isDevnet = connection.rpcEndpoint.includes("devnet");
 
-  const bundlrStorageDriver = connection.rpcEndpoint.includes("devnet")
+  const bundlrStorageDriver = isDevnet
     ? new BundlrStorageDriver(metaplex, {
         address: "https://devnet.bundlr.network",
         providerUrl: "https://api.devnet.solana.com",
@@ -232,7 +233,9 @@ export const getMetaplexInstance = (
 
   metaplex.storage().setDriver(
     new CachedStorageDriver(bundlrStorageDriver, {
-      assetManifestPath: "./.asset-manifest.json",
+      assetManifestPath: isDevnet
+        ? "./.asset-manifest-devnet.json"
+        : "./.asset-manifest.json",
     })
   );
   return metaplex;
