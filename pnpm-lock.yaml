@@ -35,7 +35,7 @@ importers:
   packages/cli:
     specifiers:
       '@metaplex-foundation/js': ^0.17.1
-      '@solana-mobile/dapp-store-publishing-tools': workspace:0.1.1-1
+      '@solana-mobile/dapp-store-publishing-tools': workspace:0.1.1
       '@solana/web3.js': 1.68.0
       '@types/commander': ^2.12.2
       '@types/debug': ^4.1.7
