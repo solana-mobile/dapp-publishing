@@ -121,7 +121,6 @@ Release JSON valid!
 ```
 
 ### Mint the NFTs
-**IMPORTANT: when switching between clusters (e.g. Devnet and Mainnet Beta), please delete `.asset-manifest.json`. This ensures that assets are uploaded to the appropriate arweave environment.**
 
 1. Create the publisher NFT
    ```
