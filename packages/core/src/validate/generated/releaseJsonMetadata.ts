@@ -34,7 +34,7 @@ export interface ReleaseJsonMetadata {
         localized_resources: {
           long_description: string;
           new_in_version: string;
-          saga_features: string;
+          saga_features?: string;
           name: string;
           [k: string]: unknown;
         };
