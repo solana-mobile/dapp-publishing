@@ -1,0 +1,15 @@
+diff --git a/dist/esm/plugins/nftModule/operations/uploadMetadata.mjs b/dist/esm/plugins/nftModule/operations/uploadMetadata.mjs
+index 89c47c83d1f4b27f36461265f717dfcac4e54cc5..5311206572250f56c18e1f6c49bd404a98e1f19a 100644
+--- a/dist/esm/plugins/nftModule/operations/uploadMetadata.mjs
++++ b/dist/esm/plugins/nftModule/operations/uploadMetadata.mjs
+@@ -68,8 +68,9 @@ const replaceAssetsWithUris = (input, replacements) => {
+   walk(clone, (next, value, key, parent) => {
+     if (isMetaplexFile(value) && index < replacements.length) {
+       parent[key] = replacements[index++];
++    } else {
++      next(value);
+     }
+-    next(value);
+   });
+   return clone;
+ };
