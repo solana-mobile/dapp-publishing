@@ -1,6 +1,6 @@
 {
   "name": "@solana-mobile/dapp-store-cli",
-  "version": "0.1.1-1",
+  "version": "0.1.1",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
@@ -28,14 +28,14 @@
     "prebuild": "pnpm run clean"
   },
   "devDependencies": {
-    "@metaplex-foundation/js": "^0.17.1",
+    "@metaplex-foundation/js": "0.17.9",
     "@types/commander": "^2.12.2",
     "@types/debug": "^4.1.7",
     "@types/js-yaml": "^4.0.5",
     "shx": "^0.3.4"
   },
   "dependencies": {
-    "@solana-mobile/dapp-store-publishing-tools": "workspace:0.1.1-1",
+    "@solana-mobile/dapp-store-publishing-tools": "workspace:0.1.1",
     "@solana/web3.js": "1.68.0",
     "ajv": "^8.11.0",
     "commander": "^9.4.1",

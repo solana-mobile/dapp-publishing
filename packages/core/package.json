@@ -1,6 +1,6 @@
 {
   "name": "@solana-mobile/dapp-store-publishing-tools",
-  "version": "0.1.1-1",
+  "version": "0.1.1",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
@@ -33,7 +33,7 @@
     "shx": "^0.3.4"
   },
   "dependencies": {
-    "@metaplex-foundation/js": "^0.17.1",
+    "@metaplex-foundation/js": "0.17.9",
     "@solana/web3.js": "1.68.0",
     "ajv": "^8.11.0",
     "axios": "1.1.3",
