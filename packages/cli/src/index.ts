@@ -37,7 +37,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 async function main() {
   program
     .name("dapp-store")
-    .version("0.1.2")
+    .version("0.1.3")
     .description("CLI to assist with publishing to the Saga Dapp Store");
 
   const createCommand = program
