@@ -1,10 +1,5 @@
 lockfileVersion: 5.4
 
-patchedDependencies:
-  '@metaplex-foundation/js@0.17.9':
-    hash: qpzzrpczuufntb5glctma5x7sy
-    path: patches/@metaplex-foundation__js@0.17.9.patch
-
 importers:
 
   .:
@@ -39,7 +34,7 @@ importers:
 
   packages/cli:
     specifiers:
-      '@metaplex-foundation/js': 0.17.9
+      '@metaplex-foundation/js': 0.17.11
       '@solana-mobile/dapp-store-publishing-tools': workspace:0.1.2
       '@solana/web3.js': 1.68.0
       '@types/commander': ^2.12.2
@@ -66,7 +61,7 @@ importers:
       js-yaml: 4.1.0
       tweetnacl: 1.0.3
     devDependencies:
-      '@metaplex-foundation/js': 0.17.9_qpzzrpczuufntb5glctma5x7sy
+      '@metaplex-foundation/js': 0.17.11
       '@types/commander': 2.12.2
       '@types/debug': 4.1.7
       '@types/js-yaml': 4.0.5
@@ -74,7 +69,7 @@ importers:
 
   packages/core:
     specifiers:
-      '@metaplex-foundation/js': 0.17.9
+      '@metaplex-foundation/js': 0.17.11
       '@solana/web3.js': 1.68.0
       '@types/debug': ^4.1.7
       '@types/mime': ^3.0.1
@@ -87,7 +82,7 @@ importers:
       mime: ^3.0.0
       shx: ^0.3.4
     dependencies:
-      '@metaplex-foundation/js': 0.17.9_qpzzrpczuufntb5glctma5x7sy
+      '@metaplex-foundation/js': 0.17.11
       '@solana/web3.js': 1.68.0
       ajv: 8.11.0
       axios: 1.1.3_debug@4.3.4
@@ -538,8 +533,8 @@ packages:
   /@metaplex-foundation/cusper/0.0.2:
     resolution: {integrity: sha512-S9RulC2fFCFOQraz61bij+5YCHhSO9llJegK8c8Y6731fSi6snUSQJdCUqYS8AIgR0TKbQvdvgSyIIdbDFZbBA==}
 
-  /@metaplex-foundation/js/0.17.9_qpzzrpczuufntb5glctma5x7sy:
-    resolution: {integrity: sha512-msMGWSYetSVWmIXpDKI5Y3WZtTrCjF6QRQ8BpsXKoNs6xAKPvSuT9OGay/mbOs+/pMNHVPt8lFfl281yBN/MxA==}
+  /@metaplex-foundation/js/0.17.11:
+    resolution: {integrity: sha512-33H49nM6IpgXXHg6Akl38OYHE1bfTtC3P3kvF6orA1F96/MJe11ThAkT8ekfk4n3P+Zj4NuN2tBlqO5yHy3FZQ==}
     dependencies:
       '@bundlr-network/client': 0.8.9_debug@4.3.4
       '@metaplex-foundation/beet': 0.7.1
@@ -568,7 +563,6 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
-    patched: true
 
   /@metaplex-foundation/mpl-auction-house/2.3.0:
     resolution: {integrity: sha512-J27In0C/B0ETsDvy/3HkopiZ+I7AR4TlEzU0T2URKsreP4ghWGUUmhldkblxY7KhgLpvvQN/L0IaIBt+TFWU8g==}
