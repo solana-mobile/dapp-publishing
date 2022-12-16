@@ -27,10 +27,5 @@
     "prettier": "^2.7.1",
     "shx": "^0.3.4",
     "typescript": "^4.7.4"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "@metaplex-foundation/js@0.17.9": "patches/@metaplex-foundation__js@0.17.9.patch"
-    }
   }
 }
