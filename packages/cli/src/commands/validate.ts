@@ -10,6 +10,17 @@ import { debug, getConfigFile } from "../utils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";
+import { isMetaplexFile } from "@metaplex-foundation/js";
+
+const metaplexFileReplacer = (k: any, v: any) => {
+  if (isMetaplexFile(v)) {
+    return {
+      ...v,
+      buffer: "(suppressed)",
+    };
+  }
+  return v;
+}
 
 export const validateCommand = async ({
   signer,
@@ -30,7 +41,7 @@ export const validateCommand = async ({
   if (typeof publisherJson.image !== "string") {
     publisherJson.image = (publisherJson.image as MetaplexFile)?.fileName;
   }
-  debug(JSON.stringify({ publisherJson }, null, 2));
+  debug("publisherJson=", JSON.stringify({ publisherJson }, metaplexFileReplacer, 2));
 
   try {
     validatePublisher(publisherJson);
@@ -43,7 +54,7 @@ export const validateCommand = async ({
   if (typeof appJson.image !== "string") {
     appJson.image = (appJson.image as MetaplexFile)?.fileName;
   }
-  debug(JSON.stringify({ appJson }, null, 2));
+  debug("appJson=", JSON.stringify({ appJson }, metaplexFileReplacer, 2));
 
   try {
     validateApp(appJson);
@@ -56,7 +67,7 @@ export const validateCommand = async ({
     { releaseDetails, appDetails, publisherDetails },
     signer.publicKey
   );
-  debug(JSON.stringify({ releaseJson }, null, 2));
+  debug("releaseJson=", JSON.stringify({ releaseJson }, metaplexFileReplacer, 2));
 
   try {
     validateRelease(releaseJson);
