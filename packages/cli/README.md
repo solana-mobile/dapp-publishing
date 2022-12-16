@@ -1,6 +1,6 @@
 ## Prerequisites
 
-- Node 16+
+- Node 16.13.2 (This specific version, please)
 - PNPM
 - Android SDK build tools
 
@@ -19,7 +19,7 @@ corepack prepare pnpm@7.13.4 --activate
 
 You must have the Android SDK build tools available for use by the `dapp-store` CLI. If you have Android Studio, these tools are available as part of that installation (for e.g., on MacOS, they can be found in ~/Library/Android/sdk/build-tools/<version>). If you do not have Android Studio installed, or wish to use a standalone version of the Android SDK build tools, please follow the instructions [here](https://developer.android.com/studio/intro/update#sdk-manager). The path to the SDK build tools can be provided either directly to subcommands that require it with the `-b` option, or indirectly via a `.env` file:
 ```
-echo "ANDROID_TOOLS_DIR=<path_to_android_sdk_build_tools_dir>" > .env
+echo "ANDROID_TOOLS_DIR=\"<path_to_android_sdk_build_tools_dir>\"" > .env
 ```
 
 ## Usage
