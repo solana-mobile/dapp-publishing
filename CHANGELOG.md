@@ -1,3 +1,7 @@
+### Schema Changelog
+
+NOTE: The versions referenced in this changelog relate only to the publishing JSON schema spec (for Publisher/App/Release) and not the versions of the CLI tooling. The CLI tooling is versioned independently. 
+
 ## 0.2.4
 
 - Rename `saga_features_localized` to `saga_features`
