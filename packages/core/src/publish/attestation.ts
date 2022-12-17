@@ -19,7 +19,7 @@ export const createAttestationPayload = async (connection: Connection, sign: Sig
   ).join("")
 
   const slot = await connection.getSlot("finalized");
-  const block = await connection.getBlock(slot, { commitment: "finalized", maxSupportedTransactionVersion: 100, rewards: false, transactionDetails: "none" } as GetVersionedBlockConfig);
+  const block = await connection.getBlock(slot, { commitment: "finalized", maxSupportedTransactionVersion: 0, rewards: false, transactionDetails: "none" } as GetVersionedBlockConfig);
 
   const attestation: Attestation = {
     slot_number: slot,
