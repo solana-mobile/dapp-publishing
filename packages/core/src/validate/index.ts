@@ -2,9 +2,9 @@ import fs from "fs";
 import Ajv from "ajv";
 
 import type {
-  AppMetadata,
+  AppMetadata, MetaplexFileReleaseJsonMetadata,
   PublisherMetadata,
-  ReleaseJsonMetadata,
+  ReleaseJsonMetadata
 } from "../types.js";
 
 // eslint-disable-next-line require-extensions/require-extensions
@@ -48,11 +48,16 @@ export const validateApp = (appJson: AppMetadata) => {
   return valid;
 };
 
-export const validateRelease = (releaseJson: ReleaseJsonMetadata) => {
+export const validateRelease = (releaseJson: MetaplexFileReleaseJsonMetadata) => {
+  const jsonToValidate = { ...releaseJson };
+  if (typeof jsonToValidate.image !== "string") {
+    jsonToValidate.image = jsonToValidate.image?.fileName;
+  }
+
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(releaseSchema);
 
-  const valid = validate(releaseJson);
+  const valid = validate(jsonToValidate);
   if (!valid) {
     console.error(validate.errors);
     throw new Error("Release JSON not valid");
