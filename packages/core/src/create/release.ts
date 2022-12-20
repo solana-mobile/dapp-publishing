@@ -32,7 +32,7 @@ const getFileMetadata = async (item: Media | File) => {
   // TODO(jon): This stuff should be probably be in `packages/cli`
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
-  const hash = createHash("sha256").update(mediaBuffer).digest("base64");
+  const hash = createHash("sha256").update(mediaBuffer).digest("hex");
   const metadata = {
     purpose: item.purpose,
     uri: toMetaplexFile(mediaBuffer, item.uri),
