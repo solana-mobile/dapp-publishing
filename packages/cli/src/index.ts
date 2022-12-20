@@ -167,22 +167,26 @@ async function main() {
       "Path to Android build tools which contains AAPT2"
     )
     .action(async ({ keypair, buildToolsPath }) => {
-      const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
-      if (resolvedBuildToolsPath === undefined) {
-        showUserErrorMessage(
-          "Please specify an Android build tools directory in the .env file or via the command line argument."
-        );
-        createCommand.showHelpAfterError();
-        return;
-      }
+      try {
+        const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
+        if (resolvedBuildToolsPath === undefined) {
+          showUserErrorMessage(
+            "Please specify an Android build tools directory in the .env file or via the command line argument."
+          );
+          createCommand.showHelpAfterError();
+          return;
+        }
 
-      const signer = parseKeypair(keypair);
+        const signer = parseKeypair(keypair);
 
-      if (signer) {
-        await validateCommand({
-          signer,
-          buildToolsPath: resolvedBuildToolsPath,
-        });
+        if (signer) {
+          await validateCommand({
+            signer,
+            buildToolsPath: resolvedBuildToolsPath,
+          });
+        }
+      } catch (e) {
+        showUserErrorMessage((e as Error | null)?.message ?? "");
       }
     });
 
