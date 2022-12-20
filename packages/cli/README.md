@@ -108,8 +108,6 @@ release:
     en-US:
       name: |
         A nice, helpful dApp name
-      short_description: |
-        Some wonderful release notes
       long_description: |
         Some wonderful release notes, in long-form
       new_in_version: |

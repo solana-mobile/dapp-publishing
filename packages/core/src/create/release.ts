@@ -74,8 +74,6 @@ export const createReleaseJson = async (
 ): Promise<MetaplexFileReleaseJsonMetadata> => {
   const truncatedAppMintAddress = truncateAddress(appDetails.address);
 
-  const releaseName = `${Object.values(releaseDetails.catalog)[0].name} ${releaseDetails.android_details.version}`;
-
   const media = [];
   debug({ media: releaseDetails.media });
   for await (const item of releaseDetails.media || []) {
@@ -90,8 +88,8 @@ export const createReleaseJson = async (
 
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
     schema_version: "0.2.4",
-    name: releaseName,
-    description: Object.values(releaseDetails.catalog)[0].short_description,
+    name: "Release: " + appDetails.name,
+    description: `Release NFT for ${appDetails.name} version ${releaseDetails.android_details.version}`,
     // TODO(jon): Figure out where to get this image
     image: "",
     external_url: appDetails.urls.website,
@@ -117,11 +115,10 @@ export const createReleaseJson = async (
           copyright_url: appDetails.urls.copyright_url,
           privacy_policy_url: appDetails.urls.privacy_policy_url,
           localized_resources: {
-            short_description: "1",
-            long_description: "2",
-            new_in_version: "3",
-            saga_features: "4",
-            name: "5",
+            long_description: "1",
+            new_in_version: "2",
+            saga_features: "3",
+            name: "4",
           },
         },
         // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
@@ -136,11 +133,10 @@ export const createReleaseJson = async (
 
   for (const [locale, strings] of Object.entries(releaseDetails.catalog)) {
     releaseMetadata.extensions.i18n[locale] = {
-      "1": strings.short_description,
-      "2": strings.long_description,
-      "3": strings.new_in_version,
-      "4": strings.saga_features,
-      "5": strings.name,
+      "1": strings.long_description,
+      "2": strings.new_in_version,
+      "3": strings.saga_features,
+      "4": strings.name,
     };
   }
 

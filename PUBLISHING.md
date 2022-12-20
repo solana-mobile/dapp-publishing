@@ -59,8 +59,6 @@ It is recommended that you put your dApp publishing files next to your app, and 
        en:
          name: >-
            [[APP_NAME]]
-         short_description: >-
-           [[SHORT_APP_DESCRIPTION]]
          long_description: >-
            [[LONG_APP_DESCRIPTION]]
          new_in_version: >-
@@ -91,8 +89,6 @@ It is recommended that you put your dApp publishing files next to your app, and 
        fr-FR:
          name: >-
            [[NAME_OF_APP_IN_FRENCH_(FRANCE)]]
-         short_description: >-
-           [[SHORT_APP_DESCRIPTION_IN_FRENCH_(FRANCE)]]
          long_description: >-
            [[LONG_APP_DESCRIPTION_IN_FRENCH_(FRANCE)]]
          new_in_version: >-
