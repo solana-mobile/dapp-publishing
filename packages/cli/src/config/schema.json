@@ -150,9 +150,6 @@
                 "name": {
                   "type": "string"
                 },
-                "short_description": {
-                  "type": "string"
-                },
                 "long_description": {
                   "type": "string"
                 },
@@ -165,7 +162,6 @@
               },
               "required": [
                 "name",
-                "short_description",
                 "long_description",
                 "new_in_version",
                 "saga_features"
