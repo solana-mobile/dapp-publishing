@@ -16,6 +16,16 @@ export type AppMetadata = Omit<AppJsonMetadata, "image"> & {
   image: string | MetaplexFile;
 };
 
+export type MetaplexFileReleaseJsonMetadata = Omit<ReleaseJsonMetadata, "image"> & {
+  image: string | MetaplexFile;
+  extensions: {
+    solana_dapp_store: {
+      media: { uri: MetaplexFile }[];
+      files: { uri: MetaplexFile }[];
+    };
+  };
+};
+
 export type Context = {
   publisher: Keypair;
   metaplex: Metaplex;

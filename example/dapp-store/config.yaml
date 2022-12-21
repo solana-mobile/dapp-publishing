@@ -1,14 +1,14 @@
 publisher:
-  name: My new publisher name
-  address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
+  name: Publisher (contains apps)
+  address: ''
   website: https://solanamobile.com
   email: hello@solanamobile.com
   media:
     - purpose: icon
       uri: ./media/publisher_icon.jpeg
 app:
-  name: My new app name
-  address: 4xE4MDVHfFAXMKKzqrJ2v1HxcgYgdoV98nuvd8SRKhWP
+  name: App (contains releases)
+  address: ''
   android_package: com.company.dapp
   urls:
     license_url: http://cdn.org/license.html
@@ -19,16 +19,16 @@ app:
     - purpose: icon
       uri: ./media/app_icon.jpeg
 release:
-  address: 9FvtmaMMQEatbr1Quj9i19t8fbNcZj9XEATH7q2Puf78
+  address: ''
   media:
     - purpose: screenshot
       uri: ./media/app_screenshot.png
   files:
     - purpose: install
-      uri: ./files/app-prod-release.apk
+      uri: ./files/app-debug.apk
   catalog:
     en-US:
-      name: A nice, helpful dApp name
+      name: This is a single release
       long_description: Some wonderful release notes, in long-form
       new_in_version: Something new in this version
       saga_features: Some information about saga specific features

@@ -14,9 +14,10 @@ import type { Keypair, PublicKey } from "@solana/web3.js";
 import type {
   App,
   Context,
+  MetaplexFileReleaseJsonMetadata,
   Publisher,
   Release,
-  ReleaseJsonMetadata,
+  ReleaseJsonMetadata
 } from "../types.js";
 
 const runImgSize = util.promisify(imageSize);
@@ -55,15 +56,6 @@ const getMediaMetadata = async (item: Media) => {
   };
 };
 
-type MetaplexFileReleaseJsonMetadata = ReleaseJsonMetadata & {
-  extensions: {
-    solana_dapp_store: {
-      media: { uri: MetaplexFile }[];
-      files: { uri: MetaplexFile }[];
-    };
-  };
-};
-
 export const createReleaseJson = async (
   {
     releaseDetails,
@@ -72,7 +64,6 @@ export const createReleaseJson = async (
   }: { releaseDetails: Release; appDetails: App; publisherDetails: Publisher },
   publisherAddress: PublicKey
 ): Promise<MetaplexFileReleaseJsonMetadata> => {
-  const truncatedAppMintAddress = truncateAddress(appDetails.address);
 
   const media = [];
   debug({ media: releaseDetails.media });
@@ -90,8 +81,7 @@ export const createReleaseJson = async (
     schema_version: "0.2.4",
     name: "Release: " + appDetails.name,
     description: `Release NFT for ${appDetails.name} version ${releaseDetails.android_details.version}`,
-    // TODO(jon): Figure out where to get this image
-    image: "",
+    image: appDetails.icon!,
     external_url: appDetails.urls.website,
     properties: {
       category: "dApp",
@@ -104,6 +94,7 @@ export const createReleaseJson = async (
     },
     extensions: {
       solana_dapp_store: {
+        // @ts-expect-error
         publisher_details: {
           name: publisherDetails.name,
           website: publisherDetails.website,
@@ -121,9 +112,7 @@ export const createReleaseJson = async (
             name: "4",
           },
         },
-        // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.media.uri type
         media,
-        // @ts-expect-error It's a bit of a headache to modify the deeply-nested extension.solana_dapp_store.files.uri type
         files,
         android_details: releaseDetails.android_details,
       },
@@ -132,6 +121,7 @@ export const createReleaseJson = async (
   };
 
   for (const [locale, strings] of Object.entries(releaseDetails.catalog)) {
+    // @ts-expect-error
     releaseMetadata.extensions.i18n[locale] = {
       "1": strings.long_description,
       "2": strings.new_in_version,
