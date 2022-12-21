@@ -208,8 +208,12 @@ async function main() {
       "An attestation that the party making this Solana dApp publisher portal request is authorized to do so"
     )
     .option(
+      "-a, --app-mint-address <app-mint-address>",
+      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+    )
+    .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT"
+      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
     )
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
@@ -218,6 +222,7 @@ async function main() {
     )
     .action(
       async ({
+        appMintAddress,
         releaseMintAddress,
         keypair,
         url,
@@ -239,6 +244,7 @@ async function main() {
           const signer = parseKeypair(keypair);
           if (signer) {
             await publishSubmitCommand({
+              appMintAddress,
               releaseMintAddress,
               signer,
               url,
@@ -271,8 +277,12 @@ async function main() {
       "An attestation that the party making this Solana dApp publisher portal request is authorized to do so"
     )
     .option(
+      "-a, --app-mint-address <app-mint-address>",
+      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+    )
+    .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT"
+      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
     )
     .option("-c, --critical", "Flag for a critical app update request")
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
@@ -282,6 +292,7 @@ async function main() {
     )
     .action(
       async ({
+        appMintAddress,
         releaseMintAddress,
         keypair,
         url,
@@ -305,6 +316,7 @@ async function main() {
 
           if (signer) {
             await publishUpdateCommand({
+              appMintAddress,
               releaseMintAddress,
               signer,
               url,
@@ -334,8 +346,12 @@ async function main() {
       "An attestation that the party making this Solana dApp publisher portal request is authorized to do so"
     )
     .option(
+      "-a, --app-mint-address <app-mint-address>",
+      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+    )
+    .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT"
+      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
     )
     .option("-c, --critical", "Flag for a critical app removal request")
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
@@ -345,6 +361,7 @@ async function main() {
     )
     .action(
       async ({
+        appMintAddress,
         releaseMintAddress,
         keypair,
         url,
@@ -367,6 +384,7 @@ async function main() {
 
           if (signer) {
             await publishRemoveCommand({
+              appMintAddress,
               releaseMintAddress,
               signer,
               url,
@@ -395,8 +413,12 @@ async function main() {
       "An attestation that the party making this Solana dApp publisher portal request is authorized to do so"
     )
     .option(
+      "-a, --app-mint-address <app-mint-address>",
+      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+    )
+    .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT"
+      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
     )
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
@@ -406,7 +428,7 @@ async function main() {
     .action(
       async (
         requestDetails,
-        { releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
+        { appMintAddress, releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
         try {
           const config = await getConfigFile();
@@ -423,6 +445,7 @@ async function main() {
 
           if (signer) {
             await publishSupportCommand({
+              appMintAddress,
               releaseMintAddress,
               signer,
               url,

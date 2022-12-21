@@ -11,6 +11,7 @@ import {
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
   TICKET_PROPERTY_CONTENT,
+  TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_REQUEST_UNIQUE_ID,
   URL_FORM_SUPPORT
@@ -20,6 +21,7 @@ import { PublishSolanaNetworkInput, SignWithPublisherKeypair } from "./types.js"
 const createSupportRequest = async (
   connection: Connection,
   sign: SignWithPublisherKeypair,
+  appMintAddress: string,
   releaseMintAddress: string,
   publisherDetails: Publisher,
   requestorIsAuthorized: boolean,
@@ -56,6 +58,11 @@ const createSupportRequest = async (
       },
       {
         objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
+        value: appMintAddress
+      },
+      {
+        objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
         value: releaseMintAddress
       },
@@ -74,6 +81,7 @@ const createSupportRequest = async (
 };
 
 export type PublishSupportInput = {
+  appMintAddress: string;
   releaseMintAddress: string;
   publisherDetails: Publisher;
   requestorIsAuthorized: boolean;
@@ -83,6 +91,7 @@ export type PublishSupportInput = {
 export const publishSupport = async (
   publishSolanaNetworkInput: PublishSolanaNetworkInput,
   {
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     requestorIsAuthorized,
@@ -93,6 +102,7 @@ export const publishSupport = async (
   const supportRequest = await createSupportRequest(
     publishSolanaNetworkInput.connection,
     publishSolanaNetworkInput.sign,
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     requestorIsAuthorized,

@@ -12,6 +12,7 @@ export const TICKET_PROPERTY_CONTENT = "content"; // string
 export const TICKET_PROPERTY_ATTESTATION_PAYLOAD = "attestation_payload"; // base64-encoded string
 export const TICKET_PROPERTY_AUTHORIZED_REQUEST = "requestor_is_authorized_to_submit_this_request"; // boolean
 export const TICKET_PROPERTY_CRITICAL_UPDATE = "critical_update"; // boolean
+export const TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS = "dapp_collection_account_address"; // base58-encoded string
 export const TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS = "dapp_release_account_address"; // base58-encoded string
 export const TICKET_PROPERTY_GOOGLE_PLAY_STORE_PACKAGE_NAME = "google_play_store_package_name"; // string
 export const TICKET_PROPERTY_POLICY_COMPLIANT = "complies_with_solana_dapp_store_policies"; // boolean
