@@ -2,7 +2,7 @@
   "include": [],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "esnext",
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "isolatedModules": true,
