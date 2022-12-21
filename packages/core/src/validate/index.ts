@@ -2,7 +2,8 @@ import fs from "fs";
 import Ajv from "ajv";
 
 import type {
-  AppMetadata, MetaplexFileReleaseJsonMetadata,
+  AppMetadata,
+  MetaplexFileReleaseJsonMetadata,
   PublisherMetadata,
   ReleaseJsonMetadata
 } from "../types.js";

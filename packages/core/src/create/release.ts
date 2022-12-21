@@ -13,7 +13,8 @@ import { imageSize } from "image-size";
 import type { Keypair, PublicKey } from "@solana/web3.js";
 import type {
   App,
-  Context, MetaplexFileReleaseJsonMetadata,
+  Context,
+  MetaplexFileReleaseJsonMetadata,
   Publisher,
   Release,
   ReleaseJsonMetadata
