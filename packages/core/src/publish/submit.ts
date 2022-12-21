@@ -10,6 +10,7 @@ import {
   TICKET_OBJECT_ID,
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
+  TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_GOOGLE_PLAY_STORE_PACKAGE_NAME,
   TICKET_PROPERTY_POLICY_COMPLIANT,
@@ -22,6 +23,7 @@ import { PublishSolanaNetworkInput, SignWithPublisherKeypair } from "./types.js"
 const createSubmitRequest = async (
   connection: Connection,
   sign: SignWithPublisherKeypair,
+  appMintAddress: string,
   releaseMintAddress: string,
   publisherDetails: Publisher,
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal,
@@ -51,6 +53,11 @@ const createSubmitRequest = async (
         objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_ATTESTATION_PAYLOAD,
         value: attestationPayload
+      },
+      {
+        objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
+        value: appMintAddress
       },
       {
         objectTypeId: TICKET_OBJECT_ID,
@@ -97,6 +104,7 @@ const createSubmitRequest = async (
 };
 
 export type PublishSubmitInput = {
+  appMintAddress: string;
   releaseMintAddress: string;
   publisherDetails: Publisher;
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal;
@@ -107,6 +115,7 @@ export type PublishSubmitInput = {
 export const publishSubmit = async (
   publishSolanaNetworkInput: PublishSolanaNetworkInput,
   {
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     solanaMobileDappPublisherPortalDetails,
@@ -118,6 +127,7 @@ export const publishSubmit = async (
   const submitRequest = await createSubmitRequest(
     publishSolanaNetworkInput.connection,
     publishSolanaNetworkInput.sign,
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     solanaMobileDappPublisherPortalDetails,

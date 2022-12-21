@@ -5,6 +5,7 @@ import nacl from "tweetnacl";
 import { getConfigFile } from "../../utils.js";
 
 type PublishSubmitCommandInput = {
+  appMintAddress: string;
   releaseMintAddress: string;
   signer: Keypair;
   url: string;
@@ -14,6 +15,7 @@ type PublishSubmitCommandInput = {
 };
 
 export const publishSubmitCommand = async ({
+  appMintAddress,
   releaseMintAddress,
   signer,
   url,
@@ -36,6 +38,7 @@ export const publishSubmitCommand = async ({
   const connection = new Connection(url);
   const {
     publisher: publisherDetails,
+    app: appDetails,
     release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigFile();
@@ -45,6 +48,7 @@ export const publishSubmitCommand = async ({
   await publishSubmit(
     { connection, sign },
     {
+      appMintAddress: appMintAddress ?? appDetails.address,
       releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
       publisherDetails,
       solanaMobileDappPublisherPortalDetails,

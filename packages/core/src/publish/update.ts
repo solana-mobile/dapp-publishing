@@ -11,6 +11,7 @@ import {
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
   TICKET_PROPERTY_CRITICAL_UPDATE,
+  TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_POLICY_COMPLIANT,
   TICKET_PROPERTY_REQUEST_UNIQUE_ID,
@@ -22,6 +23,7 @@ import { PublishSolanaNetworkInput, SignWithPublisherKeypair } from "./types.js"
 const createUpdateRequest = async (
   connection: Connection,
   sign: SignWithPublisherKeypair,
+  appMintAddress: string,
   releaseMintAddress: string,
   publisherDetails: Publisher,
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal,
@@ -52,6 +54,11 @@ const createUpdateRequest = async (
         objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_ATTESTATION_PAYLOAD,
         value: attestationPayload
+      },
+      {
+        objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
+        value: appMintAddress
       },
       {
         objectTypeId: TICKET_OBJECT_ID,
@@ -100,6 +107,7 @@ const createUpdateRequest = async (
 };
 
 export type PublishUpdateInput = {
+  appMintAddress: string;
   releaseMintAddress: string;
   publisherDetails: Publisher;
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal;
@@ -111,6 +119,7 @@ export type PublishUpdateInput = {
 export const publishUpdate = async (
   publishSolanaNetworkInput: PublishSolanaNetworkInput,
   {
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     solanaMobileDappPublisherPortalDetails,
@@ -123,6 +132,7 @@ export const publishUpdate = async (
   const updateRequest = await createUpdateRequest(
     publishSolanaNetworkInput.connection,
     publishSolanaNetworkInput.sign,
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     solanaMobileDappPublisherPortalDetails,

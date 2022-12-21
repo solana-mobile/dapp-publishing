@@ -5,6 +5,7 @@ import { getConfigFile } from "../../utils.js";
 import nacl from "tweetnacl";
 
 type PublishSupportCommandInput = {
+  appMintAddress: string;
   releaseMintAddress: string;
   signer: Keypair;
   url: string;
@@ -14,6 +15,7 @@ type PublishSupportCommandInput = {
 };
 
 export const publishSupportCommand = async ({
+  appMintAddress,
   releaseMintAddress,
   signer,
   url,
@@ -31,6 +33,7 @@ export const publishSupportCommand = async ({
   const connection = new Connection(url);
   const {
     publisher: publisherDetails,
+    app: appDetails,
     release: releaseDetails,
   } = await getConfigFile();
   const sign = ((buf: Buffer) =>
@@ -39,6 +42,7 @@ export const publishSupportCommand = async ({
   await publishSupport(
     { connection, sign },
     {
+      appMintAddress: appMintAddress ?? appDetails.address,
       releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
       publisherDetails,
       requestorIsAuthorized,

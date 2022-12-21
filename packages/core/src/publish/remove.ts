@@ -11,6 +11,7 @@ import {
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
   TICKET_PROPERTY_CRITICAL_UPDATE,
+  TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_REQUEST_UNIQUE_ID,
   URL_FORM_REMOVE
@@ -20,6 +21,7 @@ import { PublishSolanaNetworkInput, SignWithPublisherKeypair } from "./types.js"
 const createRemoveRequest = async (
   connection: Connection,
   sign: SignWithPublisherKeypair,
+  appMintAddress: string,
   releaseMintAddress: string,
   publisherDetails: Publisher,
   requestorIsAuthorized: boolean,
@@ -48,6 +50,11 @@ const createRemoveRequest = async (
         objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_ATTESTATION_PAYLOAD,
         value: attestationPayload
+      },
+      {
+        objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
+        value: appMintAddress
       },
       {
         objectTypeId: TICKET_OBJECT_ID,
@@ -81,6 +88,7 @@ const createRemoveRequest = async (
 };
 
 export type PublishRemoveInput = {
+  appMintAddress: string;
   releaseMintAddress: string;
   publisherDetails: Publisher;
   requestorIsAuthorized: boolean;
@@ -90,6 +98,7 @@ export type PublishRemoveInput = {
 export const publishRemove = async (
   publishSolanaNetworkInput: PublishSolanaNetworkInput,
   {
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     requestorIsAuthorized,
@@ -100,6 +109,7 @@ export const publishRemove = async (
   const removeRequest = await createRemoveRequest(
     publishSolanaNetworkInput.connection,
     publishSolanaNetworkInput.sign,
+    appMintAddress,
     releaseMintAddress,
     publisherDetails,
     requestorIsAuthorized,
