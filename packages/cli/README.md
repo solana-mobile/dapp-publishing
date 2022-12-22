@@ -1,10 +1,8 @@
 ## Prerequisites
 
-- Node 16.13.2 (This specific version, please)
+- Node 18+
 - PNPM
 - Android SDK build tools
-
-If you have Node 16+, you can [activate PNPM with Corepack](https://pnpm.io/installation#using-corepack):
 
 ```shell
 corepack enable

@@ -10,7 +10,7 @@ import { load } from "js-yaml";
 import Ajv from "ajv";
 
 // eslint-disable-next-line require-extensions/require-extensions
-import schemaJson from "./schema.json";
+import schemaJson from "./schema.json" assert { type: "json" };
 
 // TODO: Add version number return here
 export interface CLIConfig {
