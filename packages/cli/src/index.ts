@@ -8,9 +8,8 @@ import {
   publishUpdateCommand
 } from "./commands/publish/index.js";
 import { getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
-
 import updateNotifier from 'update-notifier';
-import cliPackage from '../package.json' assert {type: 'json'};
+import cliPackage from './package.json' assert {type: 'json'};
 
 import * as dotenv from "dotenv";
 
@@ -65,8 +64,8 @@ async function main() {
 
       // Checks for available update and returns an instance
       const notifier = updateNotifier({pkg: cliPackage});
-
-      // Notify using the built-in convenience method
+      //
+      // // Notify using the built-in convenience method
       notifier.notify();
     });
 
