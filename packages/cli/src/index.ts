@@ -62,11 +62,14 @@ async function main() {
       //   const result = await createPublisherCommand({ signer, url, dryRun });
       // }
 
-      // Checks for available update and returns an instance
-      const notifier = updateNotifier({pkg: cliPackage});
-      //
-      // // Notify using the built-in convenience method
-      notifier.notify();
+      const notifier = updateNotifier({ pkg: cliPackage });
+
+      const updateInfo = await notifier.fetchInfo()
+      if (updateInfo.current == updateInfo.latest) {
+        console.log("::: You are up to date!! :::")
+      } else {
+        console.log("::: You are NOT up to date!! :::")
+      }
     });
 
   createCommand
