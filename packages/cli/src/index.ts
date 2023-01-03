@@ -34,6 +34,14 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   return;
 }
 
+async function tryWithErrorMessage(block: () => Promise<any>) {
+  try {
+    await block()
+  } catch (e) {
+    showUserErrorMessage((e as Error | null)?.message ?? "");
+  }
+}
+
 async function main() {
   program
     .name("dapp-store")
@@ -54,17 +62,14 @@ async function main() {
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
-      try {
+      tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
         const signer = parseKeypair(keypair);
-
         if (signer) {
           const result = await createPublisherCommand({ signer, url, dryRun });
         }
-      } catch (e) {
-        showUserErrorMessage((e as Error | null)?.message ?? "");
-      }
+      });
     });
 
   createCommand
@@ -81,7 +86,7 @@ async function main() {
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
-      try {
+      tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
         const config = await getConfigFile();
@@ -103,9 +108,7 @@ async function main() {
             dryRun,
           });
         }
-      } catch (e) {
-        showUserErrorMessage((e as Error | null)?.message ?? "");
-      }
+      });
     });
 
   createCommand
@@ -126,7 +129,7 @@ async function main() {
       "Path to Android build tools which contains AAPT2"
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
@@ -149,7 +152,6 @@ async function main() {
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             const result = await createReleaseCommand({
               appMintAddress: appMintAddress,
@@ -159,9 +161,7 @@ async function main() {
               dryRun,
             });
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
@@ -177,7 +177,7 @@ async function main() {
       "Path to Android build tools which contains AAPT2"
     )
     .action(async ({ keypair, buildToolsPath }) => {
-      try {
+      tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
         const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
@@ -190,16 +190,13 @@ async function main() {
         }
 
         const signer = parseKeypair(keypair);
-
         if (signer) {
           await validateCommand({
             signer,
             buildToolsPath: resolvedBuildToolsPath,
           });
         }
-      } catch (e) {
-        showUserErrorMessage((e as Error | null)?.message ?? "");
-      }
+      });
     });
 
   const publishCommand = program
@@ -246,7 +243,7 @@ async function main() {
         requestorIsAuthorized,
         dryRun,
       }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
@@ -271,9 +268,7 @@ async function main() {
               requestorIsAuthorized,
             });
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
@@ -319,7 +314,7 @@ async function main() {
         critical,
         dryRun,
       }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
@@ -333,7 +328,6 @@ async function main() {
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             await publishUpdateCommand({
               appMintAddress,
@@ -346,9 +340,7 @@ async function main() {
               critical,
             });
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
@@ -389,7 +381,7 @@ async function main() {
         critical,
         dryRun,
       }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
@@ -415,9 +407,7 @@ async function main() {
               critical,
             });
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        })
       }
     );
 
@@ -452,7 +442,7 @@ async function main() {
         requestDetails,
         { appMintAddress, releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
@@ -478,9 +468,7 @@ async function main() {
               requestDetails,
             });
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
