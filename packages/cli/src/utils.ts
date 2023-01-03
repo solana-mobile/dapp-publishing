@@ -11,6 +11,8 @@ import { exec } from "child_process";
 import * as path from "path";
 import { BundlrStorageDriver, keypairIdentity, Metaplex, toMetaplexFile } from "@metaplex-foundation/js";
 import { imageSize } from "image-size";
+import updateNotifier from "update-notifier";
+import cliPackage from "./package.json" assert { type: "json" };
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
@@ -18,6 +20,15 @@ const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
 
 export const debug = debugModule("CLI");
+
+export const checkForSelfUpdate = async () => {
+  const notifier = updateNotifier({ pkg: cliPackage });
+  const updateInfo = await notifier.fetchInfo();
+
+  if (updateInfo.current != updateInfo.latest) {
+    throw new Error("Please update to the latest version of the dApp Store CLI before proceeding.");
+  }
+};
 
 export const parseKeypair = (pathToKeypairFile: string) => {
   try {

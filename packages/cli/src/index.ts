@@ -7,7 +7,7 @@ import {
   publishSupportCommand,
   publishUpdateCommand
 } from "./commands/publish/index.js";
-import { getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
+import { checkForSelfUpdate, getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
 
 import * as dotenv from "dotenv";
 
@@ -54,10 +54,16 @@ async function main() {
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
-      const signer = parseKeypair(keypair);
+      try {
+        await checkForSelfUpdate();
 
-      if (signer) {
-        const result = await createPublisherCommand({ signer, url, dryRun });
+        const signer = parseKeypair(keypair);
+
+        if (signer) {
+          const result = await createPublisherCommand({ signer, url, dryRun });
+        }
+      } catch (e) {
+        showUserErrorMessage((e as Error | null)?.message ?? "");
       }
     });
 
@@ -76,6 +82,8 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       try {
+        await checkForSelfUpdate();
+
         const config = await getConfigFile();
 
         if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
@@ -119,6 +127,8 @@ async function main() {
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
         try {
+          await checkForSelfUpdate();
+
           const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
           if (resolvedBuildToolsPath === undefined) {
             showUserErrorMessage(
@@ -168,6 +178,8 @@ async function main() {
     )
     .action(async ({ keypair, buildToolsPath }) => {
       try {
+        await checkForSelfUpdate();
+
         const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
         if (resolvedBuildToolsPath === undefined) {
           showUserErrorMessage(
@@ -235,6 +247,8 @@ async function main() {
         dryRun,
       }) => {
         try {
+          await checkForSelfUpdate();
+
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
@@ -306,6 +320,8 @@ async function main() {
         dryRun,
       }) => {
         try {
+          await checkForSelfUpdate();
+
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
@@ -374,6 +390,8 @@ async function main() {
         dryRun,
       }) => {
         try {
+          await checkForSelfUpdate();
+
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
@@ -435,6 +453,8 @@ async function main() {
         { appMintAddress, releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
         try {
+          await checkForSelfUpdate();
+
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
