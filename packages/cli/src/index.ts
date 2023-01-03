@@ -9,6 +9,9 @@ import {
 } from "./commands/publish/index.js";
 import { getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
 
+import updateNotifier from 'update-notifier';
+import cliPackage from '../package.json' assert {type: 'json'};
+
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -54,11 +57,17 @@ async function main() {
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
-      const signer = parseKeypair(keypair);
+      // const signer = parseKeypair(keypair);
+      //
+      // if (signer) {
+      //   const result = await createPublisherCommand({ signer, url, dryRun });
+      // }
 
-      if (signer) {
-        const result = await createPublisherCommand({ signer, url, dryRun });
-      }
+      // Checks for available update and returns an instance
+      const notifier = updateNotifier({pkg: cliPackage});
+
+      // Notify using the built-in convenience method
+      notifier.notify();
     });
 
   createCommand
@@ -76,25 +85,25 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       try {
-        const config = await getConfigFile();
-
-        if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-          showUserErrorMessage(
-            "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
-          );
-          createCommand.showHelpAfterError();
-          return;
-        }
-
-        const signer = parseKeypair(keypair);
-        if (signer) {
-          await createAppCommand({
-            publisherMintAddress: publisherMintAddress,
-            signer,
-            url,
-            dryRun,
-          });
-        }
+        // const config = await getConfigFile();
+        //
+        // if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
+        //   showUserErrorMessage(
+        //     "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
+        //   );
+        //   createCommand.showHelpAfterError();
+        //   return;
+        // }
+        //
+        // const signer = parseKeypair(keypair);
+        // if (signer) {
+        //   await createAppCommand({
+        //     publisherMintAddress: publisherMintAddress,
+        //     signer,
+        //     url,
+        //     dryRun,
+        //   });
+        // }
       } catch (e) {
         showUserErrorMessage((e as Error | null)?.message ?? "");
       }
