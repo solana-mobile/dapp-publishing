@@ -142,7 +142,7 @@ async function main() {
 
           if (!hasAddressInConfig(config.app) && !appMintAddress) {
             showUserErrorMessage(
-              "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+              "Either specify an app mint address in the config file, or specify as a CLI argument to this command"
             );
             createCommand.showHelpAfterError();
             return;
@@ -253,7 +253,7 @@ async function main() {
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
             );
             publishCommand.showHelpAfterError();
             return;
@@ -326,7 +326,7 @@ async function main() {
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
             );
             publishCommand.showHelpAfterError();
             return;
@@ -396,7 +396,7 @@ async function main() {
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
             );
             publishCommand.showHelpAfterError();
             return;
@@ -459,7 +459,7 @@ async function main() {
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
+              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
             );
             publishCommand.showHelpAfterError();
             return;
