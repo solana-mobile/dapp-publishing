@@ -92,11 +92,7 @@ async function main() {
         const config = await getConfigFile();
 
         if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-          showUserErrorMessage(
-            "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
-          );
-          createCommand.showHelpAfterError();
-          return;
+          throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.")
         }
 
         const signer = parseKeypair(keypair);
@@ -134,21 +130,12 @@ async function main() {
 
           const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
           if (resolvedBuildToolsPath === undefined) {
-            showUserErrorMessage(
-              "Please specify an Android build tools directory in the .env file or via the command line argument."
-            );
-            createCommand.showHelpAfterError();
-            return;
+            throw new Error("Please specify an Android build tools directory in the .env file or via the command line argument.")
           }
 
           const config = await getConfigFile();
-
           if (!hasAddressInConfig(config.app) && !appMintAddress) {
-            showUserErrorMessage(
-              "Either specify an app mint address in the config file, or specify as a CLI argument to this command"
-            );
-            createCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify an app mint address in the config file or specify as a CLI argument to this command")
           }
 
           const signer = parseKeypair(keypair);
@@ -182,11 +169,7 @@ async function main() {
 
         const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
         if (resolvedBuildToolsPath === undefined) {
-          showUserErrorMessage(
-            "Please specify an Android build tools directory in the .env file or via the command line argument."
-          );
-          createCommand.showHelpAfterError();
-          return;
+          throw new Error("Please specify an Android build tools directory in the .env file or via the command line argument.")
         }
 
         const signer = parseKeypair(keypair);
@@ -249,11 +232,7 @@ async function main() {
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
@@ -320,11 +299,7 @@ async function main() {
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
@@ -387,15 +362,10 @@ async function main() {
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             await publishRemoveCommand({
               appMintAddress,
@@ -448,15 +418,10 @@ async function main() {
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "Either specify an release mint address in the config file, or specify as a CLI argument to this command."
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             await publishSupportCommand({
               appMintAddress,
