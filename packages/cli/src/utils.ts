@@ -178,7 +178,7 @@ const getAndroidDetails = async (
   let localeArray = Array.from(locales?.values() ?? []);
   if (localeArray.length == 2) {
     const localesSrc = localeArray[1];
-    localeArray = localesSrc.split("' '").slice(1);
+    localeArray = ["en-US"].concat(localesSrc.split("' '").slice(1));
   }
 
   return {
