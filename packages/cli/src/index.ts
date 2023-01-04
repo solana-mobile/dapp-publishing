@@ -8,6 +8,7 @@ import {
   publishUpdateCommand
 } from "./commands/publish/index.js";
 import { checkForSelfUpdate, getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
+import terminalLink from "terminal-link";
 
 import * as dotenv from "dotenv";
 
@@ -68,6 +69,8 @@ async function main() {
         const signer = parseKeypair(keypair);
         if (signer) {
           const result = await createPublisherCommand({ signer, url, dryRun });
+
+          console.log(terminalLink('\nPublisher NFT successfully minted:', `https://solscan.io/token/${result.publisherAddress}?cluster=devnet`));
         }
       });
     });
