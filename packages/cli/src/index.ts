@@ -197,6 +197,8 @@ async function main() {
             signer,
             buildToolsPath: resolvedBuildToolsPath,
           });
+
+          //TODO: Add pretty formatting here, but will require more work than other sections
         }
       });
     });
@@ -265,6 +267,9 @@ async function main() {
               compliesWithSolanaDappStorePolicies,
               requestorIsAuthorized,
             });
+
+            const resultText = "Successfully submitted to the Solana Mobile dApp publisher portal";
+            showMessage("Success", resultText);
           }
         });
       }
@@ -333,6 +338,9 @@ async function main() {
               requestorIsAuthorized,
               critical,
             });
+
+            const resultText = "dApp successfully updated on the publisher portal";
+            showMessage("Success", resultText);
           }
         });
       }
@@ -395,6 +403,9 @@ async function main() {
               requestorIsAuthorized,
               critical,
             });
+
+            const resultText = "dApp successfully removed from the publisher portal";
+            showMessage("Success", resultText);
           }
         })
       }
@@ -451,6 +462,9 @@ async function main() {
               requestorIsAuthorized,
               requestDetails,
             });
+
+            const resultText = "Support request sent successfully";
+            showMessage("Success", resultText);
           }
         });
       }
