@@ -55,22 +55,6 @@ export const validateRelease = (releaseJson: MetaplexFileReleaseJsonMetadata) =>
     jsonToValidate.image = jsonToValidate.image?.fileName;
   }
 
-  // We need to replace media MetaplexFile instances with strings for validation
-  jsonToValidate.extensions.solana_dapp_store.media.forEach((media, index) => {
-    if (typeof media.uri !== "string") {
-      // @ts-ignore Ignoring hard type override from Metaplex to string
-      jsonToValidate.extensions.solana_dapp_store.media[index].uri = media.uri.fileName;
-    }
-  });
-
-  // We need to replace file MetaplexFile instances with strings for validation
-  jsonToValidate.extensions.solana_dapp_store.files.forEach((file, index) => {
-    if (typeof file.uri !== "string") {
-      // @ts-ignore
-      jsonToValidate.extensions.solana_dapp_store.files[index].uri = file.uri.fileName;
-    }
-  });
-
   const ajv = new Ajv({ strictTuples: false });
   const validate = ajv.compile(releaseSchema);
 

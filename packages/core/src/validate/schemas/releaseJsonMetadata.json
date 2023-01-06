@@ -107,9 +107,6 @@
                   "purpose": {
                     "type": "string"
                   },
-                  "uri": {
-                    "type": "string"
-                  },
                   "width": {
                     "type": "integer"
                   },
@@ -120,7 +117,7 @@
                     "type": "string"
                   }
                 },
-                "required": ["mime", "purpose", "uri", "width", "height", "sha256"]
+                "required": ["mime", "purpose", "width", "height", "sha256"]
               }
             },
             "files": {
@@ -137,14 +134,11 @@
                   "size": {
                     "type": "integer"
                   },
-                  "uri": {
-                    "type": "string"
-                  },
                   "sha256": {
                     "type": "string"
                   }
                 },
-                "required": ["mime", "purpose", "size", "uri", "sha256"]
+                "required": ["mime", "purpose", "size", "sha256"]
               }
             },
             "android_details": {
