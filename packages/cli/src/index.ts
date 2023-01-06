@@ -7,8 +7,9 @@ import {
   publishSupportCommand,
   publishUpdateCommand
 } from "./commands/publish/index.js";
-import { checkForSelfUpdate, getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
+import { checkForSelfUpdate, generateNetworkSuffix, getConfigFile, parseKeypair, showMessage } from "./utils.js";
 import terminalLink from "terminal-link";
+import boxen from "boxen";
 
 import * as dotenv from "dotenv";
 
@@ -39,7 +40,7 @@ async function tryWithErrorMessage(block: () => Promise<any>) {
   try {
     await block()
   } catch (e) {
-    showUserErrorMessage((e as Error | null)?.message ?? "");
+    showMessage((e as Error | null)?.message ?? "");
   }
 }
 
@@ -68,9 +69,12 @@ async function main() {
 
         const signer = parseKeypair(keypair);
         if (signer) {
-          const result = await createPublisherCommand({ signer, url, dryRun });
+          const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
 
-          console.log(terminalLink('\nPublisher NFT successfully minted:', `https://solscan.io/token/${result.publisherAddress}?cluster=devnet`));
+          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+          const resultText = "Publisher NFT successfully minted:\n" + displayUrl;
+
+          showMessage("Success", resultText);
         }
       });
     });
@@ -100,12 +104,17 @@ async function main() {
 
         const signer = parseKeypair(keypair);
         if (signer) {
-          await createAppCommand({
+          const result = await createAppCommand({
             publisherMintAddress: publisherMintAddress,
             signer,
             url,
             dryRun,
           });
+
+          const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
+          const resultText = "App NFT successfully minted:\n" + displayUrl;
+
+          showMessage("Success", resultText);
         }
       });
     });

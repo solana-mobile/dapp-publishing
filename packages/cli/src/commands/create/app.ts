@@ -81,8 +81,9 @@ export const createAppCommand = async ({
     { dryRun }
   );
 
-  // TODO(sdlaver): dry-run should not modify config
-  saveToConfig({ app: { address: appAddress } });
+  if (!dryRun) {
+    saveToConfig({ app: { address: appAddress } });
+  }
 
   return { appAddress };
 };

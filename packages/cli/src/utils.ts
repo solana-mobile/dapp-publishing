@@ -13,6 +13,7 @@ import { BundlrStorageDriver, keypairIdentity, Metaplex, toMetaplexFile } from "
 import { imageSize } from "image-size";
 import updateNotifier from "update-notifier";
 import cliPackage from "./package.json" assert { type: "json" };
+import boxen from "boxen";
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
@@ -58,8 +59,6 @@ export const getConfigFile = async (
   const configFilePath = `${process.cwd()}/config.yaml`;
 
   const config = await getConfig(configFilePath);
-
-  console.info(`Pulling details from ${configFilePath}`);
 
   if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
     // We validate that the config is going to have at least one installable asset
@@ -133,10 +132,33 @@ const checkImageExtension = (uri: string): boolean => {
   );
 };
 
-export const showUserErrorMessage = (msg: string) => {
-  console.error("\n:::: Solana Publish CLI: Error Message ::::");
-  console.error(msg);
-  console.error("");
+export const generateNetworkSuffix = (rpcUrl: string): string => {
+  let suffix = "";
+
+  if (rpcUrl.indexOf("devnet") != -1)
+    suffix = "?cluster=devnet"
+  else if (rpcUrl.indexOf("testnet") != -1)
+    suffix = "?cluster=testnet"
+  else if (rpcUrl.indexOf("mainnet") != -1)
+    suffix = "?cluster=mainnet"
+
+  return suffix;
+};
+
+export const showMessage = (
+  titleMessage = "",
+  contentMessage = "",
+  isError = false
+) => {
+  console.log(boxen(contentMessage, {
+    title: titleMessage,
+    padding: 1,
+    margin: 1,
+    borderStyle: 'single',
+    borderColor: isError ? "redBright" : "cyan",
+    textAlignment: "left",
+    titleAlignment: "center"
+  }));
 };
 
 const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
