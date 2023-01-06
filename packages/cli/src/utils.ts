@@ -135,12 +135,13 @@ const checkImageExtension = (uri: string): boolean => {
 export const generateNetworkSuffix = (rpcUrl: string): string => {
   let suffix = "";
 
-  if (rpcUrl.indexOf("devnet") != -1)
-    suffix = "?cluster=devnet"
-  else if (rpcUrl.indexOf("testnet") != -1)
-    suffix = "?cluster=testnet"
-  else if (rpcUrl.indexOf("mainnet") != -1)
-    suffix = "?cluster=mainnet"
+  if (rpcUrl.indexOf("devnet") != -1) {
+    suffix = "?cluster=devnet";
+  } else if (rpcUrl.indexOf("testnet") != -1) {
+    suffix = "?cluster=testnet";
+  } else if (rpcUrl.indexOf("mainnet") != -1) {
+    suffix = "?cluster=mainnet";
+  }
 
   return suffix;
 };
