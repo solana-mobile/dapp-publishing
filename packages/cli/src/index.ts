@@ -40,7 +40,9 @@ async function tryWithErrorMessage(block: () => Promise<any>) {
   try {
     await block()
   } catch (e) {
-    showMessage((e as Error | null)?.message ?? "");
+    const errorMsg = (e as Error | null)?.message ?? "";
+
+    showMessage("Error", errorMsg, true);
   }
 }
 
@@ -159,6 +161,11 @@ async function main() {
               url,
               dryRun,
             });
+
+            const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
+            const resultText = "Release NFT successfully minted:\n" + displayUrl;
+
+            showMessage("Success", resultText);
           }
         });
       }
