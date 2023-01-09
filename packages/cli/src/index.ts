@@ -7,7 +7,9 @@ import {
   publishSupportCommand,
   publishUpdateCommand
 } from "./commands/publish/index.js";
-import { checkForSelfUpdate, getConfigFile, parseKeypair, showUserErrorMessage } from "./utils.js";
+import { checkForSelfUpdate, generateNetworkSuffix, getConfigFile, parseKeypair, showMessage } from "./utils.js";
+import terminalLink from "terminal-link";
+import boxen from "boxen";
 
 import * as dotenv from "dotenv";
 
@@ -34,6 +36,16 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   return;
 }
 
+async function tryWithErrorMessage(block: () => Promise<any>) {
+  try {
+    await block()
+  } catch (e) {
+    const errorMsg = (e as Error | null)?.message ?? "";
+
+    showMessage("Error", errorMsg, true);
+  }
+}
+
 async function main() {
   program
     .name("dapp-store")
@@ -54,17 +66,19 @@ async function main() {
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
-      try {
+      tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
         const signer = parseKeypair(keypair);
-
         if (signer) {
-          const result = await createPublisherCommand({ signer, url, dryRun });
+          const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
+
+          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
+
+          showMessage("Success", resultText);
         }
-      } catch (e) {
-        showUserErrorMessage((e as Error | null)?.message ?? "");
-      }
+      });
     });
 
   createCommand
@@ -81,31 +95,30 @@ async function main() {
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
-      try {
+      tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
         const config = await getConfigFile();
 
         if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-          showUserErrorMessage(
-            "Either specify an publisher mint address in the config file, or specify as a CLI argument to this command."
-          );
-          createCommand.showHelpAfterError();
-          return;
+          throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.")
         }
 
         const signer = parseKeypair(keypair);
         if (signer) {
-          await createAppCommand({
+          const result = await createAppCommand({
             publisherMintAddress: publisherMintAddress,
             signer,
             url,
             dryRun,
           });
+
+          const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
+          const resultText = `App NFT successfully minted:\n${displayUrl}`;
+
+          showMessage("Success", resultText);
         }
-      } catch (e) {
-        showUserErrorMessage((e as Error | null)?.message ?? "");
-      }
+      });
     });
 
   createCommand
@@ -126,30 +139,20 @@ async function main() {
       "Path to Android build tools which contains AAPT2"
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
           if (resolvedBuildToolsPath === undefined) {
-            showUserErrorMessage(
-              "Please specify an Android build tools directory in the .env file or via the command line argument."
-            );
-            createCommand.showHelpAfterError();
-            return;
+            throw new Error("Please specify an Android build tools directory in the .env file or via the command line argument.")
           }
 
           const config = await getConfigFile();
-
           if (!hasAddressInConfig(config.app) && !appMintAddress) {
-            showUserErrorMessage(
-              "\n\n::: Either specify an app mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-            );
-            createCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify an app mint address in the config file or specify as a CLI argument to this command")
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             const result = await createReleaseCommand({
               appMintAddress: appMintAddress,
@@ -158,10 +161,13 @@ async function main() {
               url,
               dryRun,
             });
+
+            const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
+            const resultText = `Release NFT successfully minted:\n${displayUrl}`;
+
+            showMessage("Success", resultText);
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
@@ -177,29 +183,24 @@ async function main() {
       "Path to Android build tools which contains AAPT2"
     )
     .action(async ({ keypair, buildToolsPath }) => {
-      try {
+      tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
         const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
         if (resolvedBuildToolsPath === undefined) {
-          showUserErrorMessage(
-            "Please specify an Android build tools directory in the .env file or via the command line argument."
-          );
-          createCommand.showHelpAfterError();
-          return;
+          throw new Error("Please specify an Android build tools directory in the .env file or via the command line argument.")
         }
 
         const signer = parseKeypair(keypair);
-
         if (signer) {
           await validateCommand({
             signer,
             buildToolsPath: resolvedBuildToolsPath,
           });
+
+          //TODO: Add pretty formatting here, but will require more work than other sections
         }
-      } catch (e) {
-        showUserErrorMessage((e as Error | null)?.message ?? "");
-      }
+      });
     });
 
   const publishCommand = program
@@ -246,17 +247,13 @@ async function main() {
         requestorIsAuthorized,
         dryRun,
       }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
@@ -270,10 +267,11 @@ async function main() {
               compliesWithSolanaDappStorePolicies,
               requestorIsAuthorized,
             });
+
+            const resultText = "Successfully submitted to the Solana Mobile dApp publisher portal";
+            showMessage("Success", resultText);
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
@@ -319,21 +317,16 @@ async function main() {
         critical,
         dryRun,
       }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             await publishUpdateCommand({
               appMintAddress,
@@ -345,10 +338,11 @@ async function main() {
               requestorIsAuthorized,
               critical,
             });
+
+            const resultText = "dApp successfully updated on the publisher portal";
+            showMessage("Success", resultText);
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
@@ -389,21 +383,16 @@ async function main() {
         critical,
         dryRun,
       }) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             await publishRemoveCommand({
               appMintAddress,
@@ -414,10 +403,11 @@ async function main() {
               requestorIsAuthorized,
               critical,
             });
+
+            const resultText = "dApp successfully removed from the publisher portal";
+            showMessage("Success", resultText);
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        })
       }
     );
 
@@ -452,21 +442,16 @@ async function main() {
         requestDetails,
         { appMintAddress, releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
       ) => {
-        try {
+        tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
 
           const config = await getConfigFile();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
-            showUserErrorMessage(
-              "\n\n::: Either specify an release mint address in the config file, or specify as a CLI argument to this command. :::\n\n"
-            );
-            publishCommand.showHelpAfterError();
-            return;
+            throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
           }
 
           const signer = parseKeypair(keypair);
-
           if (signer) {
             await publishSupportCommand({
               appMintAddress,
@@ -477,10 +462,11 @@ async function main() {
               requestorIsAuthorized,
               requestDetails,
             });
+
+            const resultText = "Support request sent successfully";
+            showMessage("Success", resultText);
           }
-        } catch (e) {
-          showUserErrorMessage((e as Error | null)?.message ?? "");
-        }
+        });
       }
     );
 
