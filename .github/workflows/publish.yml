@@ -22,13 +22,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'pnpm'
 
       - name: Install dependencies and build 🔧
         id: install-deps
         run: pnpm run build
 
       - name: Publish package on NPM 📦
-        id: npm-publish
+        id: pnpm-publish
+        if: ${{ github.event_name == 'release' && startsWith(github.event.release.tag_name, 'v') }}
         run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
