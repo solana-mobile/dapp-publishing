@@ -74,7 +74,7 @@ async function main() {
           const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
 
           const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-          const resultText = "Publisher NFT successfully minted:\n" + displayUrl;
+          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
 
           showMessage("Success", resultText);
         }
@@ -114,7 +114,7 @@ async function main() {
           });
 
           const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
-          const resultText = "App NFT successfully minted:\n" + displayUrl;
+          const resultText = `App NFT successfully minted:\n${displayUrl}`;
 
           showMessage("Success", resultText);
         }
@@ -163,7 +163,7 @@ async function main() {
             });
 
             const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
-            const resultText = "Release NFT successfully minted:\n" + displayUrl;
+            const resultText = `Release NFT successfully minted:\n${displayUrl}`;
 
             showMessage("Success", resultText);
           }
