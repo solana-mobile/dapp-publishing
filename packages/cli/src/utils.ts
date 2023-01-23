@@ -132,14 +132,32 @@ const checkImageExtension = (uri: string): boolean => {
   );
 };
 
+export const isDevnet = (rpcUrl: string): boolean => {
+  return rpcUrl.indexOf("devnet") != -1;
+};
+
+export const isTestnet = (rpcUrl: string): boolean => {
+  return rpcUrl.indexOf("testnet") != -1;
+};
+
+export const isMainnet = (rpcUrl: string): boolean => {
+  return rpcUrl.indexOf("mainnet") != -1;
+};
+
+export const checkSubmissionNetwork = (rpcUrl: string) => {
+  if (isDevnet(rpcUrl) || isTestnet(rpcUrl)) {
+    throw new Error("Thank you, but the Solana Mobile dApp publisher portal only supports mainnet submissions.");
+  }
+};
+
 export const generateNetworkSuffix = (rpcUrl: string): string => {
   let suffix = "";
 
-  if (rpcUrl.indexOf("devnet") != -1) {
+  if (isDevnet(rpcUrl)) {
     suffix = "?cluster=devnet";
-  } else if (rpcUrl.indexOf("testnet") != -1) {
+  } else if (isTestnet(rpcUrl)) {
     suffix = "?cluster=testnet";
-  } else if (rpcUrl.indexOf("mainnet") != -1) {
+  } else if (isMainnet(rpcUrl)) {
     suffix = "?cluster=mainnet";
   }
 

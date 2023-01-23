@@ -7,7 +7,7 @@ import {
   publishSupportCommand,
   publishUpdateCommand
 } from "./commands/publish/index.js";
-import { checkForSelfUpdate, generateNetworkSuffix, getConfigFile, parseKeypair, showMessage } from "./utils.js";
+import { checkForSelfUpdate, checkSubmissionNetwork, generateNetworkSuffix, getConfigFile, parseKeypair, showMessage } from "./utils.js";
 import terminalLink from "terminal-link";
 import boxen from "boxen";
 
@@ -249,6 +249,7 @@ async function main() {
       }) => {
         tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
+          await checkSubmissionNetwork(url);
 
           const config = await getConfigFile();
 
@@ -319,6 +320,7 @@ async function main() {
       }) => {
         tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
+          await checkSubmissionNetwork(url);
 
           const config = await getConfigFile();
 
@@ -385,6 +387,7 @@ async function main() {
       }) => {
         tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
+          await checkSubmissionNetwork(url);
 
           const config = await getConfigFile();
 
@@ -444,6 +447,7 @@ async function main() {
       ) => {
         tryWithErrorMessage(async () => {
           await checkForSelfUpdate();
+          await checkSubmissionNetwork(url);
 
           const config = await getConfigFile();
 
