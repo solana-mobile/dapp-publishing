@@ -140,10 +140,6 @@ export const isTestnet = (rpcUrl: string): boolean => {
   return rpcUrl.indexOf("testnet") != -1;
 };
 
-export const isMainnet = (rpcUrl: string): boolean => {
-  return rpcUrl.indexOf("mainnet") != -1;
-};
-
 export const checkSubmissionNetwork = (rpcUrl: string) => {
   if (isDevnet(rpcUrl) || isTestnet(rpcUrl)) {
     throw new Error("Thank you, but the Solana Mobile dApp publisher portal only supports mainnet submissions.");
@@ -157,7 +153,7 @@ export const generateNetworkSuffix = (rpcUrl: string): string => {
     suffix = "?cluster=devnet";
   } else if (isTestnet(rpcUrl)) {
     suffix = "?cluster=testnet";
-  } else if (isMainnet(rpcUrl)) {
+  } else {
     suffix = "?cluster=mainnet";
   }
 
