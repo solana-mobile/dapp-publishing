@@ -79,7 +79,7 @@ export const createReleaseJson = async (
 
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
     schema_version: "0.2.4",
-    name: "Release: " + appDetails.name,
+    name: appDetails.name,
     description: `Release NFT for ${appDetails.name} version ${releaseDetails.android_details.version}`,
     image: appDetails.icon!,
     external_url: appDetails.urls.website,
