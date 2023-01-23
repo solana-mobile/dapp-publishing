@@ -142,7 +142,7 @@ export const isTestnet = (rpcUrl: string): boolean => {
 
 export const checkSubmissionNetwork = (rpcUrl: string) => {
   if (isDevnet(rpcUrl) || isTestnet(rpcUrl)) {
-    throw new Error("Thank you, but the Solana Mobile dApp publisher portal only supports mainnet submissions.");
+    throw new Error("It looks like you are attempting to submit a request with a devnet or testnet RPC endpoint. Please ensure that your NFTs are minted on mainnet beta, and re-run with a mainnet beta RPC endpoint.");
   }
 };
 
