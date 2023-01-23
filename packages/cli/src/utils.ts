@@ -132,14 +132,28 @@ const checkImageExtension = (uri: string): boolean => {
   );
 };
 
+export const isDevnet = (rpcUrl: string): boolean => {
+  return rpcUrl.indexOf("devnet") != -1;
+};
+
+export const isTestnet = (rpcUrl: string): boolean => {
+  return rpcUrl.indexOf("testnet") != -1;
+};
+
+export const checkSubmissionNetwork = (rpcUrl: string) => {
+  if (isDevnet(rpcUrl) || isTestnet(rpcUrl)) {
+    throw new Error("It looks like you are attempting to submit a request with a devnet or testnet RPC endpoint. Please ensure that your NFTs are minted on mainnet beta, and re-run with a mainnet beta RPC endpoint.");
+  }
+};
+
 export const generateNetworkSuffix = (rpcUrl: string): string => {
   let suffix = "";
 
-  if (rpcUrl.indexOf("devnet") != -1) {
+  if (isDevnet(rpcUrl)) {
     suffix = "?cluster=devnet";
-  } else if (rpcUrl.indexOf("testnet") != -1) {
+  } else if (isTestnet(rpcUrl)) {
     suffix = "?cluster=testnet";
-  } else if (rpcUrl.indexOf("mainnet") != -1) {
+  } else {
     suffix = "?cluster=mainnet";
   }
 
