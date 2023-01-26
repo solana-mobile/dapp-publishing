@@ -1,7 +1,6 @@
-# Publishing to the Solana dApp Store
+[\[Home\]](../README.md)
 
-## Status
-The Solana dApp Store is currently in the **PILOT** phase, and only accepting submissions by invited parties. Other submissions will be (politely) rejected.
+# Publishing to the Solana dApp Store
 
 ## Overview
 Publishing a dApp to the Solana dApp Store involves two steps:
