@@ -49,7 +49,7 @@ async function tryWithErrorMessage(block: () => Promise<any>) {
 async function main() {
   program
     .name("dapp-store")
-    .version("0.1.8")
+    .version("0.1.9")
     .description("CLI to assist with publishing to the Saga Dapp Store");
 
   const createCommand = program
