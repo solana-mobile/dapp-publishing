@@ -46,7 +46,7 @@ Want to know how your app is represented on-chain by NFTs? Check out the [specif
 
 ## Discord
 
-Come chat with us on our [Discord](https://discord.gg/solanamobile) in the `#sdk` channel
+Come chat with us on our [Discord](https://discord.gg/solanamobile) in the `#dapp-store` channel
 
 ## Publisher support
 

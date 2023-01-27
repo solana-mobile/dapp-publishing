@@ -17,4 +17,4 @@
 **Q.** How do I build an app so it’s more likely to be accepted on the Solana dApp Store?<br/>
 **A.** We recommend you review the [Solana Mobile Stack](https://github.com/solana-mobile/solana-mobile-stack-sdk) Github and integrate it with the SDK that corresponds to your use case, in order to transact with wallets and dApps seamlessly.
 
-_Have more questions? Come ask us on [Discord](https://discord.gg/solanamobile) in the `#sdk` channel._
+_Have more questions? Come ask us on [Discord](https://discord.gg/solanamobile) in the `#dapp-store` channel._
