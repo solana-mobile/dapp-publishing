@@ -14,6 +14,7 @@ import { imageSize } from "image-size";
 import updateNotifier from "update-notifier";
 import cliPackage from "./package.json" assert { type: "json" };
 import boxen from "boxen";
+import ver from "semver";
 
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
@@ -26,7 +27,10 @@ export const checkForSelfUpdate = async () => {
   const notifier = updateNotifier({ pkg: cliPackage });
   const updateInfo = await notifier.fetchInfo();
 
-  if (updateInfo.current != updateInfo.latest) {
+  const latestVer = new ver.SemVer(updateInfo.latest);
+  const currentVer = new ver.SemVer(updateInfo.current);
+
+  if (latestVer.major > currentVer.major || latestVer.minor > currentVer.minor) {
     throw new Error("Please update to the latest version of the dApp Store CLI before proceeding.");
   }
 };
