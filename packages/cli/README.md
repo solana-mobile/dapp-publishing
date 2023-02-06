@@ -25,24 +25,36 @@ echo "ANDROID_TOOLS_DIR=\"<path_to_android_sdk_build_tools_dir>\"" > .env
 In your application folder (e.g., `example`):
 
 ```shell
-cd example
+mkdir publishing
+cd publishing
+
+pnpm init
 pnpm install --save-dev @solana-mobile/dapp-store-cli
+npx dapp-store init
 npx dapp-store --help
 ```
 
 or with `yarn`
 
 ```shell
-cd example
+mkdir publishing
+cd publishing
+
+yarn init
 yarn add @solana-mobile/dapp-store-cli
+yarn run dapp-store init
 yarn run dapp-store --help
 ```
 
 or with `npm`
 
 ```shell
-cd example
+mkdir publishing
+cd publishing
+
+npm init
 npm install --save-dev @solana-mobile/dapp-store-cli
+npx dapp-store init
 npx dapp-store --help
 ```
 
@@ -71,55 +83,4 @@ The `dapp-store` CLI handles rote tasks like uploading assets to immutable file 
 
 ### CLI Updates
 
-The CLI will automatically check for updated versions on npm and restrict operations if the version bump is significant enough. If your CI/CD deployments fail be sure to check if there is a required update. 
-
-## Configuration
-
-In `config.yaml`:
-
-```yaml
-publisher:
-  name: My new publisher name
-  address: BrWNieTsfdkkwMaz2A616i1fkqSjxk2kHhTn1Y44pi48
-  website: https://solanamobile.com
-  email: hello@solanamobile.com
-  media:
-    - purpose: icon
-      uri: ./media/publisher_icon.jpeg
-app:
-  name: My new app name
-  address: 4xE4MDVHfFAXMKKzqrJ2v1HxcgYgdoV98nuvd8SRKhWP
-  android_package: com.company.dapp
-  urls:
-    license_url: http://cdn.org/license.html
-    copyright_url: http://cdn.org/copyright.html
-    privacy_policy_url: http://cdn.org/privacy.html
-    website: http://cdn.org
-  media:
-    - purpose: icon
-      uri: ./media/app_icon.jpeg
-release:
-  address: HeXP8pLxxzWPo1j7FwsytrCBN9Q7HZ3MA8TVCVGj5eCA
-  media:
-    - purpose: screenshot
-      uri: ./media/app_screenshot.png
-  files:
-    - purpose: install
-      uri: ./files/app-debug.apk
-  catalog:
-    en-US:
-      name: |
-        A nice, helpful dApp name
-      long_description: |
-        Some wonderful release notes, in long-form
-      new_in_version: |
-        Something new in this version
-      saga_features: |
-        Some information about saga specific features
-solana_mobile_dapp_publisher_portal:
-  google_store_package: com.company.dapp.otherpkg
-  testing_instructions: >
-    Here are some steps informing Solana Mobile of how to test this dapp. You
-    can specify multiple lines of instructions. For example, if a login is
-    needed, you would add those details here.
-```
+The CLI will automatically check for updated versions on npm and restrict operations if the version bump is significant enough. If your CI/CD deployments fail be sure to check if there is a required update.

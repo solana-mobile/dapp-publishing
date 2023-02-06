@@ -9,11 +9,19 @@ import type {
 } from "../types.js";
 
 // eslint-disable-next-line require-extensions/require-extensions
-import publisherSchema from "./schemas/publisherJsonMetadata.json" assert { type: "json" };
+import publisherSchema from "../schemas/publisherJsonMetadata.json" assert { type: "json" };
 // eslint-disable-next-line require-extensions/require-extensions
-import appSchema from "./schemas/appJsonMetadata.json" assert { type: "json" };
+import appSchema from "../schemas/appJsonMetadata.json" assert { type: "json" };
 // eslint-disable-next-line require-extensions/require-extensions
-import releaseSchema from "./schemas/releaseJsonMetadata.json" assert { type: "json" };
+import releaseSchema from "../schemas/releaseJsonMetadata.json" assert { type: "json" };
+import { isMetaplexFile } from "@metaplex-foundation/js";
+
+export const metaplexFileReplacer = (k: any, v: any) => {
+  if (isMetaplexFile(v)) {
+    return "(suppressed)";
+  }
+  return v;
+};
 
 export const validatePublisher = (publisherJson: PublisherMetadata) => {
   const jsonToValidate = { ...publisherJson };

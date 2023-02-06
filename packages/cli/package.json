@@ -28,7 +28,7 @@
   },
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
-    "prebuild": "pnpm run clean"
+    "prebuild": "pnpm run clean && node src/schemas/schemagen.js"
   },
   "devDependencies": {
     "@metaplex-foundation/js": "0.17.11",
@@ -49,6 +49,7 @@
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
     "esm": "^3.2.25",
+    "generate-schema": "^2.6.0",
     "image-size": "^1.0.2",
     "js-yaml": "^4.1.0",
     "semver": "^7.3.8",

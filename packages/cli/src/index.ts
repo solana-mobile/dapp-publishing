@@ -7,11 +7,20 @@ import {
   publishSupportCommand,
   publishUpdateCommand
 } from "./commands/publish/index.js";
-import { checkForSelfUpdate, checkSubmissionNetwork, generateNetworkSuffix, getConfigFile, parseKeypair, showMessage } from "./utils.js";
+import {
+  checkForSelfUpdate,
+  checkSubmissionNetwork,
+  Constants,
+  generateNetworkSuffix,
+  getConfigFile,
+  parseKeypair,
+  showMessage
+} from "./utils.js";
 import terminalLink from "terminal-link";
 import boxen from "boxen";
 
 import * as dotenv from "dotenv";
+import { initScaffold } from "./commands/scaffolding/index.js";
 
 dotenv.config();
 
@@ -49,8 +58,19 @@ async function tryWithErrorMessage(block: () => Promise<any>) {
 async function main() {
   program
     .name("dapp-store")
-    .version("0.1.9")
+    .version(Constants.CLI_VERSION)
     .description("CLI to assist with publishing to the Saga Dapp Store");
+
+  const initCommand = program
+    .command("init")
+    .description("First-time initialization of tooling configuration")
+    .action(async () => {
+      tryWithErrorMessage(async () => {
+        const msg = initScaffold();
+
+        showMessage("Initialized", msg);
+      })
+    });
 
   const createCommand = program
     .command("create")
@@ -226,11 +246,11 @@ async function main() {
     )
     .option(
       "-a, --app-mint-address <app-mint-address>",
-      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the app NFT. If not specified, the value from your config file will be used."
     )
     .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the release NFT. If not specified, the value from your config file will be used."
     )
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(
@@ -295,11 +315,11 @@ async function main() {
     )
     .option(
       "-a, --app-mint-address <app-mint-address>",
-      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the app NFT. If not specified, the value from your config file will be used."
     )
     .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the release NFT. If not specified, the value from your config file will be used."
     )
     .option("-c, --critical", "Flag for a critical app update request")
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
@@ -363,11 +383,11 @@ async function main() {
     )
     .option(
       "-a, --app-mint-address <app-mint-address>",
-      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the app NFT. If not specified, the value from your config file will be used."
     )
     .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the release NFT. If not specified, the value from your config file will be used."
     )
     .option("-c, --critical", "Flag for a critical app removal request")
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
@@ -429,11 +449,11 @@ async function main() {
     )
     .option(
       "-a, --app-mint-address <app-mint-address>",
-      "The mint address of the app NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the app NFT. If not specified, the value from your config file will be used."
     )
     .option(
       "-r, --release-mint-address <release-mint-address>",
-      "The mint address of the release NFT. If not specified, the value from config.yaml will be used."
+      "The mint address of the release NFT. If not specified, the value from your config file will be used."
     )
     .option("-u, --url <url>", "RPC URL", "https://devnet.genesysgo.net")
     .option(

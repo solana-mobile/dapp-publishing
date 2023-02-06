@@ -1,4 +1,4 @@
-import { mintNft } from "../utils.js";
+import { Constants, mintNft } from "../utils.js";
 import type { App, AppMetadata, Context } from "../types.js";
 import type { PublicKey, Signer } from "@solana/web3.js";
 import debugModule from "debug";
@@ -11,7 +11,7 @@ export const createAppJson = (
   publisherAddress: PublicKey
 ): AppMetadata => {
   const appMetadata = {
-    schema_version: "0.2.4",
+    schema_version: Constants.PUBLISHING_SCHEMA_VER,
     name: app.name,
     image: app.icon!,
     external_url: app.urls.website,

@@ -21,6 +21,11 @@ import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
 
+export class Constants {
+  static CLI_VERSION = "0.1.9";
+  static CONFIG_FILE_NAME = "config.yaml";
+}
+
 export const debug = debugModule("CLI");
 
 export const checkForSelfUpdate = async () => {
@@ -60,7 +65,7 @@ const AaptPrefixes = {
 export const getConfigFile = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
-  const configFilePath = `${process.cwd()}/config.yaml`;
+  const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
 
   const config = await getConfig(configFilePath);
 
@@ -266,7 +271,7 @@ export const saveToConfig = async ({
   };
 
   // TODO(jon): Verify the contents of the YAML file
-  fs.writeFileSync(`${process.cwd()}/config.yaml`, dump(newConfig));
+  fs.writeFileSync(`${process.cwd()}/${Constants.CONFIG_FILE_NAME}`, dump(newConfig));
 };
 
 export const getMetaplexInstance = (

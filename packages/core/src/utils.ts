@@ -5,7 +5,11 @@ import type {
   MetaplexFile,
   TransactionBuilder,
 } from "@metaplex-foundation/js";
+import { isMetaplexFile } from "@metaplex-foundation/js";
 
+export class Constants {
+  static PUBLISHING_SCHEMA_VER = "0.2.4";
+}
 export const truncateAddress = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(
     address.length - 4,

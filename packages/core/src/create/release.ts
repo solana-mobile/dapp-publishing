@@ -5,9 +5,9 @@ import mime from "mime";
 import debugModule from "debug";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { toMetaplexFile } from "@metaplex-foundation/js";
-import { mintNft, truncateAddress } from "../utils.js";
+import { Constants, mintNft, truncateAddress } from "../utils.js";
 import * as util from "util";
-import { validateRelease } from "../validate/index.js";
+import { metaplexFileReplacer, validateRelease } from "../validate/index.js";
 import { imageSize } from "image-size";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
@@ -17,7 +17,6 @@ import type {
   MetaplexFileReleaseJsonMetadata,
   Publisher,
   Release,
-  ReleaseJsonMetadata
 } from "../types.js";
 
 const runImgSize = util.promisify(imageSize);
@@ -28,16 +27,17 @@ type File = ArrayElement<Release["files"]>;
 type Media = ArrayElement<Release["media"]>;
 
 const getFileMetadata = async (item: Media | File) => {
-  const file = path.join(process.cwd(), item.uri);
+  const file = path.join(process.cwd(), item.uri ?? "");
   debug({ file });
+
   // TODO(jon): This stuff should be probably be in `packages/cli`
   const mediaBuffer = await fs.promises.readFile(file);
   const size = (await fs.promises.stat(file)).size;
   const hash = createHash("sha256").update(mediaBuffer).digest("hex");
   const metadata = {
     purpose: item.purpose,
-    uri: toMetaplexFile(mediaBuffer, item.uri),
-    mime: mime.getType(item.uri) || "",
+    uri: toMetaplexFile(mediaBuffer, item.uri ?? ""),
+    mime: mime.getType(item.uri ?? "") || "",
     size,
     sha256: hash,
   };
@@ -46,7 +46,7 @@ const getFileMetadata = async (item: Media | File) => {
 };
 
 const getMediaMetadata = async (item: Media) => {
-  const size = await runImgSize(item.uri);
+  const size = await runImgSize(item.uri ?? "");
   const metadata = await getFileMetadata(item);
 
   return {
@@ -78,7 +78,7 @@ export const createReleaseJson = async (
   }
 
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
-    schema_version: "0.2.4",
+    schema_version: Constants.PUBLISHING_SCHEMA_VER,
     name: appDetails.name,
     description: `Release NFT for ${appDetails.name} version ${releaseDetails.android_details.version}`,
     image: appDetails.icon!,
@@ -157,7 +157,9 @@ export const createRelease = async (
     { releaseDetails, appDetails, publisherDetails },
     publisher.publicKey
   );
-  validateRelease(releaseJson);
+
+  const suppressedJson = JSON.stringify(releaseJson, metaplexFileReplacer, 2);
+  validateRelease(JSON.parse(suppressedJson));
 
   const txBuilder = await mintNft(metaplex, releaseJson, {
     useNewMint: releaseMintAddress,
