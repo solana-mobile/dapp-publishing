@@ -42,6 +42,7 @@
   "dependencies": {
     "@solana-mobile/dapp-store-publishing-tools": "workspace:0.1.9",
     "@solana/web3.js": "1.68.0",
+    "@types/semver": "^7.3.13",
     "ajv": "^8.11.0",
     "boxen": "^7.0.1",
     "commander": "^9.4.1",
@@ -50,6 +51,7 @@
     "esm": "^3.2.25",
     "image-size": "^1.0.2",
     "js-yaml": "^4.1.0",
+    "semver": "^7.3.8",
     "terminal-link": "^3.0.0",
     "tweetnacl": "1.0.3",
     "update-notifier": "^6.0.2"

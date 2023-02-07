@@ -69,6 +69,10 @@ Repeat steps 3. and 4. as needed!
 
 The `dapp-store` CLI handles rote tasks like uploading assets to immutable file storage and i18n. However, it is by no means the only way to create these NFTs—all information about the requirements are specified in this repository, and the packages have been designed to be portable to other client contexts besides the CLI.
 
+### CLI Updates
+
+The CLI will automatically check for updated versions on npm and restrict operations if the version bump is significant enough. If your CI/CD deployments fail be sure to check if there is a required update. 
+
 ## Configuration
 
 In `config.yaml`:
