@@ -1,8 +1,9 @@
-import { Connection, Keypair } from "@solana/web3.js";
+import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
 import { getConfigFile } from "../../utils.js";
+import { Buffer } from "buffer";
 
 type PublishSubmitCommandInput = {
   appMintAddress: string;
@@ -42,19 +43,38 @@ export const publishSubmitCommand = async ({
     release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigFile();
+
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
-  await publishSubmit(
-    { connection, sign },
-    {
-      appMintAddress: appMintAddress ?? appDetails.address,
-      releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
-      publisherDetails,
-      solanaMobileDappPublisherPortalDetails,
-      compliesWithSolanaDappStorePolicies,
-      requestorIsAuthorized,
-    },
-    dryRun
-  );
+  const pubAddr = publisherDetails.address;
+  const appAddr = appMintAddress ?? appDetails.address;
+  const releaseAddr = releaseMintAddress ?? releaseDetails.address;
+
+  try {
+    const results = await connection.getMultipleAccountsInfo([
+      new PublicKey(pubAddr),
+      new PublicKey(appAddr),
+      new PublicKey(releaseAddr),
+    ]);
+
+    if (results?.length == 3) {
+      await publishSubmit(
+        { connection, sign },
+        {
+          appMintAddress: appAddr,
+          releaseMintAddress: releaseAddr,
+          publisherDetails,
+          solanaMobileDappPublisherPortalDetails,
+          compliesWithSolanaDappStorePolicies,
+          requestorIsAuthorized,
+        },
+        dryRun
+      );
+    } else {
+      throw new Error("");
+    }
+  } catch (e) {
+    throw new Error("Please ensure you have minted all of your NFTs before submitting to the dApp store.");
+  }
 };
