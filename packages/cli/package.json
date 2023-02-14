@@ -28,7 +28,7 @@
   },
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
-    "prebuild": "pnpm run clean && node src/schemas/schemagen.js"
+    "prebuild": "pnpm run clean && node src/prebuild_schema/schemagen.js"
   },
   "devDependencies": {
     "@metaplex-foundation/js": "0.17.11",

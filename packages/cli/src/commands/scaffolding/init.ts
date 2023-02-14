@@ -11,9 +11,9 @@ export const initScaffold = (): string => {
 
   if (fs.existsSync(outFile)) {
     throw Error("Configuration file already present; please use to intialize a new config file.");
-  } else {
-    fs.writeFileSync(outFile, dump(releaseSchema));
-
-    return `Your configuration file was created: ${outputYaml}`;
   }
+
+  fs.writeFileSync(outFile, dump(releaseSchema));
+
+  return `Your configuration file was created: ${outputYaml}`;
 };

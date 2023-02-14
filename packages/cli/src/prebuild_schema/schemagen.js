@@ -3,7 +3,7 @@ import yaml from "js-yaml";
 import generateSchema from "generate-schema";
 
 try {
-  const yamlSrc = fs.readFileSync('./src/schemas/publishing_source.yaml', 'utf8')
+  const yamlSrc = fs.readFileSync('./src/prebuild_schema/publishing_source.yaml', 'utf8')
   const convertedYaml = yaml.load(yamlSrc);
   fs.writeFileSync('./src/generated/config_obj.json', Buffer.from(JSON.stringify(convertedYaml)), 'utf-8');
 
