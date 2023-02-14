@@ -18,7 +18,7 @@ import { isMetaplexFile } from "@metaplex-foundation/js";
 
 export const metaplexFileReplacer = (k: any, v: any) => {
   if (isMetaplexFile(v)) {
-    return "(suppressed)";
+    return "https://temp-asset-path";
   }
   return v;
 };
