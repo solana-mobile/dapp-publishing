@@ -25,8 +25,8 @@
   },
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
-    "prebuild": "pnpm run clean",
-    "generate-types": "json2ts -i src/validate/schemas -o src/validate/generated"
+    "prebuild": "pnpm run clean && pnpm run generate-types",
+    "generate-types": "json2ts -i src/schemas -o src/generated"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

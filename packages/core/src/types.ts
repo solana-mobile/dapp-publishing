@@ -4,9 +4,9 @@ import type {
   ReleaseJsonMetadata,
   AppJsonMetadata,
   PublisherJsonMetadata,
-} from "./validate/generated/index.js";
+} from "./generated";
 
-export type { ReleaseJsonMetadata } from "./validate/generated/index.js";
+export type { ReleaseJsonMetadata } from "./generated";
 
 export type PublisherMetadata = Omit<PublisherJsonMetadata, "image"> & {
   image: string | MetaplexFile;

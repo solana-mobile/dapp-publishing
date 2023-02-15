@@ -3,7 +3,7 @@ import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
 import { validatePublisher } from "../validate/index.js";
-import { mintNft } from "../utils.js";
+import { Constants, mintNft } from "../utils.js";
 import type { Context, Publisher, PublisherMetadata } from "../types.js";
 
 const debug = debugModule("PUBLISHER");
@@ -12,7 +12,7 @@ export const createPublisherJson = (
   publisher: Publisher
 ): PublisherMetadata => {
   const publisherMetadata = {
-    schema_version: "0.2.4",
+    schema_version: Constants.PUBLISHING_SCHEMA_VER,
     name: publisher.name,
     image: publisher.icon!,
     external_url: publisher.website,

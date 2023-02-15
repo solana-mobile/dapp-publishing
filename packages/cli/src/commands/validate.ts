@@ -5,22 +5,13 @@ import {
   validateApp,
   validatePublisher,
   validateRelease,
+  metaplexFileReplacer,
 } from "@solana-mobile/dapp-store-publishing-tools";
 import { debug, getConfigFile } from "../utils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { isMetaplexFile } from "@metaplex-foundation/js";
-
-const metaplexFileReplacer = (k: any, v: any) => {
-  if (isMetaplexFile(v)) {
-    return {
-      ...v,
-      buffer: "(suppressed)",
-    };
-  }
-  return v;
-}
 
 export const validateCommand = async ({
   signer,
@@ -67,10 +58,12 @@ export const validateCommand = async ({
     { releaseDetails, appDetails, publisherDetails },
     signer.publicKey
   );
-  debug("releaseJson=", JSON.stringify({ releaseJson }, metaplexFileReplacer, 2));
+
+  const objStringified = JSON.stringify(releaseJson, metaplexFileReplacer, 2);
+  debug("releaseJson=", objStringified);
 
   try {
-    validateRelease(releaseJson);
+    validateRelease(JSON.parse(objStringified));
     console.info(`Release JSON valid!`);
   } catch (e) {
     console.error(e);

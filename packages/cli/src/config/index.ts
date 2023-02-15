@@ -10,7 +10,7 @@ import { load } from "js-yaml";
 import Ajv from "ajv";
 
 // eslint-disable-next-line require-extensions/require-extensions
-import schemaJson from "./schema.json" assert { type: "json" };
+import schemaJson from "../generated/config_schema.json" assert { type: "json" };
 
 // TODO: Add version number return here
 export interface CLIConfig {
@@ -25,7 +25,6 @@ const validate = ajv.compile(schemaJson);
 
 export const getConfig = async (configPath: string) => {
   const configFile = await fs.readFile(configPath, "utf-8");
-  const configJson = load(configFile);
 
   const valid = validate(load(configFile) as object);
 
