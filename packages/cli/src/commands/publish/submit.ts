@@ -2,7 +2,7 @@ import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
-import { getConfigFile } from "../../utils.js";
+import { checkMintedStatus, getConfigFile } from "../../utils.js";
 import { Buffer } from "buffer";
 
 type PublishSubmitCommandInput = {
@@ -51,30 +51,18 @@ export const publishSubmitCommand = async ({
   const appAddr = appMintAddress ?? appDetails.address;
   const releaseAddr = releaseMintAddress ?? releaseDetails.address;
 
-  try {
-    const results = await connection.getMultipleAccountsInfo([
-      new PublicKey(pubAddr),
-      new PublicKey(appAddr),
-      new PublicKey(releaseAddr),
-    ]);
+  await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
-    if (results?.length == 3) {
-      await publishSubmit(
-        { connection, sign },
-        {
-          appMintAddress: appAddr,
-          releaseMintAddress: releaseAddr,
-          publisherDetails,
-          solanaMobileDappPublisherPortalDetails,
-          compliesWithSolanaDappStorePolicies,
-          requestorIsAuthorized,
-        },
-        dryRun
-      );
-    } else {
-      throw new Error("");
-    }
-  } catch (e) {
-    throw new Error("Please ensure you have minted all of your NFTs before submitting to the dApp store.");
-  }
+  await publishSubmit(
+    { connection, sign },
+    {
+      appMintAddress: appAddr,
+      releaseMintAddress: releaseAddr,
+      publisherDetails,
+      solanaMobileDappPublisherPortalDetails,
+      compliesWithSolanaDappStorePolicies,
+      requestorIsAuthorized,
+    },
+    dryRun
+  );
 };
