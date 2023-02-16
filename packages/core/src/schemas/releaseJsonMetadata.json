@@ -48,7 +48,7 @@
                 },
                 "website": {
                   "type": "string",
-                  "pattern": "^(https?://[^/]+)[/]{0,1}"
+                  "pattern": "^https://"
                 },
                 "contact": {
                   "type": "string",
@@ -65,15 +65,15 @@
                 },
                 "license_url": {
                   "type": "string",
-                  "pattern": "^(https?://[^/]+)[/]{0,1}"
+                  "pattern": "^https://"
                 },
                 "copyright_url": {
                   "type": "string",
-                  "pattern": "^(https?://[^/]+)[/]{0,1}"
+                  "pattern": "^https://"
                 },
                 "privacy_policy_url": {
                   "type": "string",
-                  "pattern": "^(https?://[^/]+)[/]{0,1}"
+                  "pattern": "^https://"
                 },
                 "localized_resources": {
                   "type": "object",
