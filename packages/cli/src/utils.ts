@@ -47,7 +47,8 @@ export const checkMintedStatus = async (conn: Connection, pubAddr: string, appAd
     new PublicKey(releaseAddr),
   ]);
 
-  if (results?.length != 3) {
+  const rentAccounts = results.filter((item) => !(item == undefined) && item?.lamports > 0);
+  if (rentAccounts?.length != 3) {
     throw new Error("Please ensure you have minted all of your NFTs before submitting to the dApp store.");
   }
 };
