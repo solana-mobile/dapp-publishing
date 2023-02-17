@@ -1,8 +1,9 @@
-import { Connection, Keypair } from "@solana/web3.js";
+import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
-import { getConfigFile } from "../../utils.js";
+import { checkMintedStatus, getConfigFile } from "../../utils.js";
+import { Buffer } from "buffer";
 
 type PublishSubmitCommandInput = {
   appMintAddress: string;
@@ -42,14 +43,21 @@ export const publishSubmitCommand = async ({
     release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigFile();
+
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
+
+  const pubAddr = publisherDetails.address;
+  const appAddr = appMintAddress ?? appDetails.address;
+  const releaseAddr = releaseMintAddress ?? releaseDetails.address;
+
+  await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
   await publishSubmit(
     { connection, sign },
     {
-      appMintAddress: appMintAddress ?? appDetails.address,
-      releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
+      appMintAddress: appAddr,
+      releaseMintAddress: releaseAddr,
       publisherDetails,
       solanaMobileDappPublisherPortalDetails,
       compliesWithSolanaDappStorePolicies,

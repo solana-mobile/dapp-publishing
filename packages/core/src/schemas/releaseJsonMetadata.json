@@ -47,10 +47,12 @@
                   "type": "string"
                 },
                 "website": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^https://"
                 },
                 "contact": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
                 }
               },
               "required": ["name", "website", "contact"]
@@ -62,13 +64,16 @@
                   "type": "string"
                 },
                 "license_url": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^https://"
                 },
                 "copyright_url": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^https://"
                 },
                 "privacy_policy_url": {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^https://"
                 },
                 "localized_resources": {
                   "type": "object",

@@ -1,7 +1,7 @@
 import fs from "fs";
 import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-store-publishing-tools";
 import type { Connection } from "@solana/web3.js";
-import { Keypair } from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import type { CLIConfig } from "./config/index.js";
 import { getConfig } from "./config/index.js";
 import debugModule from "debug";
@@ -37,6 +37,19 @@ export const checkForSelfUpdate = async () => {
 
   if (latestVer.major > currentVer.major || latestVer.minor > currentVer.minor) {
     throw new Error("Please update to the latest version of the dApp Store CLI before proceeding.");
+  }
+};
+
+export const checkMintedStatus = async (conn: Connection, pubAddr: string, appAddr: string, releaseAddr: string) => {
+  const results = await conn.getMultipleAccountsInfo([
+    new PublicKey(pubAddr),
+    new PublicKey(appAddr),
+    new PublicKey(releaseAddr),
+  ]);
+
+  const rentAccounts = results.filter((item) => !(item == undefined) && item?.lamports > 0);
+  if (rentAccounts?.length != 3) {
+    throw new Error("Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.");
   }
 };
 

@@ -11,10 +11,10 @@ app:
   address: ''
   android_package: com.company.dapp
   urls:
-    license_url: http://cdn.org/license.html
-    copyright_url: http://cdn.org/copyright.html
-    privacy_policy_url: http://cdn.org/privacy.html
-    website: http://cdn.org
+    license_url: https://cdn.org/license.html
+    copyright_url: https://cdn.org/copyright.html
+    privacy_policy_url: https://cdn.org/privacy.html
+    website: https://cdn.org
   media:
     - purpose: icon
       uri: ./media/app_icon.jpeg
