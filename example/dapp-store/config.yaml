@@ -1,6 +1,6 @@
 publisher:
   name: Publisher (contains apps)
-  address: GcRW5MzJ7GHpoxWp73UEVTX3F6vq54FpnmqwG3wvdKdp
+  address: ''
   website: https://solanamobile.com
   email: hello@solanamobile.com
   media:
@@ -8,7 +8,7 @@ publisher:
       uri: ./media/publisher_icon.jpeg
 app:
   name: App (contains releases)
-  address: 7Ecc4ApeUnmqneyaTcpqv1sWXDWmPEbVF7TguEqW7fPF
+  address: ''
   android_package: com.company.dapp
   urls:
     license_url: https://cdn.org/license.html
@@ -19,7 +19,7 @@ app:
     - purpose: icon
       uri: ./media/app_icon.jpeg
 release:
-  address: 75i7poGf5sXxfpCrv6Uzv3MHpX7rpuNyE8x5Lwi4Zm6a
+  address: ''
   media:
     - purpose: screenshot
       uri: ./media/app_screenshot.png

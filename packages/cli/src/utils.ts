@@ -49,7 +49,7 @@ export const checkMintedStatus = async (conn: Connection, pubAddr: string, appAd
 
   const rentAccounts = results.filter((item) => !(item == undefined) && item?.lamports > 0);
   if (rentAccounts?.length != 3) {
-    throw new Error("Please ensure you have minted all of your NFTs before submitting to the dApp store.");
+    throw new Error("Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.");
   }
 };
 
