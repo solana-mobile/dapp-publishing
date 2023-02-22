@@ -72,7 +72,7 @@ Release JSON valid!
    _NOTE: this is a one-time operation. Once you have created your publisher, the mint address is recorded in your configuration file_.
 1. Create the dApp NFT
    ```
-   npx dapp-store create dApp -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
+   npx dapp-store create app -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
    ```
    _NOTE: this is a one-time operation. Once you have created your dApp, the mint address is recorded in your configuration file_.
 1. Create the release NFT
