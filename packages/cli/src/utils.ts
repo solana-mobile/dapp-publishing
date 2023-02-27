@@ -101,37 +101,57 @@ export const getConfigFile = async (
   const publisherIcon = config.publisher.media?.find(
     (asset: any) => asset.purpose === "icon"
   )?.uri;
+
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
       throw new Error("Please check the path to your Publisher icon and ensure the file is a jpeg, png, or webp file.");
     }
 
-    const iconBuffer = await fs.promises.readFile(iconPath);
-
     if (await checkIconDimensions(iconPath)) {
       throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
     }
 
+    const iconBuffer = await fs.promises.readFile(iconPath);
     config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
   }
 
   const appIcon = config.app.media?.find(
     (asset: any) => asset.purpose === "icon"
   )?.uri;
+
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
     if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
       throw new Error("Please check the path to your App icon and ensure the file is a jpeg, png, or webp file.")
     }
 
+    if (await checkIconDimensions(iconPath)) {
+      throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
+    }
+
     const iconBuffer = await fs.promises.readFile(iconPath);
+    config.app.icon = toMetaplexFile(iconBuffer, appIcon);
+  }
+
+  const releaseIcon = config.release.media?.find(
+    (asset: any) => asset.purpose === "icon"
+  )?.uri;
+
+  if (releaseIcon) {
+    const iconPath = path.join(process.cwd(), releaseIcon);
+    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
+      throw new Error("Please check the path to your App icon and ensure the file is a jpeg, png, or webp file.")
+    }
 
     if (await checkIconDimensions(iconPath)) {
       throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
     }
 
-    config.app.icon = toMetaplexFile(iconBuffer, appIcon);
+    //const iconBuffer = await fs.promises.readFile(iconPath);
+    //config.release.icon = toMetaplexFile(iconBuffer, releaseIcon);
+  } else {
+    throw new Error("Please specify a release icon in your configuration file.");
   }
 
   config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
@@ -140,6 +160,8 @@ export const getConfigFile = async (
       throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`)
     }
   });
+
+  throw new Error("Got here");
 
   return config;
 };

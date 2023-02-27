@@ -21,6 +21,8 @@ app:
 release:
   address: ""
   media:
+    - purpose: icon
+      uri: <<RELATIVE_PATH_TO_RELEASE_ICON>>
     - purpose: screenshot
       uri: <<RELATIVE_PATH_TO_SCREENSHOT>>
   files:
