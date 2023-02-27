@@ -104,13 +104,7 @@ export const getConfigFile = async (
 
   if (publisherIcon) {
     const iconPath = path.join(process.cwd(), publisherIcon);
-    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      throw new Error("Please check the path to your Publisher icon and ensure the file is a jpeg, png, or webp file.");
-    }
-
-    if (await checkIconDimensions(iconPath)) {
-      throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
-    }
+    await checkIconCompatibility(iconPath, "Publisher");
 
     const iconBuffer = await fs.promises.readFile(iconPath);
     config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
@@ -122,13 +116,7 @@ export const getConfigFile = async (
 
   if (appIcon) {
     const iconPath = path.join(process.cwd(), appIcon);
-    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      throw new Error("Please check the path to your App icon and ensure the file is a jpeg, png, or webp file.")
-    }
-
-    if (await checkIconDimensions(iconPath)) {
-      throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
-    }
+    await checkIconCompatibility(iconPath, "App");
 
     const iconBuffer = await fs.promises.readFile(iconPath);
     config.app.icon = toMetaplexFile(iconBuffer, appIcon);
@@ -140,16 +128,7 @@ export const getConfigFile = async (
 
   if (releaseIcon) {
     const iconPath = path.join(process.cwd(), releaseIcon);
-    if (!fs.existsSync(iconPath) || !checkImageExtension(iconPath)) {
-      throw new Error("Please check the path to your App icon and ensure the file is a jpeg, png, or webp file.")
-    }
-
-    if (await checkIconDimensions(iconPath)) {
-      throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
-    }
-
-    //const iconBuffer = await fs.promises.readFile(iconPath);
-    //config.release.icon = toMetaplexFile(iconBuffer, releaseIcon);
+    await checkIconCompatibility(iconPath, "Release");
   } else {
     throw new Error("Please specify a release icon in your configuration file.");
   }
@@ -161,9 +140,17 @@ export const getConfigFile = async (
     }
   });
 
-  throw new Error("Got here");
-
   return config;
+};
+
+const checkIconCompatibility = async (path: string, typeString: string) => {
+  if (!fs.existsSync(path) || !checkImageExtension(path)) {
+    throw new Error(`Please check the path to your ${typeString} icon and ensure the file is a jpeg, png, or webp file.`)
+  }
+
+  if (await checkIconDimensions(path)) {
+    throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.")
+  }
 };
 
 const checkImageExtension = (uri: string): boolean => {

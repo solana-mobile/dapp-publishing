@@ -77,11 +77,15 @@ export const createReleaseJson = async (
     files.push(await getFileMetadata(item));
   }
 
+  const releaseIcon = media.find(
+    (asset: any) => asset.purpose === "icon"
+  )?.uri ?? appDetails.icon!
+
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
     schema_version: Constants.PUBLISHING_SCHEMA_VER,
     name: appDetails.name,
     description: `Release NFT for ${appDetails.name} version ${releaseDetails.android_details.version}`,
-    image: appDetails.icon!,
+    image: releaseIcon,
     external_url: appDetails.urls.website,
     properties: {
       category: "dApp",
