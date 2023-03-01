@@ -129,8 +129,10 @@ export const getConfigFile = async (
   if (releaseIcon) {
     const iconPath = path.join(process.cwd(), releaseIcon);
     await checkIconCompatibility(iconPath, "Release");
-  } else {
-    throw new Error("Please specify a release icon in your configuration file.");
+  }
+
+  if (!appIcon && !releaseIcon) {
+    throw new Error("Please specify at least one media entry of type icon in your configuration file");
   }
 
   config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
