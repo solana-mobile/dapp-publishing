@@ -22,7 +22,7 @@ const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
 
 export class Constants {
-  static CLI_VERSION = "0.1.9";
+  static CLI_VERSION = "0.2.0";
   static CONFIG_FILE_NAME = "config.yaml";
 }
 
