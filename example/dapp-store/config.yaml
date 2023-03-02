@@ -1,5 +1,5 @@
 publisher:
-  name: Publisher (contains apps)
+  name: Publisher Name
   address: ''
   website: https://solanamobile.com
   email: hello@solanamobile.com
@@ -7,7 +7,7 @@ publisher:
     - purpose: icon
       uri: ./media/publisher_icon.jpeg
 app:
-  name: App (contains releases)
+  name: App Name
   address: ''
   android_package: com.company.dapp
   urls:
@@ -21,6 +21,8 @@ app:
 release:
   address: ''
   media:
+    - purpose: icon
+      uri: ./media/release_icon.png
     - purpose: screenshot
       uri: ./media/app_screenshot.png
   files:

@@ -64,7 +64,6 @@ export const createReleaseJson = async (
   }: { releaseDetails: Release; appDetails: App; publisherDetails: Publisher },
   publisherAddress: PublicKey
 ): Promise<MetaplexFileReleaseJsonMetadata> => {
-
   const media = [];
   debug({ media: releaseDetails.media });
   for await (const item of releaseDetails.media || []) {
@@ -77,11 +76,31 @@ export const createReleaseJson = async (
     files.push(await getFileMetadata(item));
   }
 
+  const releaseIcon = media.find((asset: any) => asset.purpose === "icon");
+  let imgUri: string | MetaplexFile;
+
+  if (releaseIcon) {
+    imgUri = releaseIcon?.uri;
+  } else {
+    imgUri = appDetails.icon as MetaplexFile;
+
+    const tmpMedia: Media = {
+      width: 0,
+      height: 0,
+      mime: "",
+      purpose: "icon",
+      sha256: "",
+      uri: imgUri?.fileName,
+    };
+
+    media.push(await getMediaMetadata(tmpMedia));
+  }
+
   const releaseMetadata: MetaplexFileReleaseJsonMetadata = {
     schema_version: Constants.PUBLISHING_SCHEMA_VER,
     name: appDetails.name,
     description: `Release NFT for ${appDetails.name} version ${releaseDetails.android_details.version}`,
-    image: appDetails.icon!,
+    image: imgUri,
     external_url: appDetails.urls.website,
     properties: {
       category: "dApp",
