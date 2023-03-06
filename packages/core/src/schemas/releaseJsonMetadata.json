@@ -78,6 +78,10 @@
                 "localized_resources": {
                   "type": "object",
                   "properties": {
+                    "short_description": {
+                      "type": "string",
+                      "maxLength": 50
+                    },
                     "long_description": {
                       "type": "string"
                     },
@@ -91,7 +95,7 @@
                       "type": "string"
                     }
                   },
-                  "required": ["long_description", "new_in_version", "name"]
+                  "required": ["short_description", "long_description", "new_in_version", "name"]
                 }
               },
               "required": [
