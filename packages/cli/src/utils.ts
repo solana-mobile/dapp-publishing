@@ -142,6 +142,17 @@ export const getConfigFile = async (
     }
   });
 
+  //console.log(`::: Your config size: ${ JSON.stringify() }`);
+  //Baseline: en-US
+
+  Object.keys(config.release.catalog).forEach((locale) => {
+    const size = Object.keys(config.release.catalog[locale]).length;
+
+    console.log(`Size: ${ size }`);
+  });
+
+  throw new Error(":: Got here ::");
+
   return config;
 };
 
