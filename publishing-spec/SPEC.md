@@ -1,4 +1,4 @@
-## dApp Store NFT Overview - v0.2.4
+## dApp Store NFT Overview - v0.2.5
 
 The following is documentation of the NFT & JSON metadata specification for the dApp store. In general, Publisher, App, and release details are minted as standard Metaplex NFTs with additional metadata specified that will be utilized by the Solana dApp store.
 
@@ -10,7 +10,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 
 ```json
 {
-  "schema_version": "0.2.4",
+  "schema_version": "v0.2.5",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -38,7 +38,8 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
           "long_description": "uid_1",
           "new_in_version": "uid_2",
           "saga_features": "uid_3",
-          "name": "uid_4"
+          "name": "uid_4",
+          "short_description": "uid_5"
         }
       },
       "media": [
@@ -114,19 +115,22 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "uid_1": "[Long desc en]",
         "uid_2": "[New in version en]",
         "uid_3": "[Saga features in en]",
-        "uid_4": "[Name in en]"
+        "uid_4": "[Name in en]",
+        "uid_5": "[Short desc en]"
       },
       "fr-FR": {
         "uid_1": "[Long desc fr]",
         "uid_2": "[New in version fr]",
         "uid_3": "[Saga features in fr]",
-        "uid_4": "[Name in fr]"
+        "uid_4": "[Name in fr]",
+        "uid_5": "[Short desc fr]"
       },
       "de": {
         "uid_1": "[Long desc de]",
         "uid_2": "[New in version de]",
         "uid_3": "[Saga features in de]",
-        "uid_4": "[Name in de]"
+        "uid_4": "[Name in de]",
+        "uid_5": "[Short desc de]"
       }
     }
   }
@@ -143,7 +147,7 @@ All releases for a dApp store entry will be grouped under a collection, which it
 
 ```json
 {
-  "schema_version": "0.2.4",
+  "schema_version": "v0.2.5",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
@@ -170,7 +174,7 @@ Publisher details will also be stored as an NFT. If it isn’t clear already, th
 
 ```json
 {
-  "schema_version": "0.2.4",
+  "schema_version": "v0.2.5",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
