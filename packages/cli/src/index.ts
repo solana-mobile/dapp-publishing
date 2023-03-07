@@ -45,13 +45,24 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   return;
 }
 
+/**
+ * This method should be updated with each new release of the CLI, and just do nothing when there isn't anything to report
+ */
+function latestReleaseMessage() {
+  showMessage(
+    `Publishing Tools Version ${ Constants.CLI_VERSION }`,
+    "A new field - \`short_description\` has been added to the set of strings required in the `catalog` section for each locale.",
+    "warning"
+  )
+}
+
 async function tryWithErrorMessage(block: () => Promise<any>) {
   try {
     await block()
   } catch (e) {
     const errorMsg = (e as Error | null)?.message ?? "";
 
-    showMessage("Error", errorMsg, true);
+    showMessage("Error", errorMsg, "error");
   }
 }
 
@@ -59,7 +70,7 @@ async function main() {
   program
     .name("dapp-store")
     .version(Constants.CLI_VERSION)
-    .description("CLI to assist with publishing to the Saga Dapp Store");
+    .description("CLI to assist with publishing to the Saga Dapp Store")
 
   const initCommand = program
     .command("init")
@@ -74,7 +85,7 @@ async function main() {
 
   const createCommand = program
     .command("create")
-    .description("Create a `publisher`, `app`, or `release`");
+    .description("Create a `publisher`, `app`, or `release`")
 
   createCommand
     .command("publisher")
@@ -87,6 +98,7 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
         await checkForSelfUpdate();
 
         const signer = parseKeypair(keypair);
@@ -116,6 +128,7 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
         await checkForSelfUpdate();
 
         const config = await getConfigWithChecks();
@@ -160,6 +173,7 @@ async function main() {
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
         tryWithErrorMessage(async () => {
+          latestReleaseMessage();
           await checkForSelfUpdate();
 
           const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
