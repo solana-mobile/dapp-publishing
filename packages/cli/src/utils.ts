@@ -146,14 +146,10 @@ export const getConfigWithChecks = async (
   Object.keys(config.release.catalog).forEach((locale) => {
     const size = Object.keys(config.release.catalog[locale]).length;
 
-    console.log("::: Your size: " + size);
-
     if (size != baselineSize) {
       throw new Error("Please ensure you have included all localized strings for all locales in your configuration file.");
     }
   });
-
-  throw new Error("Got here");
 
   return config;
 };
