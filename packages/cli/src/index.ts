@@ -51,8 +51,8 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "A new field - \`short_description\` has been added to the set of strings required in the `catalog` section for each locale.",
-    "warning"
+    "- The new field \`short_description\` has been added to the set of strings required in the `catalog` section for each locale.\n" +
+    "- You can now specify a release-specific icon in the release \`media\` section in your configuration file.",    "warning"
   )
 }
 
@@ -218,6 +218,7 @@ async function main() {
     )
     .action(async ({ keypair, buildToolsPath }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
         await checkForSelfUpdate();
 
         const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
