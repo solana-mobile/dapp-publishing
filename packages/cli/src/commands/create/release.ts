@@ -13,7 +13,7 @@ import {
 import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
 
 import {
-  getConfigFile,
+  getConfigWithChecks,
   getMetaplexInstance,
   saveToConfig,
 } from "../../utils.js";
@@ -81,7 +81,7 @@ export const createReleaseCommand = async ({
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await getConfigFile(buildToolsPath);
+  const { release, app, publisher } = await getConfigWithChecks(buildToolsPath);
 
   if (!dryRun) {
     const { releaseAddress } = await createReleaseNft({

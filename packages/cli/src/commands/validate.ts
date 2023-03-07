@@ -7,7 +7,7 @@ import {
   validateRelease,
   metaplexFileReplacer,
 } from "@solana-mobile/dapp-store-publishing-tools";
-import { debug, getConfigFile } from "../utils.js";
+import { debug, getConfigWithChecks } from "../utils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";
@@ -24,7 +24,7 @@ export const validateCommand = async ({
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
-  } = await getConfigFile(buildToolsPath);
+  } = await getConfigWithChecks(buildToolsPath);
 
   debug({ publisherDetails, appDetails, releaseDetails });
 

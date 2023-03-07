@@ -75,7 +75,7 @@ const AaptPrefixes = {
   localePrefix: "locales: ",
 };
 
-export const getConfigFile = async (
+export const getConfigWithChecks = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
@@ -142,16 +142,14 @@ export const getConfigFile = async (
     }
   });
 
-  //console.log(`::: Your config size: ${ JSON.stringify() }`);
-  //Baseline: en-US
-
+  const baselineSize = Object.keys(config.release.catalog["en-US"]).length;
   Object.keys(config.release.catalog).forEach((locale) => {
     const size = Object.keys(config.release.catalog[locale]).length;
 
-    console.log(`Size: ${ size }`);
+    if (size != baselineSize) {
+      throw new Error("Please ensure you have included all localized strings for all locales in your configuration file.");
+    }
   });
-
-  throw new Error(":: Got here ::");
 
   return config;
 };
@@ -283,7 +281,7 @@ export const saveToConfig = async ({
   app,
   release,
 }: SaveToConfigArgs) => {
-  const currentConfig = await getConfigFile();
+  const currentConfig = await getConfigWithChecks();
 
   delete currentConfig.publisher.icon;
   delete currentConfig.app.icon;

@@ -12,7 +12,7 @@ import {
   checkSubmissionNetwork,
   Constants,
   generateNetworkSuffix,
-  getConfigFile,
+  getConfigWithChecks,
   parseKeypair,
   showMessage
 } from "./utils.js";
@@ -118,7 +118,7 @@ async function main() {
       tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
 
-        const config = await getConfigFile();
+        const config = await getConfigWithChecks();
 
         if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
           throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.")
@@ -167,7 +167,7 @@ async function main() {
             throw new Error("Please specify an Android build tools directory in the .env file or via the command line argument.")
           }
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
           if (!hasAddressInConfig(config.app) && !appMintAddress) {
             throw new Error("Either specify an app mint address in the config file or specify as a CLI argument to this command")
           }
@@ -271,7 +271,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -342,7 +342,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -409,7 +409,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -469,7 +469,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
