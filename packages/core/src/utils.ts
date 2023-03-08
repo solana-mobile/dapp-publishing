@@ -8,7 +8,7 @@ import type {
 import { isMetaplexFile } from "@metaplex-foundation/js";
 
 export class Constants {
-  static PUBLISHING_SCHEMA_VER = "0.2.4";
+  static PUBLISHING_SCHEMA_VER = "0.2.5";
 }
 export const truncateAddress = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(

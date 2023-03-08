@@ -18,6 +18,7 @@ import type {
   Publisher,
   Release,
 } from "../types.js";
+import { str } from "ajv";
 
 const runImgSize = util.promisify(imageSize);
 const debug = debugModule("RELEASE");
@@ -129,6 +130,7 @@ export const createReleaseJson = async (
             new_in_version: "2",
             saga_features: "3",
             name: "4",
+            short_description: "5",
           },
         },
         media,
@@ -146,6 +148,7 @@ export const createReleaseJson = async (
       "2": strings.new_in_version,
       "3": strings.saga_features,
       "4": strings.name,
+      "5": strings.short_description,
     };
   }
 

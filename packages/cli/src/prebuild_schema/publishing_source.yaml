@@ -32,6 +32,8 @@ release:
     en-US:
       name: |
         <<APP_NAME>>
+      short_description: |
+        <<SHORT_APP_DESCRIPTION>>
       long_description: |
         <<LONG_APP_DESCRIPTION>>
       new_in_version: |

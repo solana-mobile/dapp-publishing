@@ -1,5 +1,5 @@
 import fs from "fs";
-import type { AndroidDetails, App, Publisher, Release } from "@solana-mobile/dapp-store-publishing-tools";
+import type { AndroidDetails, App, Publisher, Release, ReleaseJsonMetadata } from "@solana-mobile/dapp-store-publishing-tools";
 import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import type { CLIConfig } from "./config/index.js";
@@ -75,7 +75,7 @@ const AaptPrefixes = {
   localePrefix: "locales: ",
 };
 
-export const getConfigFile = async (
+export const getConfigWithChecks = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
@@ -142,6 +142,15 @@ export const getConfigFile = async (
     }
   });
 
+  const baselineSize = Object.keys(config.release.catalog["en-US"]).length;
+  Object.keys(config.release.catalog).forEach((locale) => {
+    const size = Object.keys(config.release.catalog[locale]).length;
+
+    if (size != baselineSize) {
+      throw new Error("Please ensure you have included all localized strings for all locales in your configuration file.");
+    }
+  });
+
   return config;
 };
 
@@ -196,17 +205,27 @@ export const generateNetworkSuffix = (rpcUrl: string): string => {
 export const showMessage = (
   titleMessage = "",
   contentMessage = "",
-  isError = false
-) => {
-  console.log(boxen(contentMessage, {
+  type: "standard" | "error" | "warning" = "standard",
+): string => {
+  let color = "cyan";
+  if (type == "error") {
+    color = "redBright";
+  } else if (type == "warning") {
+    color = "yellow";
+  }
+
+  const msg = boxen(contentMessage, {
     title: titleMessage,
     padding: 1,
     margin: 1,
     borderStyle: 'single',
-    borderColor: isError ? "redBright" : "cyan",
+    borderColor: color,
     textAlignment: "left",
-    titleAlignment: "center"
-  }));
+    titleAlignment: "center",
+  });
+
+  console.log(msg);
+  return msg;
 };
 
 const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
@@ -272,7 +291,7 @@ export const saveToConfig = async ({
   app,
   release,
 }: SaveToConfigArgs) => {
-  const currentConfig = await getConfigFile();
+  const currentConfig = await getConfigWithChecks();
 
   delete currentConfig.publisher.icon;
   delete currentConfig.app.icon;

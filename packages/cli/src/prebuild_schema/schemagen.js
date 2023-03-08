@@ -8,6 +8,13 @@ try {
   fs.writeFileSync('./src/generated/config_obj.json', Buffer.from(JSON.stringify(convertedYaml)), 'utf-8');
 
   const schema = generateSchema.json('result', convertedYaml);
+  // CLI 0.3.0: Adding requirement for `short_description` so validation will catch
+  schema["properties"]
+    ["release"]
+    ["properties"]
+    ["catalog"]
+    ["properties"]
+    ["en-US"].required = ["short_description"];
 
   // Generator adds some keys/values we don't need & mess up validation
   delete schema.$schema;

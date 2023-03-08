@@ -12,7 +12,7 @@ import {
   checkSubmissionNetwork,
   Constants,
   generateNetworkSuffix,
-  getConfigFile,
+  getConfigWithChecks,
   parseKeypair,
   showMessage
 } from "./utils.js";
@@ -45,13 +45,24 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   return;
 }
 
+/**
+ * This method should be updated with each new release of the CLI, and just do nothing when there isn't anything to report
+ */
+function latestReleaseMessage() {
+  showMessage(
+    `Publishing Tools Version ${ Constants.CLI_VERSION }`,
+    "- The new field \`short_description\` has been added to the set of strings required in the `catalog` section for each locale.\n" +
+    "- You can now specify a release-specific icon in the release \`media\` section in your configuration file.",    "warning"
+  )
+}
+
 async function tryWithErrorMessage(block: () => Promise<any>) {
   try {
     await block()
   } catch (e) {
     const errorMsg = (e as Error | null)?.message ?? "";
 
-    showMessage("Error", errorMsg, true);
+    showMessage("Error", errorMsg, "error");
   }
 }
 
@@ -59,7 +70,7 @@ async function main() {
   program
     .name("dapp-store")
     .version(Constants.CLI_VERSION)
-    .description("CLI to assist with publishing to the Saga Dapp Store");
+    .description("CLI to assist with publishing to the Saga Dapp Store")
 
   const initCommand = program
     .command("init")
@@ -74,7 +85,7 @@ async function main() {
 
   const createCommand = program
     .command("create")
-    .description("Create a `publisher`, `app`, or `release`");
+    .description("Create a `publisher`, `app`, or `release`")
 
   createCommand
     .command("publisher")
@@ -87,6 +98,7 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ keypair, url, dryRun }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
         await checkForSelfUpdate();
 
         const signer = parseKeypair(keypair);
@@ -116,9 +128,10 @@ async function main() {
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
     .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
         await checkForSelfUpdate();
 
-        const config = await getConfigFile();
+        const config = await getConfigWithChecks();
 
         if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
           throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.")
@@ -160,6 +173,7 @@ async function main() {
     )
     .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
         tryWithErrorMessage(async () => {
+          latestReleaseMessage();
           await checkForSelfUpdate();
 
           const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
@@ -167,7 +181,7 @@ async function main() {
             throw new Error("Please specify an Android build tools directory in the .env file or via the command line argument.")
           }
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
           if (!hasAddressInConfig(config.app) && !appMintAddress) {
             throw new Error("Either specify an app mint address in the config file or specify as a CLI argument to this command")
           }
@@ -204,6 +218,7 @@ async function main() {
     )
     .action(async ({ keypair, buildToolsPath }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
         await checkForSelfUpdate();
 
         const resolvedBuildToolsPath = resolveBuildToolsPath(buildToolsPath);
@@ -271,7 +286,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -342,7 +357,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -409,7 +424,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -469,7 +484,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await getConfigFile();
+          const config = await getConfigWithChecks();
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
