@@ -30,17 +30,17 @@ release:
       uri: <<RELATIVE_PATH_TO_APK>>
   catalog:
     en-US:
-      name: |
+      name: >-
         <<APP_NAME>>
-      short_description: |
+      short_description: >-
         <<SHORT_APP_DESCRIPTION>>
-      long_description: |
+      long_description: >-
         <<LONG_APP_DESCRIPTION>>
-      new_in_version: |
+      new_in_version: >-
         <<WHATS_NEW_IN_THIS_VERSION>>
-      saga_features: |
+      saga_features: >-
         <<ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA>>
 solana_mobile_dapp_publisher_portal:
   google_store_package: <<ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION_IF_DIFFERENT>>
-  testing_instructions: >
+  testing_instructions: >-
     <<TESTING_INSTRUCTIONS>>
