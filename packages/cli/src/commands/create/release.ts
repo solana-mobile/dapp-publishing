@@ -1,3 +1,4 @@
+import fs from "fs";
 import type {
   App,
   Publisher,
@@ -85,7 +86,8 @@ export const createReleaseCommand = async ({
   const { release, app, publisher } = await getConfigWithChecks(buildToolsPath);
 
   const apkEntry = release.files.find((asset: any) => asset.purpose === "install")!;
-  if (apkEntry.size > 100 * 1024 * 1024) {
+  const size = (await fs.promises.stat(apkEntry.uri)).size;
+  if (size > 100 * 1024 * 1024) {
     showMessage(
       "Apk too large!!",
       "Since the app size is over 100 MBs, the app would by default install only on a metered connection\n" +
