@@ -144,11 +144,11 @@ export const createReleaseJson = async (
   for (const [locale, strings] of Object.entries(releaseDetails.catalog)) {
     // @ts-expect-error
     releaseMetadata.extensions.i18n[locale] = {
-      "1": strings.long_description,
-      "2": strings.new_in_version,
-      "3": strings.saga_features,
-      "4": strings.name,
-      "5": strings.short_description,
+      "1": strings.long_description.replace(/^\s+|\s+$/g, ''),
+      "2": strings.new_in_version.replace(/^\s+|\s+$/g, ''),
+      "3": strings.saga_features.replace(/^\s+|\s+$/g, ''),
+      "4": strings.name.replace(/^\s+|\s+$/g, ''),
+      "5": strings.short_description.replace(/^\s+|\s+$/g, ''),
     };
   }
 
