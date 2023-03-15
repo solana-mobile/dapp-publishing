@@ -16,6 +16,7 @@ import {
   getConfigWithChecks,
   getMetaplexInstance,
   saveToConfig,
+  showMessage,
 } from "../../utils.js";
 
 type CreateReleaseCommandInput = {
@@ -82,6 +83,16 @@ export const createReleaseCommand = async ({
   const connection = new Connection(url);
 
   const { release, app, publisher } = await getConfigWithChecks(buildToolsPath);
+
+  const apkEntry = release.files.find((asset: any) => asset.purpose === "install")!;
+  if (apkEntry.size > 100 * 1024 * 1024) {
+    showMessage(
+      "Apk too large!!",
+      "Since the app size is over 100 MBs, the app would by default install only on a metered connection\n" +
+      "dApp store currently only supports `arm64-v8a`. Its possible to submit an `arm64-v8a` variant instead of a combined apk which works on all architectures",
+      "warning"
+    )
+  }
 
   if (!dryRun) {
     const { releaseAddress } = await createReleaseNft({
