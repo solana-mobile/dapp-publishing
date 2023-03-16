@@ -262,6 +262,17 @@ const getAndroidDetails = async (
     localeArray = ["en-US"].concat(localesSrc.split("' '").slice(1));
   }
 
+  if (localeArray.length >= 60) {
+    showMessage(
+      "The bundle apk claims supports for following locales",
+      "Claim for supported locales::\n" + 
+      localeArray + 
+      "\nIf this release does not support all these locales the release may be rejected" +
+      "\nSee details at https://developer.android.com/guide/topics/resources/multilingual-support#design for configuring the supported locales",
+      "warning"
+    )
+  }
+
   return {
     android_package: appPackage?.[1] ?? "",
     min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
