@@ -89,9 +89,13 @@ export const createReleaseCommand = async ({
   const size = (await fs.promises.stat(apkEntry.uri)).size;
   if (size > 100 * 1024 * 1024) {
     showMessage(
-      "Apk too large!!",
-      "Since the app size is over 100 MBs, the app would by default install only on a metered connection\n" +
-      "dApp store currently only supports `arm64-v8a`. Its possible to submit an `arm64-v8a` variant instead of a combined apk which works on all architectures",
+      "APK over 100MB!!",
+      "Your APK file is over 100MB, which may result in requiring WiFi or other non-metered download operations for end users.\n\n" +
+      "dApp store currently supports only `arm64-v8a` architecture.\n" +
+      "Its possible to submit an `arm64-v8a` only variant instead of a combined apk which works on other architectures such as x86\n\n" +
+      "Here are some other resources to optimize app size\n" +
+      "https://developer.android.com/studio/build/shrink-code" +
+      "\n\nIgnore recommendations if not applicable",
       "warning"
     )
   }
