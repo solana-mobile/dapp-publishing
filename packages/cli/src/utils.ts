@@ -270,7 +270,7 @@ const getAndroidDetails = async (
     localeArray = ["en-US"].concat(localesSrc.split("' '").slice(1));
   }
 
-  if (localeArray.length >= 25) {
+  if (localeArray.length >= 60) {
     showMessage(
       "The bundle apk claims supports for following locales",
       "Claim for supported locales::\n" + 
