@@ -71,7 +71,6 @@ const AaptPrefixes = {
   verCodePrefix: "versionCode=",
   verNamePrefix: "versionName=",
   sdkPrefix: "sdkVersion:",
-  permissionPrefix: "uses-permission: name=",
   localePrefix: "locales: ",
 };
 
