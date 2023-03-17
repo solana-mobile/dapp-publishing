@@ -58,9 +58,12 @@ export const parseKeypair = (pathToKeypairFile: string) => {
     const keypairFile = fs.readFileSync(pathToKeypairFile, "utf-8");
     return Keypair.fromSecretKey(Buffer.from(JSON.parse(keypairFile)));
   } catch (e) {
-    console.error(
-      `Something went wrong when attempting to retrieve the keypair at ${pathToKeypairFile}`
-    );
+    showMessage
+    (
+      "KeyPair Error",
+      "Something went wrong when attempting to retrieve the keypair at " + pathToKeypairFile,
+      "error"
+    )
   }
 };
 
