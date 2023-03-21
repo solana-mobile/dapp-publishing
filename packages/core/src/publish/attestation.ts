@@ -1,4 +1,4 @@
-import { Connection, GetVersionedBlockConfig } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import { SignWithPublisherKeypair } from "./types";
 
 //
@@ -18,12 +18,11 @@ export const createAttestationPayload = async (connection: Connection, sign: Sig
     REQUEST_UNIQUE_ID_CHAR_SET.charAt(Math.floor(Math.random() * REQUEST_UNIQUE_ID_CHAR_SET.length))
   ).join("")
 
-  const slot = await connection.getSlot("finalized");
-  const block = await connection.getBlock(slot, { commitment: "finalized", maxSupportedTransactionVersion: 0, rewards: false, transactionDetails: "none" } as GetVersionedBlockConfig);
+  const blockhash = await connection.getLatestBlockhashAndContext("finalized");
 
   const attestation: Attestation = {
-    slot_number: slot,
-    blockhash: block?.blockhash!!,
+    slot_number: blockhash.context.slot,
+    blockhash: blockhash.value.blockhash,
     request_unique_id: requestUniqueId
   };
   const signedAttestation = sign(Buffer.from(JSON.stringify(attestation)));

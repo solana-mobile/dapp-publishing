@@ -56,14 +56,16 @@ const createReleaseNft = async ({
     { metaplex, publisher }
   );
 
-  const blockhash = await connection.getLatestBlockhash();
-  const tx = txBuilder.toTransaction(blockhash);
+  const blockhash = await connection.getLatestBlockhashAndContext();
+  const tx = txBuilder.toTransaction(blockhash.value);
   tx.sign(releaseMintAddress, publisher);
 
   const txSig = await sendAndConfirmTransaction(connection, tx, [
     publisher,
     releaseMintAddress,
-  ]);
+  ], {
+    minContextSlot: blockhash.context.slot
+  });
   console.info({
     txSig,
     releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
