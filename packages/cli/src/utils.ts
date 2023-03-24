@@ -146,6 +146,15 @@ export const  getConfigWithChecks = async (
 
   validateLocalizableResources(config);
 
+  const googlePkg = config.solana_mobile_dapp_publisher_portal.google_store_package;
+  if (googlePkg?.length) {
+    const pkgCompare = new RegExp("[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+").exec(googlePkg);
+
+    if (!pkgCompare?.length) {
+      throw new Error("Please provide a valid Google store package name in the Publisher Portal section of your configuration file.");
+    }
+  }
+
   return config;
 };
 
