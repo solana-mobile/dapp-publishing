@@ -150,7 +150,7 @@ export const  getConfigWithChecks = async (
   if (googlePkg != "" && googlePkg.length > 0) {
     const pkgCompare = new RegExp("[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+").exec(googlePkg);
 
-    if (pkgCompare == null || pkgCompare?.length == 0) {
+    if (!pkgCompare?.length) {
       throw new Error("Please provide a valid Google store package name in the Publisher Portal section of your configuration file.");
     }
   }
