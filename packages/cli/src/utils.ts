@@ -75,7 +75,7 @@ const AaptPrefixes = {
   localePrefix: "locales: ",
 };
 
-export const getConfigWithChecks = async (
+export const  getConfigWithChecks = async (
   buildToolsDir: string | null = null
 ): Promise<CLIConfig> => {
   const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
@@ -142,14 +142,7 @@ export const getConfigWithChecks = async (
     }
   });
 
-  const baselineSize = Object.keys(config.release.catalog["en-US"]).length;
-  Object.keys(config.release.catalog).forEach((locale) => {
-    const size = Object.keys(config.release.catalog[locale]).length;
-
-    if (size != baselineSize) {
-      throw new Error("Please ensure you have included all localized strings for all locales in your configuration file.");
-    }
-  });
+  validateLocalizableResources(config);
 
   return config;
 };
@@ -173,6 +166,29 @@ const checkImageExtension = (uri: string): boolean => {
     fileExt == ".webp"
   );
 };
+
+/**
+ * We need to pre-check some things in the localized resources before we move forward
+ */
+const validateLocalizableResources = (config: CLIConfig) => {
+  const baselineSize = Object.keys(config.release.catalog["en-US"]).length;
+  Object.keys(config.release.catalog).forEach((locale) => {
+    const size = Object.keys(config.release.catalog[locale]).length;
+
+    if (size != baselineSize) {
+      throw new Error("Please ensure you have included all localized strings for all locales in your configuration file.");
+    }
+  });
+
+  const descsTooLong = Object.values(config.release.catalog)
+    .map((x) => x.short_description)
+    .filter((desc) => desc.length > 50);
+
+  if (descsTooLong.length > 0) {
+    throw new Error("Please ensure all translations of short_description are below 50 characters");
+  }
+};
+
 
 export const isDevnet = (rpcUrl: string): boolean => {
   return rpcUrl.indexOf("devnet") != -1;
