@@ -182,6 +182,10 @@ const checkImageExtension = (uri: string): boolean => {
  * We need to pre-check some things in the localized resources before we move forward
  */
 const validateLocalizableResources = (config: CLIConfig) => {
+  if (!config.release.catalog["en-US"]) {
+    throw new Error("Please ensure you have the en-US locale strings in your configuration file.");
+  }
+
   const baselineSize = Object.keys(config.release.catalog["en-US"]).length;
   Object.keys(config.release.catalog).forEach((locale) => {
     const size = Object.keys(config.release.catalog[locale]).length;
