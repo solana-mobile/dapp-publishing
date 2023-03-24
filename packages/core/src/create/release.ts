@@ -148,7 +148,7 @@ export const createReleaseJson = async (
       "2": strings.new_in_version.replace(/^\s+|\s+$/g, ''),
       "3": strings.saga_features?.replace(/^\s+|\s+$/g, ''), // saga_features is optional
       "4": strings.name.replace(/^\s+|\s+$/g, ''),
-      "5": strings.short_description.replace(/^\s+|\s+$/g, ''),
+      "5": strings.short_description?.replace(/^\s+|\s+$/g, ''),
     };
   }
 
