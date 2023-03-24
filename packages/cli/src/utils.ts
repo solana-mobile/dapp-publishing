@@ -195,12 +195,12 @@ const validateLocalizableResources = (config: CLIConfig) => {
     }
   });
 
-  const descsTooLong = Object.values(config.release.catalog)
+  const descsWrongLength = Object.values(config.release.catalog)
     .map((x) => x.short_description)
-    .filter((desc) => desc.length > 50);
+    .filter((desc) => desc == null || desc.length == 0 || desc.length > 50);
 
-  if (descsTooLong.length > 0) {
-    throw new Error("Please ensure all translations of short_description are below 50 characters");
+  if (descsWrongLength.length > 0) {
+    throw new Error("Please ensure all translations of short_description are between 0 and 50 characters");
   }
 };
 
