@@ -128,7 +128,7 @@ export const createReleaseJson = async (
           localized_resources: {
             long_description: "1",
             new_in_version: "2",
-            saga_features: "3",
+            saga_features: (releaseDetails.catalog["en-US"].saga_features != undefined ? "3" : undefined), // saga_features is optional
             name: "4",
             short_description: "5",
           },
@@ -146,7 +146,7 @@ export const createReleaseJson = async (
     releaseMetadata.extensions.i18n[locale] = {
       "1": strings.long_description.replace(/^\s+|\s+$/g, ''),
       "2": strings.new_in_version.replace(/^\s+|\s+$/g, ''),
-      "3": strings.saga_features.replace(/^\s+|\s+$/g, ''),
+      "3": strings.saga_features?.replace(/^\s+|\s+$/g, ''), // saga_features is optional
       "4": strings.name.replace(/^\s+|\s+$/g, ''),
       "5": strings.short_description.replace(/^\s+|\s+$/g, ''),
     };
