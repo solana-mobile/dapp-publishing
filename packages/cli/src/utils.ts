@@ -197,7 +197,7 @@ const validateLocalizableResources = (config: CLIConfig) => {
 
   const descsWrongLength = Object.values(config.release.catalog)
     .map((x) => x.short_description)
-    .filter((desc) => desc == null || desc.length == 0 || desc.length > 50);
+    .filter((desc) => !desc?.length || desc.length > 50);
 
   if (descsWrongLength.length > 0) {
     throw new Error("Please ensure all translations of short_description are between 0 and 50 characters");
