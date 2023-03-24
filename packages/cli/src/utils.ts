@@ -147,7 +147,7 @@ export const  getConfigWithChecks = async (
   validateLocalizableResources(config);
 
   const googlePkg = config.solana_mobile_dapp_publisher_portal.google_store_package;
-  if (googlePkg != "" && googlePkg.length > 0) {
+  if (googlePkg?.length) {
     const pkgCompare = new RegExp("[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+").exec(googlePkg);
 
     if (!pkgCompare?.length) {
