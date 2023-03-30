@@ -25,11 +25,11 @@ It is recommended that you put your dApp publishing files next to your dApp, and
 ### Configure the publishing details for your dApp
 
 1. Having followed the instructions in the CLI tooling README file, collect the file paths for all your publishing assets (e.g., APK file, icons, screenshot images) relative to the directory you just created.
-   
-1. Populate the initial contents of the configuration file created during setup. By default, the file name is `config.yaml`. Replace all fields in `<< >>` with details for your dApp. Remove any fields that don't apply (for e.g., `saga_features`, `google_store_package`, etc).
+
+1. Populate the initial contents of the configuration file created during setup. By default, the file name is `config.yaml`. Replace all fields in `<< >>` with details for your dApp. Remove any fields that don't apply (for e.g., `saga_features`, `google_store_package`, etc). There are 3 sections to fill out: `publisher`, `app`, and `release`. The `publisher` section describes you, the app developer. The `app` section represents a single logical app produced by a publisher. A single publisher will always have at least one app, but if you publish multiple different apps under a single identity, there will be one for each of your apps. The `release` section is the most important, and describes all the metadata for a single release of an app, including it's display name, description, icons, screenshots, etc. The text you enter in the `catalog` subsection, along with the icon and screenshots in the `media` subsections, are what application stores will use to display details about your app to the end user, so be as descriptive as you can.
 
 1. \[Optional\] Localize strings within your configuration file for all desired locales.
-   Anywhere there is a string in your configuration file with an `en` key, you can provide additional localizations. For e.g., here's how you'd localize the strings for French (France):
+   Anywhere there is a string in your configuration file with an `en-US` key, you can provide additional localizations. For e.g., here's how you'd localize the strings for French (France):
    ```
    release:
      catalog:
@@ -37,7 +37,7 @@ It is recommended that you put your dApp publishing files next to your dApp, and
          name: >-
            <<NAME_OF_APP_IN_FRENCH_(FRANCE)>>
          short_description: >-
-           <<SHORT_APP_DESCRIPTION_IN_FRENCH_(FRANCE)>> 
+           <<SHORT_APP_DESCRIPTION_IN_FRENCH_(FRANCE)>>
          long_description: >-
            <<LONG_APP_DESCRIPTION_IN_FRENCH_(FRANCE)>>
          new_in_version: >-
