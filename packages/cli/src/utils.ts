@@ -283,7 +283,7 @@ const getAndroidDetails = async (
   const minSdk = new RegExp(
     AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
   ).exec(stdout);
-  const permissions = [...stdout.matchAll(/uses-permission: name='(.*)'/g)];
+  const permissions = [...stdout.matchAll(/uses-permission: name='(.+)?' maxSdkVersion='(\d\d)'|uses-permission: name='(.+)'/g)];
   const locales = new RegExp(
     AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
   ).exec(stdout);
@@ -310,7 +310,12 @@ const getAndroidDetails = async (
     min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
     version_code: parseInt(versionCode?.[1] ?? "0", 10),
     version: versionName?.[1] ?? "0",
-    permissions: permissions.flatMap(permission => permission[1]),
+    permissions: permissions.flatMap(permission => {
+      if (permission[1] === undefined)
+        return permission[3]
+      else
+        return permission[1] + " maxSdkVersion=" + permission[2]
+    }),
     locales: localeArray,
   };
 };
