@@ -11,7 +11,7 @@ import {
   getConfigWithChecks,
   getMetaplexInstance,
   saveToConfig,
-} from "../../utils.js";
+} from "../../CliUtils.js";
 
 const createAppNft = async (
   {

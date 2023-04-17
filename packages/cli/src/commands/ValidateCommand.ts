@@ -7,7 +7,7 @@ import {
   validateRelease,
   metaplexFileReplacer,
 } from "@solana-mobile/dapp-store-publishing-tools";
-import { debug, getConfigWithChecks } from "../utils.js";
+import { debug, getConfigWithChecks } from "../CliUtils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";

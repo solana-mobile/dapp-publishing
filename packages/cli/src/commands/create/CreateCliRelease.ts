@@ -16,7 +16,7 @@ import {
   getConfigWithChecks,
   getMetaplexInstance,
   saveToConfig,
-} from "../../utils.js";
+} from "../../CliUtils.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;

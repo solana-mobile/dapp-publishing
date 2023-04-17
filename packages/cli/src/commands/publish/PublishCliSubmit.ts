@@ -2,7 +2,7 @@ import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
-import { checkMintedStatus, getConfigWithChecks } from "../../utils.js";
+import { checkMintedStatus, getConfigWithChecks } from "../../CliUtils.js";
 import { Buffer } from "buffer";
 
 type PublishSubmitCommandInput = {

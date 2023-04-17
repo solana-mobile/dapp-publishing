@@ -15,7 +15,7 @@ import {
   getConfigWithChecks,
   parseKeypair,
   showMessage
-} from "./utils.js";
+} from "./CliUtils.js";
 import terminalLink from "terminal-link";
 import boxen from "boxen";
 
