@@ -1,8 +1,8 @@
-import { Constants, mintNft } from "../utils.js";
+import { Constants, mintNft } from "../CoreUtils";
 import type { App, AppMetadata, Context } from "../types.js";
 import type { PublicKey, Signer } from "@solana/web3.js";
 import debugModule from "debug";
-import { validateApp } from "../validate/index.js";
+import { validateApp } from "../validate/CoreValidation";
 
 const debug = debugModule("APP");
 
