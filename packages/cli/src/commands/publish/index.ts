@@ -1,4 +1,4 @@
-export * from "./remove.js";
+export * from "./PublishCliRemove";
 export * from "./submit.js";
 export * from "./support.js";
 export * from "./update.js";
