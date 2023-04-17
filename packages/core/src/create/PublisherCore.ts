@@ -2,8 +2,8 @@ import type { TransactionBuilder } from "@metaplex-foundation/js";
 import debugModule from "debug";
 import type { Signer } from "@solana/web3.js";
 
-import { validatePublisher } from "../validate/CoreValidation";
-import { Constants, mintNft } from "../CoreUtils";
+import { validatePublisher } from "../validate/CoreValidation.js";
+import { Constants, mintNft } from "../CoreUtils.js";
 import type { Context, Publisher, PublisherMetadata } from "../types.js";
 
 const debug = debugModule("PUBLISHER");

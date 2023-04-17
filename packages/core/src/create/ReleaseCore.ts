@@ -5,9 +5,9 @@ import mime from "mime";
 import debugModule from "debug";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { toMetaplexFile } from "@metaplex-foundation/js";
-import { Constants, mintNft, truncateAddress } from "../CoreUtils";
+import { Constants, mintNft, truncateAddress } from "../CoreUtils.js";
 import * as util from "util";
-import { metaplexFileReplacer, validateRelease } from "../validate/CoreValidation";
+import { metaplexFileReplacer, validateRelease } from "../validate/CoreValidation.js";
 import { imageSize } from "image-size";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";

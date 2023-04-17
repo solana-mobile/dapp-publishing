@@ -1,3 +1,3 @@
-export * from "./AppCore";
-export * from "./PublisherCore";
-export * from "./ReleaseCore";
+export * from "./AppCore.js";
+export * from "./PublisherCore.js";
+export * from "./ReleaseCore.js";
