@@ -78,7 +78,7 @@ const AaptPrefixes = {
   localePrefix: "locales: ",
 };
 
-export const  getConfigWithChecks = async (
+export const loadPublishDetailsWithChecks = async (
   buildToolsDir: string | null = null
 ): Promise<PublishDetails> => {
   const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
@@ -327,7 +327,7 @@ export const saveToConfig = async ({
   app,
   release,
 }: SaveToConfigArgs) => {
-  const currentConfig = await getConfigWithChecks();
+  const currentConfig = await loadPublishDetailsWithChecks();
 
   delete currentConfig.publisher.icon;
   delete currentConfig.app.icon;

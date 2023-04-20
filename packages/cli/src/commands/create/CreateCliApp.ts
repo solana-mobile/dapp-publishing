@@ -8,7 +8,7 @@ import {
 } from "@solana/web3.js";
 
 import {
-  getConfigWithChecks,
+  loadPublishDetailsWithChecks,
   getMetaplexInstance,
   saveToConfig,
 } from "../../CliUtils.js";
@@ -71,7 +71,7 @@ export const createAppCommand = async ({
   const connection = new Connection(url);
 
   const { app: appDetails, publisher: publisherDetails } =
-    await getConfigWithChecks();
+    await loadPublishDetailsWithChecks();
 
   const { appAddress } = await createAppNft(
     {

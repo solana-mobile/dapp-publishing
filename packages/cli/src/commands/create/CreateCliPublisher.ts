@@ -7,7 +7,7 @@ import {
 } from "@solana/web3.js";
 
 import {
-  getConfigWithChecks,
+  loadPublishDetailsWithChecks,
   getMetaplexInstance,
   saveToConfig,
 } from "../../CliUtils.js";
@@ -62,7 +62,7 @@ export const createPublisherCommand = async ({
 }) => {
   const connection = new Connection(url);
 
-  const { publisher: publisherDetails } = await getConfigWithChecks();
+  const { publisher: publisherDetails } = await loadPublishDetailsWithChecks();
 
   const { publisherAddress } = await createPublisherNft(
     {

@@ -1,7 +1,7 @@
 import { Connection, Keypair } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishRemove } from "@solana-mobile/dapp-store-publishing-tools";
-import { checkMintedStatus, getConfigWithChecks } from "../../CliUtils.js";
+import { checkMintedStatus, loadPublishDetailsWithChecks } from "../../CliUtils.js";
 import nacl from "tweetnacl";
 
 type PublishRemoveCommandInput = {
@@ -35,7 +35,7 @@ export const publishRemoveCommand = async ({
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
-  } = await getConfigWithChecks();
+  } = await loadPublishDetailsWithChecks();
 
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
