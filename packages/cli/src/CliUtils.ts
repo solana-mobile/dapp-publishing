@@ -3,7 +3,7 @@ import type { AndroidDetails, App, Publisher, Release, ReleaseJsonMetadata } fro
 import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import type { PublishDetails } from "./config/PublishDetails.js";
-import { getConfig } from "./config/PublishDetails.js";
+import { loadPublishDetails } from "./config/PublishDetails.js";
 import debugModule from "debug";
 import { dump } from "js-yaml";
 import * as util from "util";
@@ -83,7 +83,7 @@ export const  getConfigWithChecks = async (
 ): Promise<PublishDetails> => {
   const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
 
-  const config = await getConfig(configFilePath);
+  const config = await loadPublishDetails(configFilePath);
 
   if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
     // We validate that the config is going to have at least one installable asset

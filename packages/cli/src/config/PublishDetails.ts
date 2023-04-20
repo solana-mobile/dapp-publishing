@@ -23,7 +23,7 @@ export interface PublishDetails {
 const ajv = new Ajv({ strictTuples: false });
 const validate = ajv.compile(schemaJson);
 
-export const getConfig = async (configPath: string) => {
+export const loadPublishDetails = async (configPath: string) => {
   const configFile = await fs.readFile(configPath, "utf-8");
 
   const valid = validate(load(configFile) as object);
