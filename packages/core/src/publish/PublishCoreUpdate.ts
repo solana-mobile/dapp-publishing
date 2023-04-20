@@ -1,6 +1,6 @@
 import { Connection } from "@solana/web3.js";
-import type { Publisher } from "../types.js";
-import { createAttestationPayload } from "./attestation.js";
+import type { Publisher, SolanaMobileDappPublisherPortal } from "../types.js";
+import { createAttestationPayload } from "./PublishCoreAttestation.js";
 import {
   CONTACT_OBJECT_ID,
   CONTACT_PROPERTY_COMPANY,
@@ -10,26 +10,30 @@ import {
   TICKET_OBJECT_ID,
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
-  TICKET_PROPERTY_CONTENT,
+  TICKET_PROPERTY_CRITICAL_UPDATE,
   TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
+  TICKET_PROPERTY_POLICY_COMPLIANT,
   TICKET_PROPERTY_REQUEST_UNIQUE_ID,
-  URL_FORM_SUPPORT
+  TICKET_PROPERTY_TESTING_INSTRUCTIONS,
+  URL_FORM_UPDATE
 } from "./dapp_publisher_portal.js";
 import { PublishSolanaNetworkInput, SignWithPublisherKeypair } from "./types.js";
 
-const createSupportRequest = async (
+const createUpdateRequest = async (
   connection: Connection,
   sign: SignWithPublisherKeypair,
   appMintAddress: string,
   releaseMintAddress: string,
   publisherDetails: Publisher,
+  solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal,
+  compliesWithSolanaDappStorePolicies: boolean,
   requestorIsAuthorized: boolean,
-  requestDetails: string
+  criticalUpdate: boolean
 ) => {
   const { attestationPayload, requestUniqueId } = await createAttestationPayload(connection, sign);
 
-  return {
+  const request = {
     fields: [
       {
         objectTypeId: CONTACT_OBJECT_ID,
@@ -53,11 +57,6 @@ const createSupportRequest = async (
       },
       {
         objectTypeId: TICKET_OBJECT_ID,
-        name: TICKET_PROPERTY_CONTENT,
-        value: requestDetails
-      },
-      {
-        objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
         value: appMintAddress
       },
@@ -75,38 +74,71 @@ const createSupportRequest = async (
         objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_AUTHORIZED_REQUEST,
         value: requestorIsAuthorized
+      },
+      {
+        objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_POLICY_COMPLIANT,
+        value: compliesWithSolanaDappStorePolicies
       }
     ]
   };
+
+  if (criticalUpdate) {
+    request.fields.push(
+      {
+        objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_CRITICAL_UPDATE,
+        value: criticalUpdate
+      }
+    );
+  }
+
+  if (solanaMobileDappPublisherPortalDetails.testing_instructions !== undefined) {
+    request.fields.push(
+      {
+        objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_TESTING_INSTRUCTIONS,
+        value: solanaMobileDappPublisherPortalDetails.testing_instructions
+      }
+    );
+  }
+
+  return request;
 };
 
-export type PublishSupportInput = {
+export type PublishUpdateInput = {
   appMintAddress: string;
   releaseMintAddress: string;
   publisherDetails: Publisher;
+  solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal;
+  compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
-  requestDetails: string;
+  criticalUpdate: boolean;
 };
 
-export const publishSupport = async (
+export const publishUpdate = async (
   publishSolanaNetworkInput: PublishSolanaNetworkInput,
   {
     appMintAddress,
     releaseMintAddress,
     publisherDetails,
+    solanaMobileDappPublisherPortalDetails,
+    compliesWithSolanaDappStorePolicies,
     requestorIsAuthorized,
-    requestDetails,
-  } : PublishSupportInput,
+    criticalUpdate,
+  } : PublishUpdateInput,
   dryRun: boolean,
 ) => {
-  const supportRequest = await createSupportRequest(
+  const updateRequest = await createUpdateRequest(
     publishSolanaNetworkInput.connection,
     publishSolanaNetworkInput.sign,
     appMintAddress,
     releaseMintAddress,
     publisherDetails,
+    solanaMobileDappPublisherPortalDetails,
+    compliesWithSolanaDappStorePolicies,
     requestorIsAuthorized,
-    requestDetails);
+    criticalUpdate);
 
-  return submitRequestToSolanaDappPublisherPortal(supportRequest, URL_FORM_SUPPORT, dryRun);
+  submitRequestToSolanaDappPublisherPortal(updateRequest, URL_FORM_UPDATE, dryRun);
 };

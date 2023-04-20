@@ -1,29 +1,36 @@
 import { Connection, Keypair } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
-import { publishSupport } from "@solana-mobile/dapp-store-publishing-tools";
-import { checkMintedStatus, getConfigWithChecks } from "../../utils.js";
+import { publishUpdate } from "@solana-mobile/dapp-store-publishing-tools";
+import { checkMintedStatus, getConfigWithChecks } from "../../CliUtils.js";
 import nacl from "tweetnacl";
 
-type PublishSupportCommandInput = {
+type PublishUpdateCommandInput = {
   appMintAddress: string;
   releaseMintAddress: string;
   signer: Keypair;
   url: string;
   dryRun: boolean;
+  compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
-  requestDetails: string;
+  critical: boolean;
 };
 
-export const publishSupportCommand = async ({
+export const publishUpdateCommand = async ({
   appMintAddress,
   releaseMintAddress,
   signer,
   url,
   dryRun = false,
+  compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
-  requestDetails,
-}: PublishSupportCommandInput) => {
-  if (!requestorIsAuthorized) {
+  critical = false,
+}: PublishUpdateCommandInput) => {
+  if (!compliesWithSolanaDappStorePolicies) {
+    console.error(
+      "ERROR: Cannot submit a request for which the requestor does not attest that it complies with Solana dApp Store policies"
+    );
+    return;
+  } else if (!requestorIsAuthorized) {
     console.error(
       "ERROR: Cannot submit a request for which the requestor does not attest they are authorized to do so"
     );
@@ -35,6 +42,7 @@ export const publishSupportCommand = async ({
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
+    solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigWithChecks();
 
   const sign = ((buf: Buffer) =>
@@ -46,14 +54,16 @@ export const publishSupportCommand = async ({
 
   await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
-  await publishSupport(
+  await publishUpdate(
     { connection, sign },
     {
       appMintAddress: appMintAddress ?? appDetails.address,
       releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
       publisherDetails,
+      solanaMobileDappPublisherPortalDetails,
+      compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
-      requestDetails,
+      criticalUpdate: critical,
     },
     dryRun
   );

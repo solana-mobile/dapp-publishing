@@ -1,7 +1,7 @@
-export * from "./remove.js";
-export * from "./submit.js";
-export * from "./support.js";
-export * from "./update.js";
+export * from "./PublishCliRemove.js";
+export * from "./PublishCliSubmit.js";
+export * from "./PublishCliSupport.js";
+export * from "./PublishCliUpdate.js";
 
 /*
  * Module responsible for submitting requests to the Solana dApp Store publisher portal

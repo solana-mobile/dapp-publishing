@@ -1,6 +1,6 @@
 import { Connection } from "@solana/web3.js";
 import type { Publisher, SolanaMobileDappPublisherPortal } from "../types.js";
-import { createAttestationPayload } from "./attestation.js";
+import { createAttestationPayload } from "./PublishCoreAttestation.js";
 import {
   CONTACT_OBJECT_ID,
   CONTACT_PROPERTY_COMPANY,

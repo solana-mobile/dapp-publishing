@@ -1,6 +1,6 @@
-export * from "./publisher.js";
-export * from "./app.js";
-export * from "./release.js";
+export * from "./CreateCliPublisher.js";
+export * from "./CreateCliApp.js";
+export * from "./CreateCliRelease.js";
 
 /*
  * Module responsible for creating publishers, apps, and releases (in that order)

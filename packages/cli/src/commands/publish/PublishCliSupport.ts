@@ -1,35 +1,29 @@
-import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
+import { Connection, Keypair } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
-import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
+import { publishSupport } from "@solana-mobile/dapp-store-publishing-tools";
+import { checkMintedStatus, getConfigWithChecks } from "../../CliUtils.js";
 import nacl from "tweetnacl";
-import { checkMintedStatus, getConfigWithChecks } from "../../utils.js";
-import { Buffer } from "buffer";
 
-type PublishSubmitCommandInput = {
+type PublishSupportCommandInput = {
   appMintAddress: string;
   releaseMintAddress: string;
   signer: Keypair;
   url: string;
   dryRun: boolean;
-  compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
+  requestDetails: string;
 };
 
-export const publishSubmitCommand = async ({
+export const publishSupportCommand = async ({
   appMintAddress,
   releaseMintAddress,
   signer,
   url,
   dryRun = false,
-  compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
-}: PublishSubmitCommandInput) => {
-  if (!compliesWithSolanaDappStorePolicies) {
-    console.error(
-      "ERROR: Cannot submit a request for which the requestor does not attest that it complies with Solana dApp Store policies"
-    );
-    return;
-  } else if (!requestorIsAuthorized) {
+  requestDetails,
+}: PublishSupportCommandInput) => {
+  if (!requestorIsAuthorized) {
     console.error(
       "ERROR: Cannot submit a request for which the requestor does not attest they are authorized to do so"
     );
@@ -41,7 +35,6 @@ export const publishSubmitCommand = async ({
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
-    solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
   } = await getConfigWithChecks();
 
   const sign = ((buf: Buffer) =>
@@ -53,15 +46,14 @@ export const publishSubmitCommand = async ({
 
   await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
-  await publishSubmit(
+  await publishSupport(
     { connection, sign },
     {
-      appMintAddress: appAddr,
-      releaseMintAddress: releaseAddr,
+      appMintAddress: appMintAddress ?? appDetails.address,
+      releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
       publisherDetails,
-      solanaMobileDappPublisherPortalDetails,
-      compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
+      requestDetails,
     },
     dryRun
   );

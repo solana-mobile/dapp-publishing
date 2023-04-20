@@ -3,7 +3,7 @@ import yaml, { dump } from "js-yaml";
 // eslint-disable-next-line require-extensions/require-extensions
 import releaseSchema from "../../generated/config_obj.json" assert { type: "json" };
 import fs from "fs";
-import { Constants } from "../../utils.js";
+import { Constants } from "../../CliUtils.js";
 
 export const initScaffold = (): string => {
   const outputYaml = Constants.CONFIG_FILE_NAME;

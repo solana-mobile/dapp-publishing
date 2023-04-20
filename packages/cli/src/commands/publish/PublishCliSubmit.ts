@@ -1,10 +1,11 @@
-import { Connection, Keypair } from "@solana/web3.js";
+import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
-import { publishUpdate } from "@solana-mobile/dapp-store-publishing-tools";
-import { checkMintedStatus, getConfigWithChecks } from "../../utils.js";
+import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
+import { checkMintedStatus, getConfigWithChecks } from "../../CliUtils.js";
+import { Buffer } from "buffer";
 
-type PublishUpdateCommandInput = {
+type PublishSubmitCommandInput = {
   appMintAddress: string;
   releaseMintAddress: string;
   signer: Keypair;
@@ -12,10 +13,9 @@ type PublishUpdateCommandInput = {
   dryRun: boolean;
   compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
-  critical: boolean;
 };
 
-export const publishUpdateCommand = async ({
+export const publishSubmitCommand = async ({
   appMintAddress,
   releaseMintAddress,
   signer,
@@ -23,8 +23,7 @@ export const publishUpdateCommand = async ({
   dryRun = false,
   compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
-  critical = false,
-}: PublishUpdateCommandInput) => {
+}: PublishSubmitCommandInput) => {
   if (!compliesWithSolanaDappStorePolicies) {
     console.error(
       "ERROR: Cannot submit a request for which the requestor does not attest that it complies with Solana dApp Store policies"
@@ -54,16 +53,15 @@ export const publishUpdateCommand = async ({
 
   await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
-  await publishUpdate(
+  await publishSubmit(
     { connection, sign },
     {
-      appMintAddress: appMintAddress ?? appDetails.address,
-      releaseMintAddress: releaseMintAddress ?? releaseDetails.address,
+      appMintAddress: appAddr,
+      releaseMintAddress: releaseAddr,
       publisherDetails,
       solanaMobileDappPublisherPortalDetails,
       compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
-      criticalUpdate: critical,
     },
     dryRun
   );

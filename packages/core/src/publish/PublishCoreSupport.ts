@@ -1,6 +1,6 @@
 import { Connection } from "@solana/web3.js";
 import type { Publisher } from "../types.js";
-import { createAttestationPayload } from "./attestation.js";
+import { createAttestationPayload } from "./PublishCoreAttestation.js";
 import {
   CONTACT_OBJECT_ID,
   CONTACT_PROPERTY_COMPANY,
@@ -10,26 +10,26 @@ import {
   TICKET_OBJECT_ID,
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
-  TICKET_PROPERTY_CRITICAL_UPDATE,
+  TICKET_PROPERTY_CONTENT,
   TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_DAPP_RELEASE_ACCOUNT_ADDRESS,
   TICKET_PROPERTY_REQUEST_UNIQUE_ID,
-  URL_FORM_REMOVE
+  URL_FORM_SUPPORT
 } from "./dapp_publisher_portal.js";
 import { PublishSolanaNetworkInput, SignWithPublisherKeypair } from "./types.js";
 
-const createRemoveRequest = async (
+const createSupportRequest = async (
   connection: Connection,
   sign: SignWithPublisherKeypair,
   appMintAddress: string,
   releaseMintAddress: string,
   publisherDetails: Publisher,
   requestorIsAuthorized: boolean,
-  criticalUpdate: boolean
+  requestDetails: string
 ) => {
   const { attestationPayload, requestUniqueId } = await createAttestationPayload(connection, sign);
 
-  const request = {
+  return {
     fields: [
       {
         objectTypeId: CONTACT_OBJECT_ID,
@@ -53,6 +53,11 @@ const createRemoveRequest = async (
       },
       {
         objectTypeId: TICKET_OBJECT_ID,
+        name: TICKET_PROPERTY_CONTENT,
+        value: requestDetails
+      },
+      {
+        objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
         value: appMintAddress
       },
@@ -70,50 +75,38 @@ const createRemoveRequest = async (
         objectTypeId: TICKET_OBJECT_ID,
         name: TICKET_PROPERTY_AUTHORIZED_REQUEST,
         value: requestorIsAuthorized
-      },
+      }
     ]
   };
-
-  if (criticalUpdate) {
-    request.fields.push(
-      {
-        objectTypeId: TICKET_OBJECT_ID,
-        name: TICKET_PROPERTY_CRITICAL_UPDATE,
-        value: criticalUpdate
-      }
-    );
-  }
-
-  return request;
 };
 
-export type PublishRemoveInput = {
+export type PublishSupportInput = {
   appMintAddress: string;
   releaseMintAddress: string;
   publisherDetails: Publisher;
   requestorIsAuthorized: boolean;
-  criticalUpdate: boolean;
+  requestDetails: string;
 };
 
-export const publishRemove = async (
+export const publishSupport = async (
   publishSolanaNetworkInput: PublishSolanaNetworkInput,
   {
     appMintAddress,
     releaseMintAddress,
     publisherDetails,
     requestorIsAuthorized,
-    criticalUpdate,
-  } : PublishRemoveInput,
+    requestDetails,
+  } : PublishSupportInput,
   dryRun: boolean,
 ) => {
-  const removeRequest = await createRemoveRequest(
+  const supportRequest = await createSupportRequest(
     publishSolanaNetworkInput.connection,
     publishSolanaNetworkInput.sign,
     appMintAddress,
     releaseMintAddress,
     publisherDetails,
     requestorIsAuthorized,
-    criticalUpdate);
+    requestDetails);
 
-  return submitRequestToSolanaDappPublisherPortal(removeRequest, URL_FORM_REMOVE, dryRun);
+  return submitRequestToSolanaDappPublisherPortal(supportRequest, URL_FORM_SUPPORT, dryRun);
 };
