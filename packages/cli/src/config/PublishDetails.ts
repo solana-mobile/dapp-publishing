@@ -13,7 +13,7 @@ import Ajv from "ajv";
 import schemaJson from "../generated/config_schema.json" assert { type: "json" };
 
 // TODO: Add version number return here
-export interface CLIConfig {
+export interface PublishDetails {
   publisher: Publisher;
   app: App;
   release: Release;
@@ -33,6 +33,6 @@ export const getConfig = async (configPath: string) => {
     process.exit(1);
   }
 
-  const config = load(configFile) as CLIConfig;
+  const config = load(configFile) as PublishDetails;
   return config;
 };

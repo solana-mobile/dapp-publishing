@@ -2,8 +2,8 @@ import fs from "fs";
 import type { AndroidDetails, App, Publisher, Release, ReleaseJsonMetadata } from "@solana-mobile/dapp-store-publishing-tools";
 import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey } from "@solana/web3.js";
-import type { CLIConfig } from "./config/CliConfig.js";
-import { getConfig } from "./config/CliConfig.js";
+import type { PublishDetails } from "./config/PublishDetails.js";
+import { getConfig } from "./config/PublishDetails.js";
 import debugModule from "debug";
 import { dump } from "js-yaml";
 import * as util from "util";
@@ -80,7 +80,7 @@ const AaptPrefixes = {
 
 export const  getConfigWithChecks = async (
   buildToolsDir: string | null = null
-): Promise<CLIConfig> => {
+): Promise<PublishDetails> => {
   const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
 
   const config = await getConfig(configFilePath);
@@ -88,7 +88,7 @@ export const  getConfigWithChecks = async (
   if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
     // We validate that the config is going to have at least one installable asset
     const apkEntry = config.release.files.find(
-      (asset: CLIConfig["release"]["files"][0]) => asset.purpose === "install"
+      (asset: PublishDetails["release"]["files"][0]) => asset.purpose === "install"
     )!;
     const apkPath = path.join(process.cwd(), apkEntry?.uri);
     if (!fs.existsSync(apkPath)) {
@@ -138,7 +138,7 @@ export const  getConfigWithChecks = async (
     throw new Error("Please specify at least one media entry of type icon in your configuration file");
   }
 
-  config.release.media.forEach((item: CLIConfig["release"]["media"][0]) => {
+  config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
     const imagePath = path.join(process.cwd(), item.uri);
     if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
       throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`)
@@ -182,7 +182,7 @@ const checkImageExtension = (uri: string): boolean => {
 /**
  * We need to pre-check some things in the localized resources before we move forward
  */
-const validateLocalizableResources = (config: CLIConfig) => {
+const validateLocalizableResources = (config: PublishDetails) => {
   if (!config.release.catalog["en-US"]) {
     throw new Error("Please ensure you have the en-US locale strings in your configuration file.");
   }
@@ -332,7 +332,7 @@ export const saveToConfig = async ({
   delete currentConfig.publisher.icon;
   delete currentConfig.app.icon;
 
-  const newConfig: CLIConfig = {
+  const newConfig: PublishDetails = {
     publisher: {
       ...currentConfig.publisher,
       address: publisher?.address ?? currentConfig.publisher.address,
