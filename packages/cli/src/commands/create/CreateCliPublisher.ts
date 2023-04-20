@@ -7,10 +7,9 @@ import {
 } from "@solana/web3.js";
 
 import {
-  getConfigWithChecks,
   getMetaplexInstance,
-  saveToConfig,
 } from "../../CliUtils.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 const createPublisherNft = async (
   {
@@ -62,7 +61,7 @@ export const createPublisherCommand = async ({
 }) => {
   const connection = new Connection(url);
 
-  const { publisher: publisherDetails } = await getConfigWithChecks();
+  const { publisher: publisherDetails } = await loadPublishDetailsWithChecks();
 
   const { publisherAddress } = await createPublisherNft(
     {
@@ -74,7 +73,7 @@ export const createPublisherCommand = async ({
   );
 
   // TODO(sdlaver): dry-run should not modify config
-  saveToConfig({ publisher: { address: publisherAddress } });
+  writeToPublishDetails({ publisher: { address: publisherAddress } });
 
   return { publisherAddress };
 };

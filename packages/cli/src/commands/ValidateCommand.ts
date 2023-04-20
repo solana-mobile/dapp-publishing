@@ -7,11 +7,12 @@ import {
   validateRelease,
   metaplexFileReplacer,
 } from "@solana-mobile/dapp-store-publishing-tools";
-import { debug, getConfigWithChecks } from "../CliUtils.js";
+import { debug } from "../CliUtils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { isMetaplexFile } from "@metaplex-foundation/js";
+import { loadPublishDetailsWithChecks } from "../config/PublishDetails.js";
 
 export const validateCommand = async ({
   signer,
@@ -24,7 +25,7 @@ export const validateCommand = async ({
     publisher: publisherDetails,
     app: appDetails,
     release: releaseDetails,
-  } = await getConfigWithChecks(buildToolsPath);
+  } = await loadPublishDetailsWithChecks(buildToolsPath);
 
   debug({ publisherDetails, appDetails, releaseDetails });
 

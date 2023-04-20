@@ -8,10 +8,9 @@ import {
 } from "@solana/web3.js";
 
 import {
-  getConfigWithChecks,
   getMetaplexInstance,
-  saveToConfig,
 } from "../../CliUtils.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 const createAppNft = async (
   {
@@ -71,7 +70,7 @@ export const createAppCommand = async ({
   const connection = new Connection(url);
 
   const { app: appDetails, publisher: publisherDetails } =
-    await getConfigWithChecks();
+    await loadPublishDetailsWithChecks();
 
   const { appAddress } = await createAppNft(
     {
@@ -84,7 +83,7 @@ export const createAppCommand = async ({
   );
 
   if (!dryRun) {
-    saveToConfig({ app: { address: appAddress } });
+    writeToPublishDetails({ app: { address: appAddress } });
   }
 
   return { appAddress };

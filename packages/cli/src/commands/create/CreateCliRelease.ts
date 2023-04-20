@@ -10,13 +10,10 @@ import {
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
-
 import {
-  getConfigWithChecks,
   getMetaplexInstance,
-  saveToConfig,
 } from "../../CliUtils.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -83,7 +80,7 @@ export const createReleaseCommand = async ({
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await getConfigWithChecks(buildToolsPath);
+  const { release, app, publisher } = await loadPublishDetailsWithChecks(buildToolsPath);
 
   if (!dryRun) {
     const { releaseAddress } = await createReleaseNft({
@@ -97,7 +94,7 @@ export const createReleaseCommand = async ({
       publisherDetails: publisher,
     });
 
-    saveToConfig({
+    writeToPublishDetails({
       release: { address: releaseAddress },
     });
 

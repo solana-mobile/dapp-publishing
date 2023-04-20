@@ -1,8 +1,9 @@
 import { Connection, Keypair } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishUpdate } from "@solana-mobile/dapp-store-publishing-tools";
-import { checkMintedStatus, getConfigWithChecks } from "../../CliUtils.js";
+import { checkMintedStatus } from "../../CliUtils.js";
 import nacl from "tweetnacl";
+import { loadPublishDetailsWithChecks } from "../../config/PublishDetails.js";
 
 type PublishUpdateCommandInput = {
   appMintAddress: string;
@@ -43,7 +44,7 @@ export const publishUpdateCommand = async ({
     app: appDetails,
     release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
-  } = await getConfigWithChecks();
+  } = await loadPublishDetailsWithChecks();
 
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
