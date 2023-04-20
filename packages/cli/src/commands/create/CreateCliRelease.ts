@@ -10,13 +10,10 @@ import {
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
-
 import {
-  loadPublishDetailsWithChecks,
   getMetaplexInstance,
-  writeToPublishDetails,
 } from "../../CliUtils.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;

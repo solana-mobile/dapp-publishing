@@ -1,8 +1,9 @@
 import { Connection, Keypair } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishSupport } from "@solana-mobile/dapp-store-publishing-tools";
-import { checkMintedStatus, loadPublishDetailsWithChecks } from "../../CliUtils.js";
+import { checkMintedStatus } from "../../CliUtils.js";
 import nacl from "tweetnacl";
+import { loadPublishDetailsWithChecks } from "../../config/PublishDetails.js";
 
 type PublishSupportCommandInput = {
   appMintAddress: string;

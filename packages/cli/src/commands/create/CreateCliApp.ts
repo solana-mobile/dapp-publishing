@@ -8,10 +8,9 @@ import {
 } from "@solana/web3.js";
 
 import {
-  loadPublishDetailsWithChecks,
   getMetaplexInstance,
-  writeToPublishDetails,
 } from "../../CliUtils.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 const createAppNft = async (
   {

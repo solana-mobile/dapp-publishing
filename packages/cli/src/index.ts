@@ -12,7 +12,6 @@ import {
   checkSubmissionNetwork,
   Constants,
   generateNetworkSuffix,
-  loadPublishDetailsWithChecks,
   parseKeypair,
   showMessage
 } from "./CliUtils.js";
@@ -21,6 +20,7 @@ import boxen from "boxen";
 
 import * as dotenv from "dotenv";
 import { initScaffold } from "./commands/scaffolding/index.js";
+import { loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
 
 dotenv.config();
 
