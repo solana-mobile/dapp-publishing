@@ -15,7 +15,7 @@ import { CachedStorageDriver } from "../../upload/CachedStorageDriver.js";
 import {
   loadPublishDetailsWithChecks,
   getMetaplexInstance,
-  saveToConfig,
+  writeToPublishDetails,
 } from "../../CliUtils.js";
 
 type CreateReleaseCommandInput = {
@@ -97,7 +97,7 @@ export const createReleaseCommand = async ({
       publisherDetails: publisher,
     });
 
-    saveToConfig({
+    writeToPublishDetails({
       release: { address: releaseAddress },
     });
 

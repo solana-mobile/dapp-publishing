@@ -10,7 +10,7 @@ import {
 import {
   loadPublishDetailsWithChecks,
   getMetaplexInstance,
-  saveToConfig,
+  writeToPublishDetails,
 } from "../../CliUtils.js";
 
 const createAppNft = async (
@@ -84,7 +84,7 @@ export const createAppCommand = async ({
   );
 
   if (!dryRun) {
-    saveToConfig({ app: { address: appAddress } });
+    writeToPublishDetails({ app: { address: appAddress } });
   }
 
   return { appAddress };

@@ -9,7 +9,7 @@ import {
 import {
   loadPublishDetailsWithChecks,
   getMetaplexInstance,
-  saveToConfig,
+  writeToPublishDetails,
 } from "../../CliUtils.js";
 
 const createPublisherNft = async (
@@ -74,7 +74,7 @@ export const createPublisherCommand = async ({
   );
 
   // TODO(sdlaver): dry-run should not modify config
-  saveToConfig({ publisher: { address: publisherAddress } });
+  writeToPublishDetails({ publisher: { address: publisherAddress } });
 
   return { publisherAddress };
 };

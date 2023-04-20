@@ -322,7 +322,7 @@ type SaveToConfigArgs = {
   release?: Pick<Release, "address">;
 };
 
-export const saveToConfig = async ({
+export const writeToPublishDetails = async ({
   publisher,
   app,
   release,
