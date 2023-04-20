@@ -24,6 +24,7 @@ const runExec = util.promisify(exec);
 export class Constants {
   static CLI_VERSION = "0.4.0";
   static CONFIG_FILE_NAME = "config.yaml";
+  static DEFAULT_RPC_DEVNET = "https://api.devnet.solana.com";
 }
 
 export const debug = debugModule("CLI");
@@ -362,7 +363,7 @@ export const getMetaplexInstance = (
   const bundlrStorageDriver = isDevnet
     ? new BundlrStorageDriver(metaplex, {
         address: "https://devnet.bundlr.network",
-        providerUrl: "https://api.devnet.solana.com",
+        providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
     : new BundlrStorageDriver(metaplex);
 
