@@ -51,7 +51,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- Bug fixes, including enforcing \`short_description\` maximum length of 50 characters.",
+    "- \`short_description\` has been updated with maximum length of 30 characters.",
     "warning"
   )
 }
