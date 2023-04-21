@@ -80,7 +80,7 @@
                   "properties": {
                     "short_description": {
                       "type": "string",
-                      "maxLength": 50
+                      "maxLength": 30
                     },
                     "long_description": {
                       "type": "string"
