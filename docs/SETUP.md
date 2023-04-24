@@ -1,3 +1,5 @@
+# Publishing Tools Setup
+
 ## Prerequisites
 
 - Node 18+
