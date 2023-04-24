@@ -10,7 +10,7 @@ Publishing a dApp to the Solana dApp Store involves two steps:
 The publishing tool is designed for CI/CD usage - all steps, including submitting publish portal requests, can be integrated into your dApp release workflows. All files used during the NFT creation and publishing request submission steps can be committed to source control.
 
 ## Setup
-Please follow the instructions in [README.md](../packages/cli/README.md) to set up the `dapp-store` CLI tooling
+Please follow the instructions in [SETUP.md](SETUP.md) to get setup with the publishing CLI tooling.
 
 ## RPC endpoints
 
