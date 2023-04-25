@@ -66,16 +66,16 @@ export const loadPublishDetailsWithChecks = async (
 
   const config = await loadPublishDetails(configFilePath);
 
-  if (buildToolsDir && fs.lstatSync(buildToolsDir).isDirectory()) {
-    // We validate that the config is going to have at least one installable asset
-    const apkEntry = config.release.files.find(
-      (asset: PublishDetails["release"]["files"][0]) => asset.purpose === "install"
-    )!;
-    const apkPath = path.join(process.cwd(), apkEntry?.uri);
-    if (!fs.existsSync(apkPath)) {
-      throw new Error("Invalid path to APK file.");
-    }
+  // We validate that the config is going to have at least one installable asset
+  const apkEntry = config.release.files.find(
+    (asset: PublishDetails["release"]["files"][0]) => asset.purpose === "install"
+  )!;
+  const apkPath = path.join(process.cwd(), apkEntry?.uri);
+  if (!fs.existsSync(apkPath)) {
+    throw new Error("Invalid path to APK file.");
+  }
 
+  if (buildToolsDir) {
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
       apkPath
@@ -197,50 +197,54 @@ const getAndroidDetails = async (
   aaptDir: string,
   apkPath: string
 ): Promise<AndroidDetails> => {
-  const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging ${apkPath}`);
+  try {
+    const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging "${apkPath}"`);
 
-  const appPackage = new RegExp(
-    AaptPrefixes.packagePrefix + AaptPrefixes.quoteRegex
-  ).exec(stdout);
-  const versionCode = new RegExp(
-    AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex
-  ).exec(stdout);
-  const versionName = new RegExp(
-    AaptPrefixes.verNamePrefix + AaptPrefixes.quoteRegex
-  ).exec(stdout);
-  const minSdk = new RegExp(
-    AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
-  ).exec(stdout);
-  const permissions = [...stdout.matchAll(/uses-permission: name='(.*)'/g)];
-  const locales = new RegExp(
-    AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
-  ).exec(stdout);
+    const appPackage = new RegExp(
+      AaptPrefixes.packagePrefix + AaptPrefixes.quoteRegex
+    ).exec(stdout);
+    const versionCode = new RegExp(
+      AaptPrefixes.verCodePrefix + AaptPrefixes.quoteRegex
+    ).exec(stdout);
+    const versionName = new RegExp(
+      AaptPrefixes.verNamePrefix + AaptPrefixes.quoteRegex
+    ).exec(stdout);
+    const minSdk = new RegExp(
+      AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
+    ).exec(stdout);
+    const permissions = [...stdout.matchAll(/uses-permission: name='(.*)'/g)];
+    const locales = new RegExp(
+      AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
+    ).exec(stdout);
 
-  let localeArray = Array.from(locales?.values() ?? []);
-  if (localeArray.length == 2) {
-    const localesSrc = localeArray[1];
-    localeArray = ["en-US"].concat(localesSrc.split("' '").slice(1));
+    let localeArray = Array.from(locales?.values() ?? []);
+    if (localeArray.length == 2) {
+      const localesSrc = localeArray[1];
+      localeArray = ["en-US"].concat(localesSrc.split("' '").slice(1));
+    }
+
+    if (localeArray.length >= 60) {
+      showMessage(
+        "The bundle apk claims supports for following locales",
+        "Claim for supported locales::\n" +
+        localeArray +
+        "\nIf this release does not support all these locales the release may be rejected" +
+        "\nSee details at https://developer.android.com/guide/topics/resources/multilingual-support#design for configuring the supported locales",
+        "warning"
+      );
+    }
+
+    return {
+      android_package: appPackage?.[1] ?? "",
+      min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
+      version_code: parseInt(versionCode?.[1] ?? "0", 10),
+      version: versionName?.[1] ?? "0",
+      permissions: permissions.flatMap(permission => permission[1]),
+      locales: localeArray
+    };
+  } catch (e) {
+    throw new Error("There was an error parsing your APK. Please ensure you have provided a valid Android tools directory containing AAPT2.");
   }
-
-  if (localeArray.length >= 60) {
-    showMessage(
-      "The bundle apk claims supports for following locales",
-      "Claim for supported locales::\n" +
-      localeArray +
-      "\nIf this release does not support all these locales the release may be rejected" +
-      "\nSee details at https://developer.android.com/guide/topics/resources/multilingual-support#design for configuring the supported locales",
-      "warning"
-    );
-  }
-
-  return {
-    android_package: appPackage?.[1] ?? "",
-    min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
-    version_code: parseInt(versionCode?.[1] ?? "0", 10),
-    version: versionName?.[1] ?? "0",
-    permissions: permissions.flatMap(permission => permission[1]),
-    locales: localeArray
-  };
 };
 
 export const writeToPublishDetails = async ({ publisher, app, release }: SaveToConfigArgs) => {
