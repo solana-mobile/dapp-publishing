@@ -197,11 +197,6 @@ const getAndroidDetails = async (
   aaptDir: string,
   apkPath: string
 ): Promise<AndroidDetails> => {
-  //fs.lstatSync(buildToolsDir).isDirectory()
-  //1. Not a directory
-  //2. Not a diretctory with aapt2
-  //3. Escaping path
-
   try {
     const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging "${apkPath}"`);
 
