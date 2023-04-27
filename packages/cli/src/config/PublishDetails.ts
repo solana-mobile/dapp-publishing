@@ -62,9 +62,7 @@ export const loadPublishDetails = async (configPath: string) => {
 export const loadPublishDetailsWithChecks = async (
   buildToolsDir: string | null = null
 ): Promise<PublishDetails> => {
-  const configFilePath = `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
-
-  const config = await loadPublishDetails(configFilePath);
+  const config = await loadPublishDetails(Constants.getConfigFilePath());
 
   // We validate that the config is going to have at least one installable asset
   const apkEntry = config.release.files.find(
@@ -269,5 +267,5 @@ export const writeToPublishDetails = async ({ publisher, app, release }: SaveToC
     solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal
   };
 
-  fs.writeFileSync(`${process.cwd()}/${Constants.CONFIG_FILE_NAME}`, dump(newConfig));
+  fs.writeFileSync(Constants.getConfigFilePath(), dump(newConfig));
 };
