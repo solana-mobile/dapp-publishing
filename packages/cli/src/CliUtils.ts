@@ -121,6 +121,17 @@ export const getMetaplexInstance = (
   const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
   const isDevnet = connection.rpcEndpoint.includes("devnet");
 
+  // const awsClient = new S3Client({
+  //   region: "us-east-1",
+  //   credentials: {
+  //     accessKeyId: "",
+  //     secretAccessKey: "",
+  //   },
+  // });
+  //
+  // const bucketDriver = awsStorage(awsClient, 'dapp-store-public-production');
+  // metaplex.use(bucketDriver);
+
   const bundlrStorageDriver = isDevnet
     ? new BundlrStorageDriver(metaplex, {
         address: "https://devnet.bundlr.network",
