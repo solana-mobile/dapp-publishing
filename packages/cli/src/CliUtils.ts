@@ -10,7 +10,7 @@ import ver from "semver";
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
 export class Constants {
-  static CLI_VERSION = "0.4.1";
+  static CLI_VERSION = "0.4.2";
   static CONFIG_FILE_NAME = "config.yaml";
   static DEFAULT_RPC_DEVNET = "https://api.devnet.solana.com";
 
