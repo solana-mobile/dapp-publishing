@@ -20,7 +20,7 @@ import boxen from "boxen";
 
 import * as dotenv from "dotenv";
 import { initScaffold } from "./commands/scaffolding/index.js";
-import { loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
+import { loadPublishDetails, loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
 
 dotenv.config();
 
@@ -286,7 +286,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await loadPublishDetailsWithChecks();
+          const config = await loadPublishDetails(Constants.getConfigFilePath());
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -357,7 +357,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await loadPublishDetailsWithChecks();
+          const config = await loadPublishDetails(Constants.getConfigFilePath())
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -424,7 +424,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await loadPublishDetailsWithChecks();
+          const config = await loadPublishDetails(Constants.getConfigFilePath())
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
@@ -484,7 +484,7 @@ async function main() {
           await checkForSelfUpdate();
           await checkSubmissionNetwork(url);
 
-          const config = await loadPublishDetailsWithChecks();
+          const config = await loadPublishDetails(Constants.getConfigFilePath())
 
           if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
             throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
