@@ -92,15 +92,15 @@ async function main() {
     )
     .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .option("-s --storage-config <storage>", "Provide alternative storage configuration details")
-    .action(async ({ keypair, url, dryRun, storage }) => {
+    .option("-s --storage-config <storageParams>", "Provide alternative storage configuration details")
+    .action(async ({ keypair, url, dryRun, storageParams }) => {
       tryWithErrorMessage(async () => {
         latestReleaseMessage();
         await checkForSelfUpdate();
 
         const signer = parseKeypair(keypair);
         if (signer) {
-          const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
+          const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams });
 
           const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
           const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;

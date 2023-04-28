@@ -16,15 +16,17 @@ const createPublisherNft = async (
     connection,
     publisher,
     publisherDetails,
+    storageParams,
   }: {
     connection: Connection;
     publisher: Keypair;
     publisherDetails: Publisher;
+    storageParams: string;
   },
   { dryRun }: { dryRun: boolean }
 ) => {
   const mintAddress = Keypair.generate();
-  const metaplex = getMetaplexInstance(connection, publisher);
+  const metaplex = getMetaplexInstance(connection, publisher, storageParams);
   console.info(
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
   );
@@ -54,10 +56,12 @@ export const createPublisherCommand = async ({
   signer,
   url,
   dryRun,
+  storageParams,
 }: {
   signer: Keypair;
   url: string;
   dryRun: boolean;
+  storageParams: string;
 }) => {
   const connection = new Connection(url);
 
@@ -68,6 +72,7 @@ export const createPublisherCommand = async ({
       connection,
       publisher: signer,
       publisherDetails,
+      storageParams,
     },
     { dryRun }
   );

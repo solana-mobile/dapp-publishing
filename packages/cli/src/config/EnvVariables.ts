@@ -15,7 +15,7 @@ export class EnvVariables {
     return process.env.ANDROID_TOOLS_DIR as string;
   }
 
-  public get hasS3Config(): boolean {
+  public get hasS3EnvArgs(): boolean {
     return process.env.STORAGE_TYPE == "s3" &&
       process.env.S3_ACCESS_KEY != undefined &&
       process.env.S3_SECRET_KEY != undefined &&

@@ -120,13 +120,15 @@ export const showMessage = (
 
 export const getMetaplexInstance = (
   connection: Connection,
-  keypair: Keypair
+  keypair: Keypair,
+  storageParams: string = ""
 ) => {
   const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
   const isDevnet = connection.rpcEndpoint.includes("devnet");
 
   //TODO: Use DI for this
   const s3Mgr = new S3StorageManager(new EnvVariables());
+  s3Mgr.parseCmdArg(storageParams);
 
   if (s3Mgr.hasS3Config) {
     const awsClient = new S3Client({
