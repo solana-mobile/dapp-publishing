@@ -15,20 +15,16 @@ import {
   parseKeypair,
   showMessage
 } from "./CliUtils.js";
-import terminalLink from "terminal-link";
-import boxen from "boxen";
-
-import * as dotenv from "dotenv";
 import { initScaffold } from "./commands/scaffolding/index.js";
 import { loadPublishDetails, loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
-
-dotenv.config();
+import { EnvVariables } from "./config/EnvVariables";
 
 const hasAddressInConfig = ({ address }: { address: string }) => {
   return !!address;
 };
 
 const program = new Command();
+const envVars = new EnvVariables();
 
 function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   // If a path was specified on the command line, use that
@@ -37,8 +33,8 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   }
 
   // If a path is specified in a .env file, use that
-  if (process.env.ANDROID_TOOLS_DIR !== undefined) {
-    return process.env.ANDROID_TOOLS_DIR;
+  if (envVars.hasAndroidTools) {
+    return envVars.androidToolsDir;
   }
 
   // No path was specified
