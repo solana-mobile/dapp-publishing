@@ -96,20 +96,24 @@ async function main() {
     )
     .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .action(async ({ keypair, url, dryRun }) => {
+    .option("-s --storage-config <storage>", "Provide alternative storage configuration details")
+    .action(async ({ keypair, url, dryRun, storage }) => {
       tryWithErrorMessage(async () => {
-        latestReleaseMessage();
-        await checkForSelfUpdate();
 
-        const signer = parseKeypair(keypair);
-        if (signer) {
-          const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
+        showMessage("Your params", "Your param: " + storage);
 
-          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
-
-          showMessage("Success", resultText);
-        }
+        // latestReleaseMessage();
+        // await checkForSelfUpdate();
+        //
+        // const signer = parseKeypair(keypair);
+        // if (signer) {
+        //   const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
+        //
+        //   const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+        //   const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
+        //
+        //   showMessage("Success", resultText);
+        // }
       });
     });
 
