@@ -1,0 +1,21 @@
+import { EnvVariables, S3Config } from "./EnvVariables.js";
+
+export class S3StorageManager {
+
+  public get hasS3Config(): boolean {
+    return this.envVars.hasS3Config;
+  }
+
+  public get s3Config(): S3Config {
+    return {
+      accessKey: this.envVars.s3Config.accessKey,
+      secretKey: this.envVars.s3Config.secretKey,
+      bucketName: this.envVars.s3Config.bucketName,
+    };
+  }
+
+  constructor(
+    private envVars: EnvVariables
+  ) { }
+
+}

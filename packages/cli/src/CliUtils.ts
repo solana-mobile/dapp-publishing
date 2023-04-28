@@ -11,6 +11,7 @@ import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 import { EnvVariables } from "./config/index.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
+import { S3StorageManager } from "./config/index.js";
 
 export class Constants {
   static CLI_VERSION = "0.4.2";
@@ -124,17 +125,19 @@ export const getMetaplexInstance = (
   const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
   const isDevnet = connection.rpcEndpoint.includes("devnet");
 
-  const envVars = new EnvVariables();
-  if (envVars.hasS3Config) {
+  //TODO: Use DI for this
+  const s3Mgr = new S3StorageManager(new EnvVariables());
+
+  if (s3Mgr.hasS3Config) {
     const awsClient = new S3Client({
       region: "us-east-1",
       credentials: {
-        accessKeyId: envVars.s3Config.accessKey,
-        secretAccessKey: envVars.s3Config.secretKey,
+        accessKeyId: s3Mgr.s3Config.accessKey,
+        secretAccessKey: s3Mgr.s3Config.secretKey,
       },
     });
 
-    const bucketPlugin = awsStorage(awsClient, envVars.s3Config.bucketName);
+    const bucketPlugin = awsStorage(awsClient, s3Mgr.s3Config.bucketName);
     metaplex.use(bucketPlugin);
   } else {
     const bundlrStorageDriver = isDevnet
