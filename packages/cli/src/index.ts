@@ -123,7 +123,8 @@ async function main() {
     )
     .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
     .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-    .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
+    .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
+    .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig }) => {
       tryWithErrorMessage(async () => {
         latestReleaseMessage();
         await checkForSelfUpdate();
@@ -131,7 +132,7 @@ async function main() {
         const config = await loadPublishDetailsWithChecks();
 
         if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-          throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.")
+          throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.");
         }
 
         const signer = parseKeypair(keypair);
@@ -141,6 +142,7 @@ async function main() {
             signer,
             url,
             dryRun,
+            storageParams: storageConfig
           });
 
           const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
