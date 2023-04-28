@@ -95,21 +95,18 @@ async function main() {
     .option("-s --storage-config <storage>", "Provide alternative storage configuration details")
     .action(async ({ keypair, url, dryRun, storage }) => {
       tryWithErrorMessage(async () => {
+        latestReleaseMessage();
+        await checkForSelfUpdate();
 
-        showMessage("Your params", "Your param: " + storage);
+        const signer = parseKeypair(keypair);
+        if (signer) {
+          const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
 
-        // latestReleaseMessage();
-        // await checkForSelfUpdate();
-        //
-        // const signer = parseKeypair(keypair);
-        // if (signer) {
-        //   const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
-        //
-        //   const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-        //   const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
-        //
-        //   showMessage("Success", resultText);
-        // }
+          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
+
+          showMessage("Success", resultText);
+        }
       });
     });
 

@@ -8,6 +8,9 @@ import cliPackage from "./package.json" assert { type: "json" };
 import boxen from "boxen";
 import ver from "semver";
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
+import { EnvVariables } from "./config/index.js";
+import { S3Client } from "@aws-sdk/client-s3";
+import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
 
 export class Constants {
   static CLI_VERSION = "0.4.2";
@@ -121,30 +124,34 @@ export const getMetaplexInstance = (
   const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
   const isDevnet = connection.rpcEndpoint.includes("devnet");
 
-  // const awsClient = new S3Client({
-  //   region: "us-east-1",
-  //   credentials: {
-  //     accessKeyId: "",
-  //     secretAccessKey: "",
-  //   },
-  // });
-  //
-  // const bucketDriver = awsStorage(awsClient, 'dapp-store-public-production');
-  // metaplex.use(bucketDriver);
+  const envVars = new EnvVariables();
+  if (envVars.hasS3Config) {
+    const awsClient = new S3Client({
+      region: "us-east-1",
+      credentials: {
+        accessKeyId: envVars.s3Config.accessKey,
+        secretAccessKey: envVars.s3Config.secretKey,
+      },
+    });
 
-  const bundlrStorageDriver = isDevnet
-    ? new BundlrStorageDriver(metaplex, {
+    const bucketDriver = awsStorage(awsClient, envVars.s3Config.bucketName);
+    metaplex.use(bucketDriver);
+  } else {
+    const bundlrStorageDriver = isDevnet
+      ? new BundlrStorageDriver(metaplex, {
         address: "https://devnet.bundlr.network",
         providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
-    : new BundlrStorageDriver(metaplex);
+      : new BundlrStorageDriver(metaplex);
 
-  metaplex.storage().setDriver(
-    new CachedStorageDriver(bundlrStorageDriver, {
-      assetManifestPath: isDevnet
-        ? "./.asset-manifest-devnet.json"
-        : "./.asset-manifest.json",
-    })
-  );
+    metaplex.storage().setDriver(
+      new CachedStorageDriver(bundlrStorageDriver, {
+        assetManifestPath: isDevnet
+          ? "./.asset-manifest-devnet.json"
+          : "./.asset-manifest.json",
+      })
+    );
+  }
+
   return metaplex;
 };
