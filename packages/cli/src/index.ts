@@ -17,7 +17,7 @@ import {
 } from "./CliUtils.js";
 import { initScaffold } from "./commands/scaffolding/index.js";
 import { loadPublishDetails, loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
-import { EnvVariables } from "./config/EnvVariables";
+import { EnvVariables } from "./config/index.js";
 
 const hasAddressInConfig = ({ address }: { address: string }) => {
   return !!address;
