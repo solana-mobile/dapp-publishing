@@ -134,8 +134,8 @@ export const getMetaplexInstance = (
       },
     });
 
-    const bucketDriver = awsStorage(awsClient, envVars.s3Config.bucketName);
-    metaplex.use(bucketDriver);
+    const bucketPlugin = awsStorage(awsClient, envVars.s3Config.bucketName);
+    metaplex.use(bucketPlugin);
   } else {
     const bundlrStorageDriver = isDevnet
       ? new BundlrStorageDriver(metaplex, {
@@ -144,14 +144,16 @@ export const getMetaplexInstance = (
       })
       : new BundlrStorageDriver(metaplex);
 
-    metaplex.storage().setDriver(
-      new CachedStorageDriver(bundlrStorageDriver, {
-        assetManifestPath: isDevnet
-          ? "./.asset-manifest-devnet.json"
-          : "./.asset-manifest.json",
-      })
-    );
+    metaplex.storage().setDriver(bundlrStorageDriver);
   }
+
+  metaplex.storage().setDriver(
+    new CachedStorageDriver(metaplex.storage().driver(), {
+      assetManifestPath: isDevnet
+        ? "./.asset-manifest-devnet.json"
+        : "./.asset-manifest.json",
+    })
+  );
 
   return metaplex;
 };
