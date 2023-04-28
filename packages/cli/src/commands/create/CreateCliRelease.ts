@@ -21,6 +21,7 @@ type CreateReleaseCommandInput = {
   signer: Keypair;
   url: string;
   dryRun?: boolean;
+  storageParams: string;
 };
 
 const createReleaseNft = async ({
@@ -30,6 +31,7 @@ const createReleaseNft = async ({
   publisherDetails,
   connection,
   publisher,
+  storageParams,
 }: {
   appMintAddress: string;
   releaseDetails: Release;
@@ -37,10 +39,11 @@ const createReleaseNft = async ({
   publisherDetails: Publisher;
   connection: Connection;
   publisher: Keypair;
+  storageParams: string;
 }) => {
   const releaseMintAddress = Keypair.generate();
 
-  const metaplex = getMetaplexInstance(connection, publisher);
+  const metaplex = getMetaplexInstance(connection, publisher, storageParams);
 
   const { txBuilder } = await createRelease(
     {
@@ -77,6 +80,7 @@ export const createReleaseCommand = async ({
   signer,
   url,
   dryRun = false,
+  storageParams,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
@@ -92,6 +96,7 @@ export const createReleaseCommand = async ({
       },
       appDetails: app,
       publisherDetails: publisher,
+      storageParams: storageParams,
     });
 
     writeToPublishDetails({

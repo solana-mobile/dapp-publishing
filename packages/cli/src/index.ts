@@ -170,7 +170,8 @@ async function main() {
       "-b, --build-tools-path <build-tools-path>",
       "Path to Android build tools which contains AAPT2"
     )
-    .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
+    .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
+    .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath, storageConfig }) => {
         tryWithErrorMessage(async () => {
           latestReleaseMessage();
           await checkForSelfUpdate();
@@ -193,6 +194,7 @@ async function main() {
               signer,
               url,
               dryRun,
+              storageParams: storageConfig,
             });
 
             const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
