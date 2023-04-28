@@ -1,26 +1,41 @@
 import { EnvVariables, S3Config } from "./EnvVariables.js";
 
 export class S3StorageManager {
+  private _config: S3Config | undefined = undefined
 
   public get hasS3Config(): boolean {
-    // TODO: Will be a better boolean
-    return this.envVars.hasS3EnvArgs;
+    return this._config != undefined;
   }
 
   public get s3Config(): S3Config {
-    return {
-      accessKey: this.envVars.s3Config.accessKey,
-      secretKey: this.envVars.s3Config.secretKey,
-      bucketName: this.envVars.s3Config.bucketName,
-    };
+    return this._config as S3Config;
   }
 
-  constructor(
-    private envVars: EnvVariables
-  ) { }
+  constructor(private envVars: EnvVariables) {
+    if (envVars.hasS3EnvArgs) {
+      this._config = {
+        accessKey: this.envVars.s3Config.accessKey,
+        secretKey: this.envVars.s3Config.secretKey,
+        bucketName: this.envVars.s3Config.bucketName,
+      };
+    }
+  }
 
   parseCmdArg(cmdArg: string) {
-    throw new Error(`:: Your args: ${cmdArg}`);
+    try {
+      //This will overwrite any existing parameters already obtained from the .env file
+      const parsedArray = JSON.parse(`${cmdArg}`);
+
+      if (parsedArray instanceof Array && parsedArray.length == 4 && parsedArray[0] == "s3") {
+        this._config = {
+          accessKey: parsedArray[1],
+          secretKey: parsedArray[2],
+          bucketName: parsedArray[3],
+        };
+      }
+    } catch (e) {
+      throw new Error("There was an error parsing your s3 parameters from the CLI. Please ensure they are formatted correctly.");
+    }
   }
 
 }

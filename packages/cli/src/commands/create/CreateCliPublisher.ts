@@ -72,7 +72,7 @@ export const createPublisherCommand = async ({
       connection,
       publisher: signer,
       publisherDetails,
-      storageParams,
+      storageParams: storageParams,
     },
     { dryRun }
   );
