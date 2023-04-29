@@ -22,6 +22,8 @@ export class S3StorageManager {
   }
 
   parseCmdArg(cmdArg: string) {
+    if (!cmdArg || cmdArg == "") return;
+
     try {
       //This will overwrite any existing parameters already obtained from the .env file
       const parsedArray = JSON.parse(`${cmdArg}`);
