@@ -52,19 +52,7 @@ yarn run dapp-store init
 yarn run dapp-store --help
 ```
 
-or with `npm`
-
-```shell
-mkdir publishing
-cd publishing
-
-npm init
-npm install --save-dev @solana-mobile/dapp-store-cli
-npx dapp-store init
-npx dapp-store --help
-```
-
-# Overview
+## Technical Overview
 
 Publishers, applications, and releases on the Saga Dapp Store are all represented as NFTs, with some modifications.
 
@@ -74,18 +62,9 @@ Publishers, applications, and releases on the Saga Dapp Store are all represente
 
 "Releases" are immutable Metaplex NFTs that can only be issued once per-version. Any new releases must be re-issued as a new NFT.
 
-A typical publishing flow might look like:
-
-1. Create a publisher (`dapp-store create publisher ...`)
-2. Create an app (`dapp-store create app ...`)
-3. Create a release (`dapp-store create release ...`)
-4. Submit an app for review (`dapp-store publish submit ...`)
-
-Repeat steps 3. and 4. as needed!
-
 ## Editor's Note
 
-The `dapp-store` CLI handles rote tasks like uploading assets to immutable file storage and i18n. However, it is by no means the only way to create these NFTs—all information about the requirements are specified in this repository, and the packages have been designed to be portable to other client contexts besides the CLI.
+The `dapp-store` CLI handles rote tasks like uploading assets to file storage and i18n. However, it is by no means the only way to create these NFTs; all information about the requirements are specified in this repository, and the packages have been designed to be portable to other client contexts besides the CLI.
 
 ### CLI Updates
 
