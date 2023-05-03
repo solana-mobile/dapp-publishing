@@ -34,6 +34,7 @@
   "devDependencies": {
     "@jest/globals": "^29.5.0",
     "@metaplex-foundation/js": "0.17.11",
+    "@swc/jest": "^0.2.26",
     "@types/commander": "^2.12.2",
     "@types/debug": "^4.1.7",
     "@types/js-yaml": "^4.0.5",
