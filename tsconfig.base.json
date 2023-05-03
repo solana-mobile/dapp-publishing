@@ -3,13 +3,13 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "esnext",
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "isolatedModules": true,
     "noEmitOnError": true,
     "resolveJsonModule": true,
     "strict": true,
     "stripInternal": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   }
 }

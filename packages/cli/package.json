@@ -29,14 +29,16 @@
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
     "prebuild": "pnpm run clean && node src/prebuild_schema/schemagen.js",
-    "test": " node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.js"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
+    "@jest/types": "^29.5.0",
     "@metaplex-foundation/js": "0.17.11",
     "@swc/jest": "^0.2.26",
     "@types/commander": "^2.12.2",
     "@types/debug": "^4.1.7",
+    "@types/jest": "^29.5.1",
     "@types/js-yaml": "^4.0.5",
     "@types/terminal-link": "^1.2.0",
     "@types/update-notifier": "^6.0.1",
