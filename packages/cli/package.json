@@ -29,7 +29,7 @@
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
     "prebuild": "pnpm run clean && node src/prebuild_schema/schemagen.js",
-    "test": "jest"
+    "test": " node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
