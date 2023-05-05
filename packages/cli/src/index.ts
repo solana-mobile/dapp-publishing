@@ -28,7 +28,7 @@ const hasAddressInConfig = ({ address }: { address: string }) => {
   return !!address;
 };
 
-const program = new Command();
+export const testProgram = new Command();
 
 function resolveBuildToolsPath(buildToolsPath: string | undefined) {
   // If a path was specified on the command line, use that
@@ -67,12 +67,12 @@ async function tryWithErrorMessage(block: () => Promise<any>) {
 }
 
 async function main() {
-  program
+  testProgram
     .name("dapp-store")
     .version(Constants.CLI_VERSION)
     .description("CLI to assist with publishing to the Saga Dapp Store")
 
-  const initCommand = program
+  const initCommand = testProgram
     .command("init")
     .description("First-time initialization of tooling configuration")
     .action(async () => {
@@ -83,7 +83,7 @@ async function main() {
       })
     });
 
-  const createCommand = program
+  const createCommand = testProgram
     .command("create")
     .description("Create a `publisher`, `app`, or `release`")
 
@@ -205,7 +205,7 @@ async function main() {
       }
     );
 
-  program
+  testProgram
     .command("validate")
     .description("Validates details prior to publishing")
     .requiredOption(
@@ -238,7 +238,7 @@ async function main() {
       });
     });
 
-  const publishCommand = program
+  const publishCommand = testProgram
     .command("publish")
     .description(
       "Submit a publishing request (`submit`, `update`, `remove`, or `support`) to the Solana Mobile dApp publisher portal"
@@ -509,6 +509,6 @@ async function main() {
       }
     );
 
-  await program.parseAsync(process.argv);
+  await testProgram.parseAsync(process.argv);
 }
 main();

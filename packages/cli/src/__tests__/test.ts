@@ -1,6 +1,7 @@
-import { describe, expect, test, jest } from "@jest/globals";
+import { jest } from "@jest/globals";
 import { Command } from "commander";
-import { Constants } from "../src/CliUtils";
+import { Constants } from "../CliUtils";
+import { testProgram } from "../index";
 
 describe("General Module", () => {
 
@@ -8,18 +9,19 @@ describe("General Module", () => {
     //expect((1 + 2)).toBe(3);
 
     const myStr = Constants.CLI_VERSION
+    const mytester = testProgram
 
-    const writeSpy = jest.spyOn(process.stdout, "write").mockImplementation((std) => {
-      console.log(std + myStr);
+    // const writeSpy = jest.spyOn(process.stdout, "write").mockImplementation((std) => {
+    //   console.log(std + myStr);
+    //
+    //   return true;
+    // });
 
-      return true;
-    });
+    // const program = new Command();
+    // program.name("blah");
+    mytester.exitOverride();
 
-    const program = new Command();
-    program.name("blah");
-    program.exitOverride();
-
-    program
+    mytester
       .command("dothis")
       .requiredOption(
         "-k, --keypair <path-to-keypair-file>",
@@ -32,14 +34,10 @@ describe("General Module", () => {
 
 
     expect(() => {
-      program.parse(["npx", "blah"]);
+      mytester.parse(["npx", "blah"]);
     }).toThrow("error: required option '-k, --keypair <path-to-keypair-file>' not specified");
 
-    writeSpy.mockClear();
-
-    // expect(() => {
-    //   program.parse(['node', 'test', '--help']);
-    // }).toThrow('(outputHelp)');
+    // writeSpy.mockClear();
   });
 
 });

@@ -6,8 +6,11 @@ export default {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
+  roots: [
+    '<rootDir>/src/'
+  ],
   transform: {
-    "^.+\\.(t|j)sx?$": ["@swc/jest"],
+    "^.+\\.(t|j)sx?$": ["@swc/jest"]
   },
   moduleFileExtensions: ["ts", "js", "jsx"],
 };
