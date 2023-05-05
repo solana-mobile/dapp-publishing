@@ -15,9 +15,6 @@ import {
   parseKeypair,
   showMessage
 } from "./CliUtils.js";
-import terminalLink from "terminal-link";
-import boxen from "boxen";
-
 import * as dotenv from "dotenv";
 import { initScaffold } from "./commands/scaffolding/index.js";
 import { loadPublishDetails, loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
