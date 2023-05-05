@@ -1,4 +1,5 @@
-import { mainCli } from "../index";
+import { mainCli } from "../CliSetup";
+
 
 describe("General Module", () => {
 
