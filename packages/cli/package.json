@@ -29,6 +29,7 @@
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
     "prebuild": "pnpm run clean && node src/prebuild_schema/schemagen.js",
+    "build": "swc src -d lib --copy-files",
     "test": "jest"
   },
   "devDependencies": {

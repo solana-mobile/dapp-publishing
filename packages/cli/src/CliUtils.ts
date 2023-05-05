@@ -11,7 +11,7 @@ import updateNotifier from "update-notifier";
 import cliPackage from "./package.json" assert { type: "json" };
 import boxen from "boxen";
 import ver from "semver";
-import { CachedStorageDriver } from "./upload/CachedStorageDriver";
+import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 
 export class Constants {
   static CLI_VERSION = "0.4.2";
