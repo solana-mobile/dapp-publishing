@@ -1,5 +1,12 @@
 import { beforeEach, expect } from "@jest/globals";
-import { createCliCmd, createPublisherCliCmd, initCliCmd, mainCli, setupCreateCommands } from "../CliSetup";
+import {
+  createAppCliCmd,
+  createCliCmd,
+  createPublisherCliCmd,
+  createReleaseCliCmd,
+  initCliCmd,
+  mainCli
+} from "../CliSetup";
 import { Constants } from "../CliUtils";
 
 describe("Cli Setup & Execution", () => {
@@ -70,7 +77,7 @@ describe("Cli Setup & Execution", () => {
     expect(() => {
         createPublisherCliCmd.parse(["dapp-store", "create", "publisher"]);
       }
-    ).toThrow("error: required option '-k, --keypair <path-to-keypair-file>' not specified");
+    ).toThrow(keyPairArgHelp);
   });
 
   test("Calling create publisher command with help flag shows contextual help", () => {
@@ -82,6 +89,46 @@ describe("Cli Setup & Execution", () => {
 
     expect(otherOutput).toEqual(createPublisherHelp)
   });
+
+  test("Calling create app command with no arguments warns about required argument", () => {
+    createAppCliCmd.exitOverride()
+
+    expect(() => {
+      createAppCliCmd.parse(["dapp-store", "create", "app"]);
+      }
+    ).toThrow(keyPairArgHelp);
+  });
+
+  test("Calling create app command with help flag shows contextual help", () => {
+    createAppCliCmd.exitOverride()
+
+    expect(() => {
+      createAppCliCmd.parse(["dapp-store", "create", "app", "-h"]);
+    }).toThrow(outputHelpReference)
+
+    expect(otherOutput).toEqual(createAppHelp)
+  });
+
+  test("Calling create release command with no arguments warns about required argument", () => {
+    createReleaseCliCmd.exitOverride()
+
+    expect(() => {
+        createReleaseCliCmd.parse(["dapp-store", "create", "release"]);
+      }
+    ).toThrow(keyPairArgHelp);
+  });
+
+  test("Calling create release command with help flag shows contextual help", () => {
+    createReleaseCliCmd.exitOverride()
+
+    expect(() => {
+      createReleaseCliCmd.parse(["dapp-store", "create", "release", "-h"]);
+    }).toThrow(outputHelpReference)
+
+    expect(otherOutput).toEqual(createReleaseHelp)
+  });
+
+  //--------------------------------------------------
 
   const generalHelp = `Usage: dapp-store [options] [command]
 
@@ -105,7 +152,9 @@ First-time initialization of tooling configuration
 
 Options:
   -h, --help  display help for command
-`
+`;
+
+  const keyPairArgHelp = "error: required option '-k, --keypair <path-to-keypair-file>' not specified"
 
   const createHelp = `Usage: dapp-store create [options] [command]
 
@@ -130,6 +179,31 @@ Options:
   -u, --url <url>                       RPC URL (default: "https://api.devnet.solana.com")
   -d, --dry-run                         Flag for dry run. Doesn't mint an NFT
   -h, --help                            display help for command
-`
+`;
+
+  const createAppHelp = `Usage: dapp-store create app [options]
+
+Create a app
+
+Options:
+  -k, --keypair <path-to-keypair-file>                   Path to keypair file
+  -p, --publisher-mint-address <publisher-mint-address>  The mint address of the publisher NFT
+  -u, --url <url>                                        RPC URL (default: "https://api.devnet.solana.com")
+  -d, --dry-run                                          Flag for dry run. Doesn't mint an NFT
+  -h, --help                                             display help for command
+`;
+
+  const createReleaseHelp = `Usage: dapp-store create release [options]
+
+Create a release
+
+Options:
+  -k, --keypair <path-to-keypair-file>       Path to keypair file
+  -a, --app-mint-address <app-mint-address>  The mint address of the app NFT
+  -u, --url <url>                            RPC URL (default: "https://api.devnet.solana.com")
+  -d, --dry-run                              Flag for dry run. Doesn't mint an NFT
+  -b, --build-tools-path <build-tools-path>  Path to Android build tools which contains AAPT2
+  -h, --help                                 display help for command
+`;
 
 });

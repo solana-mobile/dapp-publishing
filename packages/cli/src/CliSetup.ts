@@ -109,7 +109,7 @@ export const createPublisherCliCmd = createCliCmd
     });
   });
 
-createCliCmd
+export const createAppCliCmd = createCliCmd
   .command("app")
   .description("Create a app")
   .requiredOption(
@@ -150,7 +150,7 @@ createCliCmd
     });
   });
 
-createCliCmd
+export const createReleaseCliCmd = createCliCmd
   .command("release")
   .description("Create a release")
   .requiredOption(
