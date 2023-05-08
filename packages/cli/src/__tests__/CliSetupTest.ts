@@ -1,16 +1,25 @@
-import { beforeAll, beforeEach, expect } from "@jest/globals";
-import { mainCli } from "../CliSetup";
+import { beforeEach, expect } from "@jest/globals";
+import { createCliCmd, createPublisherCliCmd, initCliCmd, mainCli, setupCreateCommands } from "../CliSetup";
 import { Constants } from "../CliUtils";
 
 describe("Cli Setup & Execution", () => {
-  let errorOutput: string = ""
+  const outputHelpReference = "(outputHelp)"
 
-  beforeAll(() => {
+  let errorOutput: string = ""
+  let otherOutput: string = ""
+
+  beforeEach(() => {
+    errorOutput = "";
+    otherOutput = "";
     mainCli.exitOverride();
 
     mainCli.configureOutput({
       getOutHelpWidth(): number { return 250; },
       getErrHelpWidth(): number { return 250;},
+
+      writeOut(str: string) {
+        otherOutput = str;
+      },
 
       writeErr(str: string) {
         errorOutput = str;
@@ -18,37 +27,60 @@ describe("Cli Setup & Execution", () => {
     });
   });
 
-  beforeEach(() => {
-    errorOutput = "";
-  });
-
   test("Cli version argument reports correct version", () => {
 
     expect(() => {
       mainCli.parse(["npx", "dapp-store", "-V"]);
     }).toThrow(Constants.CLI_VERSION)
-
   });
 
   test("Calling cli with no parameters displays general help", () => {
-
     expect(() => {
         mainCli.parse(["npx", "dapp-store"]);
       }
-    ).toThrow("(outputHelp)");
+    ).toThrow(outputHelpReference);
 
     expect(generalHelp).toEqual(errorOutput)
   });
 
-  test("Calling create command with no options lists all options", () => {
+  test("Calling init command with help parameter shows contextual help info", () => {
+    initCliCmd.exitOverride()
 
     expect(() => {
-        mainCli.parse(["npx", "dapp-store", "create"]);
+      initCliCmd.parse(["dapp-store", "init", "-h"])
+    }).toThrow(outputHelpReference)
+
+    expect(otherOutput).toEqual(initHelp)
+  })
+
+  test("Calling create command with no options lists all options", () => {
+    createCliCmd.exitOverride()
+
+    expect(() => {
+        createCliCmd.parse(["dapp-store", "create"]);
       }
-    ).toThrow("(outputHelp)");
+    ).toThrow(outputHelpReference);
 
-    expect(createHelp).toEqual(errorOutput)
+    expect(errorOutput).toEqual(createHelp)
+  });
 
+  test("Calling create publisher command with no arguments warns about required argument", () => {
+    createPublisherCliCmd.exitOverride()
+
+    expect(() => {
+        createPublisherCliCmd.parse(["dapp-store", "create", "publisher"]);
+      }
+    ).toThrow("error: required option '-k, --keypair <path-to-keypair-file>' not specified");
+  });
+
+  test("Calling create publisher command with help flag shows contextual help", () => {
+    createPublisherCliCmd.exitOverride()
+
+    expect(() => {
+      createPublisherCliCmd.parse(["dapp-store", "create", "publisher", "-h"]);
+    }).toThrow(outputHelpReference)
+
+    expect(otherOutput).toEqual(createPublisherHelp)
   });
 
   const generalHelp = `Usage: dapp-store [options] [command]
@@ -67,6 +99,14 @@ Commands:
   help [command]      display help for command
 `;
 
+  const initHelp = `Usage: dapp-store init [options]
+
+First-time initialization of tooling configuration
+
+Options:
+  -h, --help  display help for command
+`
+
   const createHelp = `Usage: dapp-store create [options] [command]
 
 Create a \`publisher\`, \`app\`, or \`release\`
@@ -80,4 +120,16 @@ Commands:
   release [options]    Create a release
   help [command]       display help for command
 `;
+
+  const createPublisherHelp = `Usage: dapp-store create publisher [options]
+
+Create a publisher
+
+Options:
+  -k, --keypair <path-to-keypair-file>  Path to keypair file
+  -u, --url <url>                       RPC URL (default: "https://api.devnet.solana.com")
+  -d, --dry-run                         Flag for dry run. Doesn't mint an NFT
+  -h, --help                            display help for command
+`
+
 });

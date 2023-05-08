@@ -68,7 +68,7 @@ mainCli
   .version(Constants.CLI_VERSION)
   .description("CLI to assist with publishing to the Saga Dapp Store")
 
-mainCli
+export const initCliCmd = mainCli
   .command("init")
   .description("First-time initialization of tooling configuration")
   .action(async () => {
@@ -79,11 +79,11 @@ mainCli
     })
   });
 
-const createCommand = mainCli
+export const createCliCmd = mainCli
   .command("create")
   .description("Create a `publisher`, `app`, or `release`")
 
-createCommand
+export const createPublisherCliCmd = createCliCmd
   .command("publisher")
   .description("Create a publisher")
   .requiredOption(
@@ -109,7 +109,7 @@ createCommand
     });
   });
 
-createCommand
+createCliCmd
   .command("app")
   .description("Create a app")
   .requiredOption(
@@ -150,7 +150,7 @@ createCommand
     });
   });
 
-createCommand
+createCliCmd
   .command("release")
   .description("Create a release")
   .requiredOption(
