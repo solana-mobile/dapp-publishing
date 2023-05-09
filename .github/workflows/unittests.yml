@@ -43,6 +43,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
             
+      - name: Build tooling
+        run: pnpm run build
+        
       - name: Run unit tests
         working-directory: ./packages/cli
         run: pnpm run test
