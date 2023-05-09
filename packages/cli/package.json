@@ -30,7 +30,7 @@
     "clean": "shx mkdir -p lib && shx rm -rf lib",
     "prebuild": "pnpm run clean && node src/prebuild_schema/schemagen.js",
     "build": "swc src -d lib --copy-files",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "pnpm run prebuild && node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
