@@ -4,15 +4,15 @@
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
-  "main": "./lib/cjs/index.js",
-  "module": "./lib/esm/index.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
   "types": "./lib/types/index.d.ts",
   "engines": {
     "node": ">=18"
   },
   "exports": {
-    "import": "./lib/esm/index.js",
-    "require": "./lib/cjs/index.js",
+    "import": "./lib/index.js",
+    "require": "./lib/index.js",
     "types": "./lib/types/index.d.ts"
   },
   "files": [
@@ -26,6 +26,7 @@
   "scripts": {
     "clean": "shx mkdir -p lib && shx rm -rf lib",
     "prebuild": "pnpm run clean && pnpm run generate-types",
+    "build": "swc src -d lib --copy-files",
     "generate-types": "json2ts -i src/schemas -o src/generated"
   },
   "devDependencies": {
