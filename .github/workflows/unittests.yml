@@ -42,3 +42,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+            
+      - name: Run unit tests
+        working-directory: ./packages/cli
+        run: pnpm run test
