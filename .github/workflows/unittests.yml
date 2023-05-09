@@ -21,13 +21,13 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: packages/cli/package-lock.json
+        cache: 'pnpm'
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.2.4
       with:
         run_install: pnpm install
-    - run: pnpm run build
+    - name: Initialize pnpm dependencies
+      run: pnpm run build
     - name: Run test suite
       working-directory: ./packages/cli
       run: pnpm run test
