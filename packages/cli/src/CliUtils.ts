@@ -2,7 +2,11 @@ import fs from "fs";
 import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
-import { BundlrStorageDriver, keypairIdentity, Metaplex } from "@metaplex-foundation/js";
+import {
+  BundlrStorageDriver,
+  keypairIdentity,
+  Metaplex,
+} from "@metaplex-foundation/js";
 import updateNotifier from "update-notifier";
 import cliPackage from "./package.json" assert { type: "json" };
 import boxen from "boxen";
@@ -32,21 +36,35 @@ export const checkForSelfUpdate = async () => {
   const latestVer = new ver.SemVer(updateInfo.latest);
   const currentVer = new ver.SemVer(updateInfo.current);
 
-  if (latestVer.major > currentVer.major || latestVer.minor > currentVer.minor) {
-    throw new Error("Please update to the latest version of the dApp Store CLI before proceeding.");
+  if (
+    latestVer.major > currentVer.major ||
+    latestVer.minor > currentVer.minor
+  ) {
+    throw new Error(
+      "Please update to the latest version of the dApp Store CLI before proceeding."
+    );
   }
 };
 
-export const checkMintedStatus = async (conn: Connection, pubAddr: string, appAddr: string, releaseAddr: string) => {
+export const checkMintedStatus = async (
+  conn: Connection,
+  pubAddr: string,
+  appAddr: string,
+  releaseAddr: string
+) => {
   const results = await conn.getMultipleAccountsInfo([
     new PublicKey(pubAddr),
     new PublicKey(appAddr),
     new PublicKey(releaseAddr),
   ]);
 
-  const rentAccounts = results.filter((item) => !(item == undefined) && item?.lamports > 0);
+  const rentAccounts = results.filter(
+    (item) => !(item == undefined) && item?.lamports > 0
+  );
   if (rentAccounts?.length != 3) {
-    throw new Error("Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.");
+    throw new Error(
+      "Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal."
+    );
   }
 };
 
@@ -55,12 +73,12 @@ export const parseKeypair = (pathToKeypairFile: string) => {
     const keypairFile = fs.readFileSync(pathToKeypairFile, "utf-8");
     return Keypair.fromSecretKey(Buffer.from(JSON.parse(keypairFile)));
   } catch (e) {
-    showMessage
-    (
+    showMessage(
       "KeyPair Error",
-      "Something went wrong when attempting to retrieve the keypair at " + pathToKeypairFile,
+      "Something went wrong when attempting to retrieve the keypair at " +
+        pathToKeypairFile,
       "error"
-    )
+    );
   }
 };
 
@@ -74,7 +92,9 @@ export const isTestnet = (rpcUrl: string): boolean => {
 
 export const checkSubmissionNetwork = (rpcUrl: string) => {
   if (isDevnet(rpcUrl) || isTestnet(rpcUrl)) {
-    throw new Error("It looks like you are attempting to submit a request with a devnet or testnet RPC endpoint. Please ensure that your NFTs are minted on mainnet beta, and re-run with a mainnet beta RPC endpoint.");
+    throw new Error(
+      "It looks like you are attempting to submit a request with a devnet or testnet RPC endpoint. Please ensure that your NFTs are minted on mainnet beta, and re-run with a mainnet beta RPC endpoint."
+    );
   }
 };
 
@@ -95,7 +115,7 @@ export const generateNetworkSuffix = (rpcUrl: string): string => {
 export const showMessage = (
   titleMessage = "",
   contentMessage = "",
-  type: "standard" | "error" | "warning" = "standard",
+  type: "standard" | "error" | "warning" = "standard"
 ): string => {
   let color = "cyan";
   if (type == "error") {
@@ -108,7 +128,7 @@ export const showMessage = (
     title: titleMessage,
     padding: 1,
     margin: 1,
-    borderStyle: 'single',
+    borderStyle: "single",
     borderColor: color,
     textAlignment: "left",
     titleAlignment: "center",
