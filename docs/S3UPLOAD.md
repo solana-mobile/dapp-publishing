@@ -8,6 +8,7 @@ In order to use the CLI tooling with S3 bucket storage, you will need the follow
 - The name of your S3 bucket
 - Your account access key ID
 - Your account secret access key ID
+- The S3 region name your bucket uses
 
 The CLI tooling assumes the S3 bucket is configured correctly for both tool-based uploading along with usage as a public endpoint for downloads. 
 
@@ -24,6 +25,7 @@ STORAGE_TYPE="s3"
 S3_ACCESS_KEY="<your access key>"
 S3_SECRET_KEY="<your secret key>"
 S3_BUCKET="<destination bucket name>"
+S3_REGION="<s3 region name>"
 ```
 
 _NOTE: This is the same `.env` file that can also contain the path to your Android tools directory._
@@ -33,7 +35,7 @@ _NOTE: This is the same `.env` file that can also contain the path to your Andro
 Alternatively you can provide the values as command line arguments along with all other relevant command line parameters you are using. In order to provide all relevant data, you provide an *array* of values on the command line:
 
 ```
-npx dapp-store {relevant mint command with args} -s '["s3", "<access_key>", "<secret_key>", "<bucket_name>"]'
+npx dapp-store create {relevant mint command with args} -s '["s3", "<access_key>", "<secret_key>", "<bucket_name>", "<s3_region>"]'
 ```
 
 Some notes about providing the S3 details via the CLI:
@@ -42,4 +44,7 @@ Some notes about providing the S3 details via the CLI:
 - It is important that the _array itself_ is contained in single quotes: ``''``
 - It is important that the _values inside_ the array are contained in double quotes: ``""``
 - You must append this argument/array parameter for each of the NFT minting operations: publisher, dApp, and releases.
- 
+
+### Final considerations
+
+The tooling will attempt to ensure that your S3 configuration details are provided correctly. Please be aware that if there is sufficeint divergence from the methods described here, the tooling may ignore the incorrectly-formatted details and revert to using the default permastorage method.
