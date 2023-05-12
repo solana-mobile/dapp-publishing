@@ -17,6 +17,7 @@ export class S3StorageManager {
         accessKey: this.envVars.s3Config.accessKey,
         secretKey: this.envVars.s3Config.secretKey,
         bucketName: this.envVars.s3Config.bucketName,
+        regionName: this.envVars.s3Config.regionName
       };
     }
   }
@@ -33,6 +34,7 @@ export class S3StorageManager {
           accessKey: parsedArray[1],
           secretKey: parsedArray[2],
           bucketName: parsedArray[3],
+          regionName: parsedArray[4]
         };
       }
     } catch (e) {

@@ -152,7 +152,7 @@ export const getMetaplexInstance = (
 
   if (s3Mgr.hasS3Config) {
     const awsClient = new S3Client({
-      region: "us-east-1",
+      region: s3Mgr.s3Config.regionName,
       credentials: {
         accessKeyId: s3Mgr.s3Config.accessKey,
         secretAccessKey: s3Mgr.s3Config.secretKey,
