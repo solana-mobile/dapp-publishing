@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "pnpm --recursive run clean",
     "build": "pnpm --recursive run prebuild && pnpm --recursive run build",
-    "watch": "pnpm --recursive run prebuild && swc --watch",
+    "watch": "pnpm -parallel run watch",
     "fmt": "prettier --write '{*,**/*}.{ts,tsx,js,jsx,json}'",
     "lint": "prettier --check '{*,**/*}.{ts,tsx,js,jsx,json}' && eslint packages/**",
     "lint:fix": "pnpm fmt && eslint --fix packages/**",
