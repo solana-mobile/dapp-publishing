@@ -129,6 +129,7 @@ _NOTE: Please be aware that all files produced by the CLI tooling are uplaoded t
    ```
 
    _NOTE: this will be repeated each time you have a new version of your dApp to release. The mint address of the latest release is recorded in your configuration file_.
+   > **Warning**: on this step make sure your network is reliable and has a minimum upload speed of 0.25 megabytes per second.
 
 #### Devnet/Mainnet-beta
 

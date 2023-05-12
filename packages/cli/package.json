@@ -30,6 +30,7 @@
     "clean": "shx mkdir -p lib && shx rm -rf lib",
     "prebuild": "pnpm run clean && node src/prebuild_schema/schemagen.js",
     "build": "swc src -d lib --copy-files",
+    "watch": "swc src --out-dir lib -w",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
@@ -57,6 +58,7 @@
     "@types/semver": "^7.3.13",
     "ajv": "^8.11.0",
     "boxen": "^7.0.1",
+    "chokidar": "^3.5.3",
     "commander": "^9.4.1",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
