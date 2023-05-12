@@ -29,7 +29,9 @@ export class S3StorageManager {
       //This will overwrite any existing parameters already obtained from the .env file
       const parsedArray = JSON.parse(`${cmdArg}`);
 
-      if (parsedArray instanceof Array && parsedArray.length == 4 && parsedArray[0] == "s3") {
+      if (parsedArray instanceof Array && parsedArray[0] == "s3") {
+        if (parsedArray.length != 5) throw new Error("Invalid parameters")
+
         this._config = {
           accessKey: parsedArray[1],
           secretKey: parsedArray[2],
