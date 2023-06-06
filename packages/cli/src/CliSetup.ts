@@ -92,14 +92,15 @@ export const createPublisherCliCmd = createCliCmd
   )
   .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-  .action(async ({ keypair, url, dryRun }) => {
+  .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
+  .action(async ({ keypair, url, dryRun, storageConfig }) => {
     tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
 
       const signer = parseKeypair(keypair);
       if (signer) {
-        const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun });
+        const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig });
 
         const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
         const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
@@ -122,7 +123,8 @@ export const createAppCliCmd = createCliCmd
   )
   .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-  .action(async ({ publisherMintAddress, keypair, url, dryRun }) => {
+  .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
+  .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig }) => {
     tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
@@ -130,7 +132,7 @@ export const createAppCliCmd = createCliCmd
       const config = await loadPublishDetailsWithChecks();
 
       if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-        throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.")
+        throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.");
       }
 
       const signer = parseKeypair(keypair);
@@ -140,6 +142,7 @@ export const createAppCliCmd = createCliCmd
           signer,
           url,
           dryRun,
+          storageParams: storageConfig
         });
 
         const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
@@ -167,7 +170,8 @@ export const createReleaseCliCmd = createCliCmd
     "-b, --build-tools-path <build-tools-path>",
     "Path to Android build tools which contains AAPT2"
   )
-  .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath }) => {
+  .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
+  .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath, storageConfig }) => {
       tryWithErrorMessage(async () => {
         latestReleaseMessage();
         await checkForSelfUpdate();
@@ -190,6 +194,7 @@ export const createReleaseCliCmd = createCliCmd
             signer,
             url,
             dryRun,
+            storageParams: storageConfig,
           });
 
           const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;

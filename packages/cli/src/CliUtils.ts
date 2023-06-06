@@ -12,6 +12,10 @@ import cliPackage from "./package.json" assert { type: "json" };
 import boxen from "boxen";
 import ver from "semver";
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
+import { EnvVariables } from "./config/index.js";
+import { S3Client } from "@aws-sdk/client-s3";
+import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
+import { S3StorageManager } from "./config/index.js";
 
 export class Constants {
   static CLI_VERSION = "0.4.2";
@@ -136,24 +140,45 @@ export const showMessage = (
 
 export const getMetaplexInstance = (
   connection: Connection,
-  keypair: Keypair
+  keypair: Keypair,
+  storageParams: string = ""
 ) => {
   const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
   const isDevnet = connection.rpcEndpoint.includes("devnet");
 
-  const bundlrStorageDriver = isDevnet
-    ? new BundlrStorageDriver(metaplex, {
+  //TODO: Use DI for this
+  const s3Mgr = new S3StorageManager(new EnvVariables());
+  s3Mgr.parseCmdArg(storageParams);
+
+  if (s3Mgr.hasS3Config) {
+    const awsClient = new S3Client({
+      region: s3Mgr.s3Config.regionName,
+      credentials: {
+        accessKeyId: s3Mgr.s3Config.accessKey,
+        secretAccessKey: s3Mgr.s3Config.secretKey,
+      },
+    });
+
+    const bucketPlugin = awsStorage(awsClient, s3Mgr.s3Config.bucketName);
+    metaplex.use(bucketPlugin);
+  } else {
+    const bundlrStorageDriver = isDevnet
+      ? new BundlrStorageDriver(metaplex, {
         address: "https://devnet.bundlr.network",
         providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
-    : new BundlrStorageDriver(metaplex);
+      : new BundlrStorageDriver(metaplex);
+
+    metaplex.storage().setDriver(bundlrStorageDriver);
+  }
 
   metaplex.storage().setDriver(
-    new CachedStorageDriver(bundlrStorageDriver, {
+    new CachedStorageDriver(metaplex.storage().driver(), {
       assetManifestPath: isDevnet
         ? "./.asset-manifest-devnet.json"
         : "./.asset-manifest.json",
     })
   );
+
   return metaplex;
 };

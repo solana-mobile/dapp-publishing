@@ -100,16 +100,24 @@ Release JSON valid!
 
 ### Mint the NFTs
 
+By default, all off-chain assets are uploaded to Arweave for permanent storage during minting. This is the storage method used for all three of the following NFTs. The CLI tooling currently allows for one alternative storage method. Follow the relevant link for instructions if you would like to use an alternative while minting. 
+
+Return to these minting steps after you have completed your alternative storage configuration. Alternative storage methods modify the arguments you pass to the CLI tooling.
+
+- [Amazon S3](S3UPLOAD.md): Upload all assets to an Amazon S3 bucket.
+
+_NOTE: Please be aware that all files produced by the CLI tooling are uplaoded to whichever storage provider you choose. This includes assets, files, and JSON metadata files that are created by the tooling._
+
 #### 1. Create the publisher NFT
 
    ```
-   npx dapp-store create publisher -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
+   npx dapp-store create publisher -k <path_to_your_keypair>
    ```
    _NOTE: this is a one-time operation. Once you have created your publisher, the mint address is recorded in your configuration file_.
 
 #### 2. Create the dApp NFT
    ```
-   npx dapp-store create app -k <path_to_your_keypair> [-u <mainnet_beta_rpc_url>]
+   npx dapp-store create app -k <path_to_your_keypair>
    ```
 
    _NOTE: this is a one-time operation. Once you have created your dApp, the mint address is recorded in your configuration file_.
@@ -117,11 +125,19 @@ Release JSON valid!
 #### 3. Create the release NFT
 
    ```
-   npx dapp-store create release -k <path_to_your_keypair> -b <path_to_your_android_sdk_build_tools> [-u <mainnet_beta_rpc_url>]
+   npx dapp-store create release -k <path_to_your_keypair> -b <path_to_your_android_sdk_build_tools>
    ```
 
    _NOTE: this will be repeated each time you have a new version of your dApp to release. The mint address of the latest release is recorded in your configuration file_.
    > **Warning**: on this step make sure your network is reliable and has a minimum upload speed of 0.25 megabytes per second.
+
+#### Devnet/Mainnet-beta
+
+By default, each of the minting commands above will mint to Solana *devnet*. When you are ready to mint to mainnet-beta, append the following argument/parameter to each of the three CLI commands:
+
+```
+-u <mainnet_beta_rpc_url>
+```
 
 ### Submit your dApp
 

@@ -18,16 +18,18 @@ const createAppNft = async (
     connection,
     publisherMintAddress,
     publisher,
+    storageParams,
   }: {
     appDetails: App;
     connection: Connection;
     publisherMintAddress: string;
     publisher: Keypair;
+    storageParams: string;
   },
   { dryRun }: { dryRun?: boolean }
 ) => {
   const mintAddress = Keypair.generate();
-  const metaplex = getMetaplexInstance(connection, publisher);
+  const metaplex = getMetaplexInstance(connection, publisher, storageParams);
   const txBuilder = await createApp(
     {
       publisherMintAddress: new PublicKey(publisherMintAddress),
@@ -59,6 +61,7 @@ type CreateAppCommandInput = {
   signer: Keypair;
   url: string;
   dryRun?: boolean;
+  storageParams: string;
 };
 
 export const createAppCommand = async ({
@@ -66,6 +69,7 @@ export const createAppCommand = async ({
   url,
   dryRun,
   publisherMintAddress,
+  storageParams,
 }: CreateAppCommandInput) => {
   const connection = new Connection(url);
 
@@ -78,6 +82,7 @@ export const createAppCommand = async ({
       publisher: signer,
       publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
       appDetails,
+      storageParams,
     },
     { dryRun }
   );
