@@ -178,10 +178,10 @@ const validateLocalizableResources = (config: PublishDetails) => {
 
   const descsWrongLength = Object.values(config.release.catalog)
     .map((x) => x.short_description)
-    .filter((desc) => !desc?.length || desc.length > 50);
+    .filter((desc) => !desc?.length || desc.length > 30);
 
   if (descsWrongLength.length > 0) {
-    throw new Error("Please ensure all translations of short_description are between 0 and 50 characters");
+    throw new Error("Please ensure all translations of short_description are between 0 and 30 characters");
   }
 };
 
