@@ -48,7 +48,8 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- NOTE: In a future release, the maximum length for `short_description` will be reduced from 50 to 30 characters. We recommend updating all localized instances now.",
+    "- S3 bucket-based storage support added \n" +
+    "- short_description value reduced to 30 character limit",
     "warning"
   );
 }
