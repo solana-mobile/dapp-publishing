@@ -172,6 +172,9 @@
                 "min_sdk": {
                   "type": "integer"
                 },
+                "cert_fingerprint": {
+                  "type": "string"
+                },
                 "permissions": {
                   "type": "array",
                   "items": {
@@ -190,6 +193,7 @@
                 "version_code",
                 "version",
                 "min_sdk",
+                "cert_fingerprint",
                 "permissions",
                 "locales"
               ]
