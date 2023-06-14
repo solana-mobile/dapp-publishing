@@ -2,6 +2,10 @@
 
 NOTE: The versions referenced in this changelog relate only to the publishing JSON schema spec (for Publisher/App/Release) and not the versions of the CLI tooling. The CLI tooling is versioned independently. 
 
+## 0.2.6
+
+- `cert_fingerprint` value added to `android_details` region of the release schema as required field
+
 ## 0.2.5
 
 - `short_description` added back into release JSON schema as required field

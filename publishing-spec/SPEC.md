@@ -1,4 +1,4 @@
-## dApp Store NFT Overview - v0.2.5
+## dApp Store NFT Overview - v0.2.6
 
 The following is documentation of the NFT & JSON metadata specification for the dApp store. In general, Publisher, App, and release details are minted as standard Metaplex NFTs with additional metadata specified that will be utilized by the Solana dApp store.
 
@@ -10,7 +10,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 
 ```json
 {
-  "schema_version": "v0.2.5",
+  "schema_version": "v0.2.6",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -98,6 +98,7 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
         "version": "1.0",
         "version_code": 1,
         "min_sdk": 21,
+        "cert_fingerprint": "121389995d84ba2573e677418923441a4e2d56b41174d8c2630e1137ea4a4c91",
         "permissions": [
           "android.permission.INTERNET",
           "android.permission.LOCATION_HARDWARE",
@@ -147,7 +148,7 @@ All releases for a dApp store entry will be grouped under a collection, which it
 
 ```json
 {
-  "schema_version": "v0.2.5",
+  "schema_version": "v0.2.6",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
@@ -174,7 +175,7 @@ Publisher details will also be stored as an NFT. If it isn’t clear already, th
 
 ```json
 {
-  "schema_version": "v0.2.5",
+  "schema_version": "v0.2.6",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
