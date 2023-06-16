@@ -237,6 +237,7 @@ const getAndroidDetails = async (
       min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
       version_code: parseInt(versionCode?.[1] ?? "0", 10),
       version: versionName?.[1] ?? "0",
+      cert_fingerprint: await extractCertFingerprint(aaptDir, apkPath),
       permissions: permissions.flatMap(permission => permission[1]),
       locales: localeArray
     };
@@ -244,6 +245,19 @@ const getAndroidDetails = async (
     throw new Error("There was an error parsing your APK. Please ensure you have provided a valid Android tools directory containing AAPT2.");
   }
 };
+
+export const extractCertFingerprint = async (aaptDir: string, apkPath: string): Promise<string> => {
+  const { stdout } = await runExec(`${aaptDir}/apksigner verify --print-certs -v "${apkPath}"`);
+
+  const regex = /Signer #1 certificate SHA-256 digest:\s*([a-fA-F0-9]+)/;
+  const match = stdout.match(regex);
+
+  if (match && match[1]) {
+    return match[1];
+  } else {
+    throw new Error("Could not obtain cert fingerprint")
+  }
+}
 
 export const writeToPublishDetails = async ({ publisher, app, release }: SaveToConfigArgs) => {
   const currentConfig = await loadPublishDetailsWithChecks();
