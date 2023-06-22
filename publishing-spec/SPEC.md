@@ -1,12 +1,27 @@
-## dApp Store NFT Overview - v0.2.6
 
-The following is documentation of the NFT & JSON metadata specification for the dApp store. In general, Publisher, App, and release details are minted as standard Metaplex NFTs with additional metadata specified that will be utilized by the Solana dApp store.
+## dApp Store NFT Specification - v0.2.6
 
-This data ideally should not be created manually. Instead, please see the publishing tooling documentation for a more automated workflow. 
+The following is documentation of the NFT & JSON metadata specification for the dApp store.
+
+## Technical Overview
+
+In general, publisher, app, and release details are minted as standard Metaplex NFTs with additional metadata specified that will be utilized by the Solana dApp store.
+
+- Publisher NFTs are Metaplex Certified Collection (MCC) NFTs that have can have many "apps" associated with them.
+- App NFTs are _also_ MCC NFTs that can have many "releases" associated with them.
+- Releases are immutable Metaplex NFTs that can only be issued once per-version. Any new releases must be re-issued as a new NFT.
+
+### Clarifications & Comments
+
+In general, the schema of these JSON files have moved away from using Metaplex NFT JSON fields and instead puts most of the dApp store-relevant data into an `extensions` region. These NFTs only need minimal existing wallet support, which this scheme enables.
+
+Fields left in to fulfill the Metaplex spec are suffixed with `[Metaplex compatibility]` in the sample data below.
 
 ## Release NFT JSON
 
-The following is a JSON file for a dApp NFT release with readable sample data filled in.
+The release NFT [json schema](https://json-schema.org/) formatted file can be viewed [here](https://github.com/solana-mobile/dapp-publishing/blob/main/packages/core/src/schemas/releaseJsonMetadata.json). It is not particularly human-readable.
+
+The following is a readable example instance with sample data filled in:
 
 ```json
 {
@@ -138,13 +153,13 @@ The following is a JSON file for a dApp NFT release with readable sample data fi
 }
 ```
 
-### Clarifications & Comments
+## App NFT JSON
 
-In general, the schema of this JSON file has moved away from using Metaplex NFT JSON fields and instead puts most of the dApp store data into the `extensions` region. These releases only need minimal existing Wallet support, which this scheme fulfills. Fields left in to fulfill the Metaplex spec are suffixed with `[Metaplex compatibility]` in the sample data.
+All releases for a dApp store entry will be grouped under an "App" collection, which itself will be an NFT that contains JSON metadata representing “global” immutable data for a dApp’s catalog entry. This actually ends up being just _one_ extension property, the app package name.
 
-## dApp “Collection” NFT JSONx
+The app release NFT json schema can be viewed [here](https://github.com/solana-mobile/dapp-publishing/blob/main/packages/core/src/schemas/appJsonMetadata.json).
 
-All releases for a dApp store entry will be grouped under a collection, which itself will be an NFT that contains JSON metadata representing “global” immutable data for a dApp’s catalog entry. This actually ends up being just _one_ extension property, the dApp package name:
+The following is a readable example instance with sample data filled in:
 
 ```json
 {
@@ -170,8 +185,12 @@ All releases for a dApp store entry will be grouped under a collection, which it
 Publisher details will also be stored as an NFT. If it isn’t clear already, the relationship between the NFT entities are as follows:
 
 - Publisher details represent the “root” entity and acts as a parent to all the others
-- Publishers can create & manage multiple dApps - otherwise known as Collection NFTs
-- Collection NFTs are the parent to all release NFTs associated with it
+- Publishers can create & manage multiple app NFTs
+- App NFTs are the parent to all release NFTs associated with it
+
+The publisher release NFT json schema can be viewed [here](https://github.com/solana-mobile/dapp-publishing/blob/main/packages/core/src/schemas/publisherJsonMetadata.json).
+
+The following is a readable example instance with sample data filled in:
 
 ```json
 {
