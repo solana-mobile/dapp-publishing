@@ -48,7 +48,6 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- S3 bucket-based storage support added \n" +
     "- short_description value reduced to 30 character limit",
     "warning"
   );
