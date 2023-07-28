@@ -60,6 +60,7 @@ async function tryWithErrorMessage(block: () => Promise<any>) {
     const errorMsg = (e as Error | null)?.message ?? "";
 
     showMessage("Error", errorMsg, "error");
+    process.exit(-1)
   }
 }
 
@@ -233,8 +234,6 @@ mainCli
           signer,
           buildToolsPath: resolvedBuildToolsPath,
         });
-
-        //TODO: Add pretty formatting here, but will require more work than other sections
       }
     });
   });
