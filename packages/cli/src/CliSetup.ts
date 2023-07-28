@@ -72,7 +72,7 @@ export const initCliCmd = mainCli
   .command("init")
   .description("First-time initialization of tooling configuration")
   .action(async () => {
-    tryWithErrorMessage(async () => {
+    await tryWithErrorMessage(async () => {
       const msg = initScaffold();
 
       showMessage("Initialized", msg);
@@ -94,7 +94,7 @@ export const createPublisherCliCmd = createCliCmd
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
   .action(async ({ keypair, url, dryRun, storageConfig }) => {
-    tryWithErrorMessage(async () => {
+    await tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
 
@@ -125,7 +125,7 @@ export const createAppCliCmd = createCliCmd
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
   .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig }) => {
-    tryWithErrorMessage(async () => {
+    await tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
 
@@ -172,7 +172,7 @@ export const createReleaseCliCmd = createCliCmd
   )
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
   .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath, storageConfig }) => {
-      tryWithErrorMessage(async () => {
+    await tryWithErrorMessage(async () => {
         latestReleaseMessage();
         await checkForSelfUpdate();
 
@@ -218,7 +218,7 @@ mainCli
     "Path to Android build tools which contains AAPT2"
   )
   .action(async ({ keypair, buildToolsPath }) => {
-    tryWithErrorMessage(async () => {
+    await tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
 
@@ -283,7 +283,7 @@ publishCommand
              requestorIsAuthorized,
              dryRun,
            }) => {
-      tryWithErrorMessage(async () => {
+      await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
         await checkSubmissionNetwork(url);
 
@@ -354,7 +354,7 @@ publishCommand
              critical,
              dryRun,
            }) => {
-      tryWithErrorMessage(async () => {
+      await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
         await checkSubmissionNetwork(url);
 
@@ -421,7 +421,7 @@ publishCommand
              critical,
              dryRun,
            }) => {
-      tryWithErrorMessage(async () => {
+      await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
         await checkSubmissionNetwork(url);
 
@@ -481,7 +481,7 @@ publishCommand
       requestDetails,
       { appMintAddress, releaseMintAddress, keypair, url, requestorIsAuthorized, dryRun }
     ) => {
-      tryWithErrorMessage(async () => {
+      await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
         await checkSubmissionNetwork(url);
 
