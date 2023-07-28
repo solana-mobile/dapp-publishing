@@ -88,7 +88,7 @@ export const createAppCommand = async ({
   );
 
   if (!dryRun) {
-    writeToPublishDetails({ app: { address: appAddress } });
+    await writeToPublishDetails({ app: { address: appAddress } });
   }
 
   return { appAddress };
