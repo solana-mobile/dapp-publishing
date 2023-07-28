@@ -281,5 +281,7 @@ export const writeToPublishDetails = async ({ publisher, app, release }: SaveToC
     solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal
   };
 
-  fs.writeFileSync(Constants.getConfigFilePath(), dump(newConfig));
+  fs.writeFileSync(Constants.getConfigFilePath(), dump(newConfig, {
+    lineWidth: -1
+  }));
 };
