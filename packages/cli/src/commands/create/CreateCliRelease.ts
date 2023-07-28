@@ -99,9 +99,7 @@ export const createReleaseCommand = async ({
       storageParams: storageParams,
     });
 
-    writeToPublishDetails({
-      release: { address: releaseAddress },
-    });
+    await writeToPublishDetails({ release: { address: releaseAddress }, });
 
     return { releaseAddress };
   }

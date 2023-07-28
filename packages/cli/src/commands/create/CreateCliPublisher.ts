@@ -78,7 +78,7 @@ export const createPublisherCommand = async ({
   );
 
   // TODO(sdlaver): dry-run should not modify config
-  writeToPublishDetails({ publisher: { address: publisherAddress } });
+  await writeToPublishDetails({ publisher: { address: publisherAddress } });
 
   return { publisherAddress };
 };
