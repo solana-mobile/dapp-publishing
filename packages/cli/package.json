@@ -34,9 +34,9 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
+    "@metaplex-foundation/js": "0.18.3",
     "@jest/globals": "^29.5.0",
     "@jest/types": "^29.5.0",
-    "@metaplex-foundation/js": "0.19.4",
     "@swc/jest": "^0.2.26",
     "@types/commander": "^2.12.2",
     "@types/debug": "^4.1.7",
@@ -54,7 +54,7 @@
     "@aws-sdk/client-s3": "^3.321.1",
     "@metaplex-foundation/js-plugin-aws": "^0.18.3",
     "@solana-mobile/dapp-store-publishing-tools": "workspace:0.5.0",
-    "@solana/web3.js": "1.78.0",
+    "@solana/web3.js": "1.68.0",
     "@types/semver": "^7.3.13",
     "ajv": "^8.11.0",
     "boxen": "^7.0.1",
