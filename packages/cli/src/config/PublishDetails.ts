@@ -242,7 +242,7 @@ const getAndroidDetails = async (
       locales: localeArray
     };
   } catch (e) {
-    throw new Error("There was an error parsing your APK. Please ensure you have provided a valid Android tools directory containing AAPT2.");
+    throw new Error(`There was an error parsing your APK. Please ensure you have installed Java and provided a valid Android tools directory containing AAPT2.\n" + e);
   }
 };
 
