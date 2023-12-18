@@ -164,10 +164,12 @@ export const getMetaplexInstance = (
   } else {
     const bundlrStorageDriver = isDevnet
       ? new BundlrStorageDriver(metaplex, {
-        address: "https://devnet.bundlr.network",
+        address: "https://turbo.ardrive.dev",
         providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
-      : new BundlrStorageDriver(metaplex);
+      : new BundlrStorageDriver(metaplex, {
+        address: "https://up.arweave.net",
+      });
 
     metaplex.storage().setDriver(bundlrStorageDriver);
   }
