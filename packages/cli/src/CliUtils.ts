@@ -18,7 +18,7 @@ import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
 import { S3StorageManager } from "./config/index.js";
 
 export class Constants {
-  static CLI_VERSION = "0.5.2";
+  static CLI_VERSION = "0.6.0";
   static CONFIG_FILE_NAME = "config.yaml";
   static DEFAULT_RPC_DEVNET = "https://api.devnet.solana.com";
 
@@ -164,10 +164,12 @@ export const getMetaplexInstance = (
   } else {
     const bundlrStorageDriver = isDevnet
       ? new BundlrStorageDriver(metaplex, {
-        address: "https://devnet.bundlr.network",
+        address: "https://turbo.ardrive.dev",
         providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
-      : new BundlrStorageDriver(metaplex);
+      : new BundlrStorageDriver(metaplex, {
+        address: "https://up.arweave.net",
+      });
 
     metaplex.storage().setDriver(bundlrStorageDriver);
   }
