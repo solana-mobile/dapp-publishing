@@ -168,7 +168,7 @@ export const getMetaplexInstance = (
         providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
       : new BundlrStorageDriver(metaplex, {
-        address: "https://up.arweave.net",
+        address: "https://turbo.ardrive.io",
       });
 
     metaplex.storage().setDriver(bundlrStorageDriver);
