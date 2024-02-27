@@ -34,6 +34,7 @@ const AaptPrefixes = {
   verCodePrefix: "versionCode=",
   verNamePrefix: "versionName=",
   sdkPrefix: "sdkVersion:",
+  debuggableApkPrefix: "application-debuggable",
   localePrefix: "locales: ",
 };
 
@@ -214,6 +215,13 @@ const getAndroidDetails = async (
     const locales = new RegExp(
       AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
     ).exec(stdout);
+    const isDebuggable = new RegExp(
+      AaptPrefixes.debuggableApkPrefix
+    ).exec(stdout);
+
+    if (isDebuggable != null) {
+      throw new TypeError("Debug apks are not supported on Solana dApp store.\nSubmit a signed release apk")
+    }
 
     let localeArray = Array.from(locales?.values() ?? []);
     if (localeArray.length == 2) {
@@ -242,7 +250,11 @@ const getAndroidDetails = async (
       locales: localeArray
     };
   } catch (e) {
-    throw new Error(`There was an error parsing your APK. Please ensure you have installed Java and provided a valid Android tools directory containing AAPT2.\n` + e);
+    if (e instanceof TypeError) {
+      throw e
+    } else {
+      throw new Error(`There was an error parsing your APK. Please ensure you have installed Java and provided a valid Android tools directory containing AAPT2.\n` + e);
+    }
   }
 };
 
