@@ -5,6 +5,7 @@ import type {
   MetaplexFile,
   TransactionBuilder,
 } from "@metaplex-foundation/js";
+import { ComputeBudgetProgram } from "@solana/web3.js";
 
 export class Constants {
   static PUBLISHING_SCHEMA_VER = "0.2.6";
@@ -37,6 +38,13 @@ export const mintNft = async (
       // @ts-ignore
       name: json.name,
       sellerFeeBasisPoints: 0,
+    });
+
+  txBuilder.prepend({
+      instruction: ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 5000,
+      }),
+      signers: [],
     });
 
   return txBuilder;
