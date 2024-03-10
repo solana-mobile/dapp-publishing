@@ -2,7 +2,7 @@ import { AccountInfo, Connection, Keypair, PublicKey } from "@solana/web3.js";
 import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publishing-tools";
 import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
-import { checkMintedStatus } from "../../CliUtils.js";
+import { checkMintedStatus, showMessage } from "../../CliUtils.js";
 import { Buffer } from "buffer";
 import { loadPublishDetailsWithChecks } from "../../config/PublishDetails.js";
 
@@ -25,6 +25,12 @@ export const publishSubmitCommand = async ({
   compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
 }: PublishSubmitCommandInput) => {
+  showMessage(
+    `Publishing Estimates`,
+    "New app submissions take around 3-4 business days for review.",
+    "warning"
+  );
+
   if (!compliesWithSolanaDappStorePolicies) {
     console.error(
       "ERROR: Cannot submit a request for which the requestor does not attest that it complies with Solana dApp Store policies"
