@@ -57,19 +57,17 @@ const createReleaseNft = async ({
     { metaplex, publisher }
   );
 
-  const blockhash = await connection.getLatestBlockhashAndContext();
-  const tx = txBuilder.toTransaction(blockhash.value);
-  tx.sign(releaseMintAddress, publisher);
   const maxTries = 4;
   for (let i = 1; i <= maxTries; i++) {
     try {
+      const blockhash = await connection.getLatestBlockhashAndContext();
+      const tx = txBuilder.toTransaction(blockhash.value);
+      tx.sign(releaseMintAddress, publisher);
       const txSig = await sendAndConfirmTransaction(connection, tx, [
         publisher,
         releaseMintAddress,
       ], {
-        commitment: "confirmed",
         minContextSlot: blockhash.context.slot,
-        maxRetries: 0
       });
       console.info({
         txSig,
