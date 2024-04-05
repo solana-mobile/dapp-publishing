@@ -42,7 +42,7 @@ export const mintNft = async (
 
   txBuilder.prepend({
     instruction: ComputeBudgetProgram.setComputeUnitLimit({
-      units: 300000,
+      units: 250000,
     }),
     signers: [],
   });
