@@ -12,6 +12,7 @@ import {
 } from "@solana/web3.js";
 import {
   getMetaplexInstance,
+  showMessage
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
@@ -56,22 +57,34 @@ const createReleaseNft = async ({
     { metaplex, publisher }
   );
 
-  const blockhash = await connection.getLatestBlockhashAndContext();
-  const tx = txBuilder.toTransaction(blockhash.value);
-  tx.sign(releaseMintAddress, publisher);
-
-  const txSig = await sendAndConfirmTransaction(connection, tx, [
-    publisher,
-    releaseMintAddress,
-  ], {
-    minContextSlot: blockhash.context.slot
-  });
-  console.info({
-    txSig,
-    releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
-  });
-
-  return { releaseAddress: releaseMintAddress.publicKey.toBase58() };
+  const maxTries = 4;
+  for (let i = 1; i <= maxTries; i++) {
+    try {
+      const blockhash = await connection.getLatestBlockhashAndContext();
+      const tx = txBuilder.toTransaction(blockhash.value);
+      tx.sign(releaseMintAddress, publisher);
+      const txSig = await sendAndConfirmTransaction(connection, tx, [
+        publisher,
+        releaseMintAddress,
+      ], {
+        minContextSlot: blockhash.context.slot,
+      });
+      console.info({
+        txSig,
+        releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
+      });
+      return { releaseAddress: releaseMintAddress.publicKey.toBase58() };
+    } catch (e) {
+      const errorMsg = (e as Error | null)?.message ?? "";
+      if (i == maxTries) {
+        showMessage("Transaction Failure", errorMsg, "error");
+        process.exit(-1)
+      } else {
+        const retryMsg = errorMsg + "\nWill Retry minting release"
+        showMessage("Transaction Failure", retryMsg, "standard");
+      }
+    }
+  }
 };
 
 export const createReleaseCommand = async ({

@@ -48,7 +48,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- short_description value reduced to 30 character limit",
+    "- priority fee has been updated to handle network congestion\n- short_description value reduced to 30 character limit",
     "warning"
   );
 }
@@ -108,6 +108,7 @@ export const createPublisherCliCmd = createCliCmd
 
         showMessage("Success", resultText);
       }
+      process.exit()
     });
   });
 
@@ -151,6 +152,7 @@ export const createAppCliCmd = createCliCmd
 
         showMessage("Success", resultText);
       }
+      process.exit()
     });
   });
 
@@ -203,6 +205,7 @@ export const createReleaseCliCmd = createCliCmd
 
           showMessage("Success", resultText);
         }
+        process.exit()
       });
     }
   );
@@ -235,6 +238,7 @@ mainCli
           buildToolsPath: resolvedBuildToolsPath,
         });
       }
+      process.exit()
     });
   });
 
@@ -307,6 +311,7 @@ publishCommand
           const resultText = "Successfully submitted to the Solana Mobile dApp publisher portal";
           showMessage("Success", resultText);
         }
+        process.exit()
       });
     }
   );
@@ -380,6 +385,7 @@ publishCommand
           showMessage("Success", resultText);
         }
       });
+      process.exit()
     }
   );
 
@@ -445,6 +451,7 @@ publishCommand
           const resultText = "dApp successfully removed from the publisher portal";
           showMessage("Success", resultText);
         }
+        process.exit()
       })
     }
   );
@@ -505,6 +512,7 @@ publishCommand
           const resultText = "Support request sent successfully";
           showMessage("Success", resultText);
         }
+        process.exit()
       });
     }
   );
