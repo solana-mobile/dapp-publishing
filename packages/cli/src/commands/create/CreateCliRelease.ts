@@ -80,7 +80,7 @@ const createReleaseNft = async ({
         showMessage("Transaction Failure", errorMsg, "error");
         process.exit(-1)
       } else {
-        const retryMsg = errorMsg + "\nWill Retry transaction"
+        const retryMsg = errorMsg + "\nWill Retry minting release"
         showMessage("Transaction Failure", retryMsg, "standard");
       }
     }
