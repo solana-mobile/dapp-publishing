@@ -41,11 +41,18 @@ export const mintNft = async (
     });
 
   txBuilder.prepend({
-      instruction: ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 5000,
-      }),
-      signers: [],
-    });
+    instruction: ComputeBudgetProgram.setComputeUnitLimit({
+      units: 250000,
+    }),
+    signers: [],
+  });
+
+  txBuilder.prepend({
+    instruction: ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 1000000,
+    }),
+    signers: [],
+  });
 
   return txBuilder;
 };
