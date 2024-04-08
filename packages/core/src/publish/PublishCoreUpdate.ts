@@ -140,5 +140,5 @@ export const publishUpdate = async (
     requestorIsAuthorized,
     criticalUpdate);
 
-  submitRequestToSolanaDappPublisherPortal(updateRequest, URL_FORM_UPDATE, dryRun);
+  return submitRequestToSolanaDappPublisherPortal(updateRequest, URL_FORM_UPDATE, dryRun);
 };
