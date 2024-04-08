@@ -108,7 +108,6 @@ export const createPublisherCliCmd = createCliCmd
 
         showMessage("Success", resultText);
       }
-      process.exit()
     });
   });
 
@@ -152,7 +151,6 @@ export const createAppCliCmd = createCliCmd
 
         showMessage("Success", resultText);
       }
-      process.exit()
     });
   });
 
@@ -205,7 +203,6 @@ export const createReleaseCliCmd = createCliCmd
 
           showMessage("Success", resultText);
         }
-        process.exit()
       });
     }
   );
@@ -238,7 +235,6 @@ mainCli
           buildToolsPath: resolvedBuildToolsPath,
         });
       }
-      process.exit()
     });
   });
 
@@ -311,7 +307,6 @@ publishCommand
           const resultText = "Successfully submitted to the Solana Mobile dApp publisher portal";
           showMessage("Success", resultText);
         }
-        process.exit()
       });
     }
   );
@@ -385,7 +380,6 @@ publishCommand
           showMessage("Success", resultText);
         }
       });
-      process.exit()
     }
   );
 
@@ -451,7 +445,6 @@ publishCommand
           const resultText = "dApp successfully removed from the publisher portal";
           showMessage("Success", resultText);
         }
-        process.exit()
       })
     }
   );
@@ -512,7 +505,6 @@ publishCommand
           const resultText = "Support request sent successfully";
           showMessage("Success", resultText);
         }
-        process.exit()
       });
     }
   );

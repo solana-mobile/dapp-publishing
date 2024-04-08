@@ -57,7 +57,7 @@ const createReleaseNft = async ({
     { metaplex, publisher }
   );
 
-  const maxTries = 4;
+  const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {
       const blockhash = await connection.getLatestBlockhashAndContext();
