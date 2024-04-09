@@ -23,6 +23,7 @@ type CreateReleaseCommandInput = {
   url: string;
   dryRun?: boolean;
   storageParams: string;
+  priorityFeeLamports: number;
 };
 
 const createReleaseNft = async ({
@@ -33,6 +34,7 @@ const createReleaseNft = async ({
   connection,
   publisher,
   storageParams,
+  priorityFeeLamports,
 }: {
   appMintAddress: string;
   releaseDetails: Release;
@@ -41,6 +43,7 @@ const createReleaseNft = async ({
   connection: Connection;
   publisher: Keypair;
   storageParams: string;
+  priorityFeeLamports: number;
 }) => {
   const releaseMintAddress = Keypair.generate();
 
@@ -53,6 +56,7 @@ const createReleaseNft = async ({
       releaseDetails,
       appDetails,
       publisherDetails,
+      priorityFeeLamports
     },
     { metaplex, publisher }
   );
@@ -94,6 +98,7 @@ export const createReleaseCommand = async ({
   url,
   dryRun = false,
   storageParams,
+  priorityFeeLamports = 500000
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
@@ -110,6 +115,7 @@ export const createReleaseCommand = async ({
       appDetails: app,
       publisherDetails: publisher,
       storageParams: storageParams,
+      priorityFeeLamports: priorityFeeLamports,
     });
 
     await writeToPublishDetails({ release: { address: releaseAddress }, });
