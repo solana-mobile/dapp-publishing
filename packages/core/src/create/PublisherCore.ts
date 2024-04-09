@@ -42,10 +42,11 @@ export const createPublisherJson = (
 type CreatePublisherInput = {
   mintAddress: Signer;
   publisherDetails: Publisher;
+  priorityFeeLamports: number;
 };
 
 export const createPublisher = async (
-  { mintAddress, publisherDetails }: CreatePublisherInput,
+  { mintAddress, publisherDetails, priorityFeeLamports }: CreatePublisherInput,
   { metaplex }: Context
 ): Promise<TransactionBuilder> => {
   debug(`Minting publisher NFT`);
@@ -53,11 +54,16 @@ export const createPublisher = async (
   const publisherJson = createPublisherJson(publisherDetails);
   validatePublisher(publisherJson);
 
-  const txBuilder = await mintNft(metaplex, publisherJson, {
-    isCollection: true,
-    isMutable: true,
-    useNewMint: mintAddress,
-  });
+  const txBuilder = await mintNft(
+    metaplex, 
+    publisherJson, 
+    {
+      isCollection: true,
+      isMutable: true,
+      useNewMint: mintAddress,
+    },
+    priorityFeeLamports
+  );
 
   return txBuilder;
 };

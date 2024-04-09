@@ -11,6 +11,7 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import {
+  Constants,
   getMetaplexInstance,
   showMessage
 } from "../../CliUtils.js";
@@ -23,6 +24,7 @@ type CreateReleaseCommandInput = {
   url: string;
   dryRun?: boolean;
   storageParams: string;
+  priorityFeeLamports: number;
 };
 
 const createReleaseNft = async ({
@@ -33,6 +35,7 @@ const createReleaseNft = async ({
   connection,
   publisher,
   storageParams,
+  priorityFeeLamports,
 }: {
   appMintAddress: string;
   releaseDetails: Release;
@@ -41,6 +44,7 @@ const createReleaseNft = async ({
   connection: Connection;
   publisher: Keypair;
   storageParams: string;
+  priorityFeeLamports: number;
 }) => {
   const releaseMintAddress = Keypair.generate();
 
@@ -53,6 +57,7 @@ const createReleaseNft = async ({
       releaseDetails,
       appDetails,
       publisherDetails,
+      priorityFeeLamports
     },
     { metaplex, publisher }
   );
@@ -94,6 +99,7 @@ export const createReleaseCommand = async ({
   url,
   dryRun = false,
   storageParams,
+  priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
@@ -110,6 +116,7 @@ export const createReleaseCommand = async ({
       appDetails: app,
       publisherDetails: publisher,
       storageParams: storageParams,
+      priorityFeeLamports: priorityFeeLamports,
     });
 
     await writeToPublishDetails({ release: { address: releaseAddress }, });

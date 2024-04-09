@@ -48,7 +48,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- priority fee has been updated to handle network congestion\n- short_description value reduced to 30 character limit",
+    `- priority fee has been updated to ${Constants.DEFAULT_PRIORITY_FEE} lamports = ${Constants.DEFAULT_PRIORITY_FEE/1000000000} SOL. To adjust this value use param "-p or --priority-fee-lamports"`,
     "warning"
   );
 }
@@ -94,14 +94,15 @@ export const createPublisherCliCmd = createCliCmd
   .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
-  .action(async ({ keypair, url, dryRun, storageConfig }) => {
+  .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
+  .action(async ({ keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
 
       const signer = parseKeypair(keypair);
       if (signer) {
-        const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig });
+        const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
 
         const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
         const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
@@ -125,7 +126,8 @@ export const createAppCliCmd = createCliCmd
   .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
-  .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig }) => {
+  .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
+  .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
       latestReleaseMessage();
       await checkForSelfUpdate();
@@ -143,7 +145,8 @@ export const createAppCliCmd = createCliCmd
           signer,
           url,
           dryRun,
-          storageParams: storageConfig
+          storageParams: storageConfig,
+          priorityFeeLamports: priorityFeeLamports,
         });
 
         const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
@@ -172,7 +175,8 @@ export const createReleaseCliCmd = createCliCmd
     "Path to Android build tools which contains AAPT2"
   )
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
-  .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath, storageConfig }) => {
+  .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
+  .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
         latestReleaseMessage();
         await checkForSelfUpdate();
@@ -196,6 +200,7 @@ export const createReleaseCliCmd = createCliCmd
             url,
             dryRun,
             storageParams: storageConfig,
+            priorityFeeLamports: priorityFeeLamports
           });
 
           const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;

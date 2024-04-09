@@ -161,6 +161,7 @@ type CreateReleaseInput = {
   releaseDetails: Release;
   publisherDetails: Publisher;
   appDetails: App;
+  priorityFeeLamports: number;
 };
 
 export const createRelease = async (
@@ -170,6 +171,7 @@ export const createRelease = async (
     releaseDetails,
     appDetails,
     publisherDetails,
+    priorityFeeLamports,
   }: CreateReleaseInput,
   { publisher, metaplex }: Context
 ) => {
@@ -183,13 +185,17 @@ export const createRelease = async (
   const suppressedJson = JSON.stringify(releaseJson, metaplexFileReplacer, 2);
   validateRelease(JSON.parse(suppressedJson));
 
-  const txBuilder = await mintNft(metaplex, releaseJson, {
-    useNewMint: releaseMintAddress,
-    collection: appMintAddress,
-    collectionAuthority: publisher,
-    creators: [{ address: publisher.publicKey, share: 100 }],
-    isMutable: false,
-  });
+  const txBuilder = await mintNft(
+    metaplex, 
+    releaseJson, {
+      useNewMint: releaseMintAddress,
+      collection: appMintAddress,
+      collectionAuthority: publisher,
+      creators: [{ address: publisher.publicKey, share: 100 }],
+      isMutable: false,
+    },
+    priorityFeeLamports
+  );
 
   // TODO(jon): Enable a case where the signer is not the publisher
   // TODO(jon): Allow this to be unverified and to verify later

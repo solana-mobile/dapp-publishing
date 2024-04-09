@@ -175,11 +175,12 @@ Commands:
 Create a publisher
 
 Options:
-  -k, --keypair <path-to-keypair-file>   Path to keypair file
-  -u, --url <url>                        RPC URL (default: "https://api.devnet.solana.com")
-  -d, --dry-run                          Flag for dry run. Doesn't mint an NFT
-  -s, --storage-config <storage-config>  Provide alternative storage configuration details
-  -h, --help                             display help for command
+  -k, --keypair <path-to-keypair-file>                 Path to keypair file
+  -u, --url <url>                                      RPC URL (default: "https://api.devnet.solana.com")
+  -d, --dry-run                                        Flag for dry run. Doesn't mint an NFT
+  -s, --storage-config <storage-config>                Provide alternative storage configuration details
+  -p, --priority-fee-lamports <priority-fee-lamports>  Priority Fee lamports
+  -h, --help                                           display help for command
 `;
 
   const createAppHelp = `Usage: dapp-store create app [options]
@@ -192,6 +193,7 @@ Options:
   -u, --url <url>                                        RPC URL (default: "https://api.devnet.solana.com")
   -d, --dry-run                                          Flag for dry run. Doesn't mint an NFT
   -s, --storage-config <storage-config>                  Provide alternative storage configuration details
+  -p, --priority-fee-lamports <priority-fee-lamports>    Priority Fee lamports
   -h, --help                                             display help for command
 `;
 
@@ -200,13 +202,14 @@ Options:
 Create a release
 
 Options:
-  -k, --keypair <path-to-keypair-file>       Path to keypair file
-  -a, --app-mint-address <app-mint-address>  The mint address of the app NFT
-  -u, --url <url>                            RPC URL (default: "https://api.devnet.solana.com")
-  -d, --dry-run                              Flag for dry run. Doesn't mint an NFT
-  -b, --build-tools-path <build-tools-path>  Path to Android build tools which contains AAPT2
-  -s, --storage-config <storage-config>      Provide alternative storage configuration details
-  -h, --help                                 display help for command
+  -k, --keypair <path-to-keypair-file>                 Path to keypair file
+  -a, --app-mint-address <app-mint-address>            The mint address of the app NFT
+  -u, --url <url>                                      RPC URL (default: "https://api.devnet.solana.com")
+  -d, --dry-run                                        Flag for dry run. Doesn't mint an NFT
+  -b, --build-tools-path <build-tools-path>            Path to Android build tools which contains AAPT2
+  -s, --storage-config <storage-config>                Provide alternative storage configuration details
+  -p, --priority-fee-lamports <priority-fee-lamports>  Priority Fee lamports
+  -h, --help                                           display help for command
 `;
 
 });

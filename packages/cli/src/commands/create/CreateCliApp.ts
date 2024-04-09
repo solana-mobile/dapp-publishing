@@ -8,6 +8,7 @@ import {
 } from "@solana/web3.js";
 
 import {
+  Constants,
   getMetaplexInstance,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
@@ -19,12 +20,14 @@ const createAppNft = async (
     publisherMintAddress,
     publisher,
     storageParams,
+    priorityFeeLamports,
   }: {
     appDetails: App;
     connection: Connection;
     publisherMintAddress: string;
     publisher: Keypair;
     storageParams: string;
+    priorityFeeLamports: number;
   },
   { dryRun }: { dryRun?: boolean }
 ) => {
@@ -35,6 +38,7 @@ const createAppNft = async (
       publisherMintAddress: new PublicKey(publisherMintAddress),
       mintAddress,
       appDetails,
+      priorityFeeLamports
     },
     { metaplex, publisher }
   );
@@ -62,6 +66,7 @@ type CreateAppCommandInput = {
   url: string;
   dryRun?: boolean;
   storageParams: string;
+  priorityFeeLamports: number;
 };
 
 export const createAppCommand = async ({
@@ -70,6 +75,7 @@ export const createAppCommand = async ({
   dryRun,
   publisherMintAddress,
   storageParams,
+  priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateAppCommandInput) => {
   const connection = new Connection(url);
 
@@ -83,6 +89,7 @@ export const createAppCommand = async ({
       publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
       appDetails,
       storageParams,
+      priorityFeeLamports
     },
     { dryRun }
   );

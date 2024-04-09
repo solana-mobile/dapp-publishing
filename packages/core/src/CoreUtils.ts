@@ -24,10 +24,16 @@ type JsonMetadataMetaplexFile = Omit<JsonMetadata, "image"> & {
 export const mintNft = async (
   metaplex: Metaplex,
   json: JsonMetadataMetaplexFile,
-  createNftInput: Omit<CreateNftInput, "uri" | "name" | "sellerFeeBasisPoints">
+  createNftInput: Omit<CreateNftInput, "uri" | "name" | "sellerFeeBasisPoints">,
+  priorityFeeLamports: number,
 ): Promise<TransactionBuilder> => {
   console.info({ json });
   const { uri } = await metaplex.nfts().uploadMetadata(json);
+  const computeBudget = 250000
+
+  if (priorityFeeLamports < 0) {
+    throw new Error("Priority fees cannot be negative")
+  }
 
   const txBuilder = await metaplex
     .nfts()
@@ -42,14 +48,16 @@ export const mintNft = async (
 
   txBuilder.prepend({
     instruction: ComputeBudgetProgram.setComputeUnitLimit({
-      units: 250000,
+      units: computeBudget,
     }),
     signers: [],
   });
 
+  const microLamportsPerCU = 1000000 * priorityFeeLamports / computeBudget
+
   txBuilder.prepend({
     instruction: ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 2000000,
+      microLamports: microLamportsPerCU,
     }),
     signers: [],
   });

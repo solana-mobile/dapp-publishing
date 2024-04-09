@@ -7,6 +7,7 @@ import {
 } from "@solana/web3.js";
 
 import {
+  Constants,
   getMetaplexInstance,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
@@ -17,11 +18,13 @@ const createPublisherNft = async (
     publisher,
     publisherDetails,
     storageParams,
+    priorityFeeLamports,
   }: {
     connection: Connection;
     publisher: Keypair;
     publisherDetails: Publisher;
     storageParams: string;
+    priorityFeeLamports: number;
   },
   { dryRun }: { dryRun: boolean }
 ) => {
@@ -31,7 +34,7 @@ const createPublisherNft = async (
     `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
   );
   const txBuilder = await createPublisher(
-    { mintAddress, publisherDetails },
+    { mintAddress, publisherDetails, priorityFeeLamports },
     { metaplex, publisher }
   );
 
@@ -57,11 +60,13 @@ export const createPublisherCommand = async ({
   url,
   dryRun,
   storageParams,
+  priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: {
   signer: Keypair;
   url: string;
   dryRun: boolean;
   storageParams: string;
+  priorityFeeLamports: number;
 }) => {
   const connection = new Connection(url);
 
@@ -73,6 +78,7 @@ export const createPublisherCommand = async ({
       publisher: signer,
       publisherDetails,
       storageParams: storageParams,
+      priorityFeeLamports: priorityFeeLamports,
     },
     { dryRun }
   );

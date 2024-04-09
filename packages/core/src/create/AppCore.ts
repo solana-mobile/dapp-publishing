@@ -38,10 +38,11 @@ type CreateAppInput = {
   publisherMintAddress: PublicKey;
   mintAddress: Signer;
   appDetails: App;
+  priorityFeeLamports: number;
 };
 
 export const createApp = async (
-  { publisherMintAddress, mintAddress, appDetails }: CreateAppInput,
+  { publisherMintAddress, mintAddress, appDetails, priorityFeeLamports }: CreateAppInput,
   { metaplex, publisher }: Context
 ) => {
   debug(`Minting app NFT for publisher: ${publisherMintAddress.toBase58()}`);
@@ -49,14 +50,19 @@ export const createApp = async (
   const appJson = createAppJson(appDetails, publisher.publicKey);
   validateApp(appJson);
 
-  const txBuilder = await mintNft(metaplex, appJson, {
-    useNewMint: mintAddress,
-    collection: publisherMintAddress,
-    collectionAuthority: publisher,
-    isCollection: true,
-    isMutable: true,
-    creators: [{ address: publisher.publicKey, share: 100 }],
-  });
+  const txBuilder = await mintNft(
+    metaplex, 
+    appJson, 
+    {
+      useNewMint: mintAddress,
+      collection: publisherMintAddress,
+      collectionAuthority: publisher,
+      isCollection: true,
+      isMutable: true,
+      creators: [{ address: publisher.publicKey, share: 100 }],
+    },
+    priorityFeeLamports
+  );
 
   txBuilder.append(
     metaplex.nfts().builders().verifyCreator({
