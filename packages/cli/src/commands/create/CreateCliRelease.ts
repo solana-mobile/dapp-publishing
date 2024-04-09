@@ -105,6 +105,11 @@ export const createReleaseCommand = async ({
 
   const { release, app, publisher } = await loadPublishDetailsWithChecks(buildToolsPath);
 
+
+  if (app.android_package != release.android_details.android_package) {
+      throw new Error("App package name and release package name do not match.\nApp release specifies " + app.android_package + " while release specifies " + release.android_details.android_package)
+  }
+
   if (!dryRun) {
     const { releaseAddress } = await createReleaseNft({
       appMintAddress: app.address ?? appMintAddress,

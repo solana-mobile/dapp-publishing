@@ -7,7 +7,7 @@ import {
   validateRelease,
   metaplexFileReplacer,
 } from "@solana-mobile/dapp-store-publishing-tools";
-import { debug } from "../CliUtils.js";
+import { debug, showMessage } from "../CliUtils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";
@@ -39,7 +39,13 @@ export const validateCommand = async ({
     validatePublisher(publisherJson);
     console.info(`Publisher JSON valid!`);
   } catch (e) {
-    console.error(e);
+    const errorMsg = (e as Error | null)?.message ?? "";
+    showMessage(
+      "Publisher JSON invalid",
+      errorMsg,
+      "error"
+    )
+    return
   }
 
   const appJson = createAppJson(appDetails, signer.publicKey);
@@ -52,13 +58,29 @@ export const validateCommand = async ({
     validateApp(appJson);
     console.info(`App JSON valid!`);
   } catch (e) {
-    console.error(e);
+    const errorMsg = (e as Error | null)?.message ?? "";
+    showMessage(
+      "App JSON invalid",
+      errorMsg,
+      "error"
+    )
+    return
   }
 
   const releaseJson = await createReleaseJson(
     { releaseDetails, appDetails, publisherDetails },
     signer.publicKey
   );
+
+
+  if (appDetails.android_package != releaseDetails.android_details.android_package) {
+    showMessage(
+      "App package name and release package name do not match", 
+      "App release specifies " + appDetails.android_package + " while release specifies " + releaseDetails.android_details.android_package,
+      "error"
+    )
+    return
+  }
 
   const objStringified = JSON.stringify(releaseJson, metaplexFileReplacer, 2);
   debug("releaseJson=", objStringified);
@@ -67,6 +89,18 @@ export const validateCommand = async ({
     validateRelease(JSON.parse(objStringified));
     console.info(`Release JSON valid!`);
   } catch (e) {
-    console.error(e);
+    const errorMsg = (e as Error | null)?.message ?? "";
+    showMessage(
+      "Release JSON invalid",
+      errorMsg,
+      "error"
+    )
+    return
   }
+
+  showMessage(
+    "Json is Valid",
+    "Input data is valid",
+    "standard"
+  )
 };

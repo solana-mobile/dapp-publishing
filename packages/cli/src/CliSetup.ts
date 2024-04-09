@@ -11,6 +11,7 @@ import {
   checkForSelfUpdate,
   checkSubmissionNetwork,
   Constants,
+  dryRunSuccessMessage,
   generateNetworkSuffix,
   parseKeypair,
   showMessage
@@ -104,10 +105,14 @@ export const createPublisherCliCmd = createCliCmd
       if (signer) {
         const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
 
-        const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-        const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
+        if (dryRun) {
+          dryRunSuccessMessage()
+        } else {
+          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
 
-        showMessage("Success", resultText);
+          showMessage("Success", resultText);
+        }
       }
     });
   });
@@ -149,10 +154,13 @@ export const createAppCliCmd = createCliCmd
           priorityFeeLamports: priorityFeeLamports,
         });
 
-        const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
-        const resultText = `App NFT successfully minted:\n${displayUrl}`;
-
-        showMessage("Success", resultText);
+        if (dryRun) {
+          dryRunSuccessMessage()
+        } else {
+          const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
+          const resultText = `App NFT successfully minted:\n${displayUrl}`;  
+          showMessage("Success", resultText);
+        }
       }
     });
   });
@@ -203,10 +211,14 @@ export const createReleaseCliCmd = createCliCmd
             priorityFeeLamports: priorityFeeLamports
           });
 
-          const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
-          const resultText = `Release NFT successfully minted:\n${displayUrl}`;
+          if (dryRun) {
+            dryRunSuccessMessage()
+          } else {
+            const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
+            const resultText = `Release NFT successfully minted:\n${displayUrl}`;
 
-          showMessage("Success", resultText);
+            showMessage("Success", resultText);
+          }
         }
       });
     }
@@ -309,8 +321,11 @@ publishCommand
             requestorIsAuthorized,
           });
 
-          const resultText = "Successfully submitted to the Solana Mobile dApp publisher portal";
-          showMessage("Success", resultText);
+          if (dryRun) {
+            dryRunSuccessMessage()
+          } else {
+            showMessage("Success", "Successfully submitted to the Solana Mobile dApp publisher portal");
+          }
         }
       });
     }
@@ -381,8 +396,11 @@ publishCommand
             critical,
           });
 
-          const resultText = "dApp successfully updated on the publisher portal";
-          showMessage("Success", resultText);
+          if (dryRun) {
+            dryRunSuccessMessage()
+          } else {
+            showMessage("Success", "dApp successfully updated on the publisher portal");
+          }
         }
       });
     }
@@ -447,8 +465,11 @@ publishCommand
             critical,
           });
 
-          const resultText = "dApp successfully removed from the publisher portal";
-          showMessage("Success", resultText);
+          if (dryRun) {
+            dryRunSuccessMessage()
+          } else {
+            showMessage("Success", "dApp successfully removed from the publisher portal");
+          }
         }
       })
     }
@@ -507,8 +528,11 @@ publishCommand
             requestDetails,
           });
 
-          const resultText = "Support request sent successfully";
-          showMessage("Success", resultText);
+          if (dryRun) {
+            dryRunSuccessMessage()
+          } else {
+            showMessage("Success", "Support request sent successfully");
+          }
         }
       });
     }
