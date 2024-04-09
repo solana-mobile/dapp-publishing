@@ -31,6 +31,10 @@ export const mintNft = async (
   const { uri } = await metaplex.nfts().uploadMetadata(json);
   const computeBudget = 250000
 
+  if (priorityFeeLamports < 0) {
+    throw new Error("Priority fees cannot be negative")
+  }
+
   const txBuilder = await metaplex
     .nfts()
     .builders()

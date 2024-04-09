@@ -48,7 +48,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- priority fee has been updated to handle network congestion\n- short_description value reduced to 30 character limit",
+    "- priority fee has been updated to 500000 lamports = 0.0005 SOL. To adjust this value use param `-p or --priority-fee-lamports`",
     "warning"
   );
 }
