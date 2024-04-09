@@ -8,6 +8,7 @@ import {
 } from "@solana/web3.js";
 
 import {
+  Constants,
   getMetaplexInstance,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
@@ -74,7 +75,7 @@ export const createAppCommand = async ({
   dryRun,
   publisherMintAddress,
   storageParams,
-  priorityFeeLamports = 500000,
+  priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateAppCommandInput) => {
   const connection = new Connection(url);
 

@@ -48,7 +48,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
 function latestReleaseMessage() {
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    "- priority fee has been updated to 500000 lamports = 0.0005 SOL. To adjust this value use param `-p or --priority-fee-lamports`",
+    `- priority fee has been updated to ${Constants.DEFAULT_PRIORITY_FEE} lamports = ${Constants.DEFAULT_PRIORITY_FEE/1000000000} SOL. To adjust this value use param "-p or --priority-fee-lamports"`,
     "warning"
   );
 }

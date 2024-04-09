@@ -11,6 +11,7 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import {
+  Constants,
   getMetaplexInstance,
   showMessage
 } from "../../CliUtils.js";
@@ -98,7 +99,7 @@ export const createReleaseCommand = async ({
   url,
   dryRun = false,
   storageParams,
-  priorityFeeLamports = 500000
+  priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 

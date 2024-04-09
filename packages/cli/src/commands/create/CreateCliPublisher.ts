@@ -7,6 +7,7 @@ import {
 } from "@solana/web3.js";
 
 import {
+  Constants,
   getMetaplexInstance,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
@@ -59,7 +60,7 @@ export const createPublisherCommand = async ({
   url,
   dryRun,
   storageParams,
-  priorityFeeLamports = 500000,
+  priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: {
   signer: Keypair;
   url: string;
