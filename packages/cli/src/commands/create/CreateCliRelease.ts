@@ -84,7 +84,7 @@ const createReleaseNft = async ({
         showMessage("Transaction Failure", errorMsg, "error");
         process.exit(-1)
       } else {
-        const retryMsg = errorMsg + "\nWill Retry minting release"
+        const retryMsg = errorMsg + "\nWill Retry minting release NFT"
         showMessage("Transaction Failure", retryMsg, "standard");
       }
     }
@@ -106,7 +106,7 @@ export const createReleaseCommand = async ({
 
 
   if (app.android_package != release.android_details.android_package) {
-      throw new Error("App package name and release package name do not match.\nApp release specifies " + app.android_package + " while release specifies " + release.android_details.android_package)
+    throw new Error("App package name and release package name do not match.\nApp release specifies " + app.android_package + " while release specifies " + release.android_details.android_package)
   }
 
   if (!dryRun) {

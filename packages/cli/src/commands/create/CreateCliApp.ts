@@ -66,7 +66,7 @@ const createAppNft = async (
         showMessage("Transaction Failure", errorMsg, "error");
         process.exit(-1)
       } else {
-        const retryMsg = errorMsg + "\nWill Retry minting publisher."
+        const retryMsg = errorMsg + "\nWill Retry minting app NFT."
         showMessage("Transaction Failure", retryMsg, "standard");
       }
     }
