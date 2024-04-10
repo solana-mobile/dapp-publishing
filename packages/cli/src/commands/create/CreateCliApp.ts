@@ -61,10 +61,10 @@ const createAppNft = async (
         ], {
           minContextSlot: blockhash.context.slot
         });
-        console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+        return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig};
       }
 
-      return { appAddress: mintAddress.publicKey.toBase58() };
+      return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: ""};
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
@@ -100,7 +100,7 @@ export const createAppCommand = async ({
   const { app: appDetails, publisher: publisherDetails } =
     await loadPublishDetailsWithChecks();
 
-  const { appAddress } = await createAppNft(
+  const { appAddress, transactionSignature } = await createAppNft(
     {
       connection,
       publisher: signer,
@@ -116,5 +116,5 @@ export const createAppCommand = async ({
     await writeToPublishDetails({ app: { address: appAddress } });
   }
 
-  return { appAddress };
+  return { appAddress, transactionSignature };
 };

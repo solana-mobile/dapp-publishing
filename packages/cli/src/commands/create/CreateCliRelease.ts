@@ -77,11 +77,7 @@ const createReleaseNft = async ({
       ], {
         minContextSlot: blockhash.context.slot,
       });
-      console.info({
-        txSig,
-        releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
-      });
-      return { releaseAddress: releaseMintAddress.publicKey.toBase58() };
+      return { releaseAddress: releaseMintAddress.publicKey.toBase58(), transactionSignature: txSig };
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
@@ -114,7 +110,7 @@ export const createReleaseCommand = async ({
   }
 
   if (!dryRun) {
-    const { releaseAddress } = await createReleaseNft({
+    const { releaseAddress, transactionSignature } = await createReleaseNft({
       appMintAddress: app.address ?? appMintAddress,
       connection,
       publisher: signer,
@@ -129,6 +125,6 @@ export const createReleaseCommand = async ({
 
     await writeToPublishDetails({ release: { address: releaseAddress }, });
 
-    return { releaseAddress };
+    return { releaseAddress, transactionSignature };
   }
 };

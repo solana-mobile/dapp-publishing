@@ -52,9 +52,9 @@ const createPublisherNft = async (
         ], {
           minContextSlot: blockhash.context.slot
         });
-        console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+        return { publisherAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig};
       }
-      return { publisherAddress: mintAddress.publicKey.toBase58() };
+      return {publisherAddress: mintAddress.publicKey.toBase58(), transactionSignature: ""}
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
@@ -85,7 +85,7 @@ export const createPublisherCommand = async ({
 
   const { publisher: publisherDetails } = await loadPublishDetailsWithChecks();
 
-  const { publisherAddress } = await createPublisherNft(
+  const { publisherAddress, transactionSignature } = await createPublisherNft(
     {
       connection,
       publisher: signer,
@@ -99,5 +99,5 @@ export const createPublisherCommand = async ({
   // TODO(sdlaver): dry-run should not modify config
   await writeToPublishDetails({ publisher: { address: publisherAddress } });
 
-  return { publisherAddress };
+  return { publisherAddress, transactionSignature };
 };

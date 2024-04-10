@@ -109,13 +109,14 @@ export const createPublisherCliCmd = createCliCmd
 
       const signer = parseKeypair(keypair);
       if (signer) {
-        const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
+        const result: { publisherAddress: string, transactionSignature: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
 
         if (dryRun) {
           dryRunSuccessMessage()
         } else {
-          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
+          const displayUrl = `https://explorer.solana.com/address/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+          const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
+          const resultText = `Publisher NFT successfully minted successfully:\n${displayUrl}\n${transactionUrl}`;
 
           showMessage("Success", resultText);
         }
@@ -163,8 +164,9 @@ export const createAppCliCmd = createCliCmd
         if (dryRun) {
           dryRunSuccessMessage()
         } else {
-          const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
-          const resultText = `App NFT successfully minted:\n${displayUrl}`;  
+          const displayUrl = `https://explorer.solana.com/address/${result.appAddress}${generateNetworkSuffix(url)}`;
+          const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
+          const resultText = `App NFT successfully minted:\n${displayUrl}\n${transactionUrl}`;  
           showMessage("Success", resultText);
         }
       }
@@ -220,8 +222,9 @@ export const createReleaseCliCmd = createCliCmd
           if (dryRun) {
             dryRunSuccessMessage()
           } else {
-            const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
-            const resultText = `Release NFT successfully minted:\n${displayUrl}`;
+            const displayUrl = `https://explorer.solana.com/address/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
+            const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
+            const resultText = `Release NFT successfully minted:\n${displayUrl}\n${transactionUrl}`;
 
             showMessage("Success", resultText);
           }
