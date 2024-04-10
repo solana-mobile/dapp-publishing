@@ -154,7 +154,7 @@ const checkIconCompatibility = async (path: string, typeString: string) => {
   }
 
   if (await checkIconDimensions(path)) {
-    throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.");
+    throw new Error("Icons must be 512px by 512px.");
   }
 };
 
@@ -197,7 +197,7 @@ const validateLocalizableResources = (config: PublishDetails) => {
 const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
   const size = await runImgSize(iconPath);
 
-  return size?.width != size?.height || (size?.width ?? 0) > 512;
+  return size?.width != size?.height || (size?.width ?? 0) != 512;
 };
 
 const getAndroidDetails = async (
