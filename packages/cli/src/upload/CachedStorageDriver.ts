@@ -32,7 +32,6 @@ export class CachedStorageDriver implements StorageDriver {
     { assetManifestPath }: { assetManifestPath: string }
   ) {
     this.assetManifestPath = assetManifestPath;
-    console.info({ loading: true });
     this.assetManifest = this.loadAssetManifest(assetManifestPath) ?? {
       schema_version: CachedStorageDriver.SCHEMA_VERSION,
       assets: {},
@@ -69,15 +68,6 @@ export class CachedStorageDriver implements StorageDriver {
     }
     const hash = createHash("sha256").update(file.buffer).digest("base64");
 
-    console.info(
-      JSON.stringify({
-        file: {
-          name: file.fileName,
-          disn: file.displayName,
-          un: file.uniqueName,
-        },
-      })
-    );
     const uploadedAsset = this.uploadedAsset(file.fileName, { sha256: hash });
     if (uploadedAsset) {
       console.log(
@@ -101,6 +91,7 @@ export class CachedStorageDriver implements StorageDriver {
       JSON.stringify({ assets: { ...this.assetManifest.assets } }, null, 2),
       "utf-8"
     );
+    console.log(`${file.fileName} uploaded at ${uri}`)
 
     return uri;
   }

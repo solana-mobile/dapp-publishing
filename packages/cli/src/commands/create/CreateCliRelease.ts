@@ -46,6 +46,8 @@ const createReleaseNft = async ({
   storageParams: string;
   priorityFeeLamports: number;
 }) => {
+  console.info(`Creating Release NFT`);
+
   const releaseMintAddress = Keypair.generate();
 
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
@@ -62,6 +64,7 @@ const createReleaseNft = async ({
     { metaplex, publisher }
   );
 
+  console.info(`Release NFT data upload complete\nSigning transaction now`);
   const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {

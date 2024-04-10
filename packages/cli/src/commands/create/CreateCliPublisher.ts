@@ -29,16 +29,15 @@ const createPublisherNft = async (
   },
   { dryRun }: { dryRun: boolean }
 ) => {
+  console.info(`Creating Publisher NFT`);
   const mintAddress = Keypair.generate();
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
-  console.info(
-    `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
-  );
   const txBuilder = await createPublisher(
     { mintAddress, publisherDetails, priorityFeeLamports },
     { metaplex, publisher }
   );
 
+  console.info(`Publisher NFT data upload complete\nSigning transaction now`);
   const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {

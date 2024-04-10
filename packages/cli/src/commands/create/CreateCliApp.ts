@@ -32,6 +32,8 @@ const createAppNft = async (
   },
   { dryRun }: { dryRun?: boolean }
 ) => {
+  console.info(`Creating App NFT`);
+
   const mintAddress = Keypair.generate();
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
   const txBuilder = await createApp(
@@ -44,6 +46,7 @@ const createAppNft = async (
     { metaplex, publisher }
   );
 
+  console.info(`App NFT data upload complete\nSigning transaction now`);
   const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {

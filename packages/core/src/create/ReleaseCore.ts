@@ -175,8 +175,6 @@ export const createRelease = async (
   }: CreateReleaseInput,
   { publisher, metaplex }: Context
 ) => {
-  debug(`Minting release NFT for: ${appMintAddress.toBase58()}`);
-
   const releaseJson = await createReleaseJson(
     { releaseDetails, appDetails, publisherDetails },
     publisher.publicKey
