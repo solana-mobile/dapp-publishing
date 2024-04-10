@@ -119,11 +119,11 @@ export const loadPublishDetailsWithChecks = async (
   }
 
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
-      const imagePath = path.join(process.cwd(), item.uri);
-      if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
-        throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
-      }
+    const imagePath = path.join(process.cwd(), item.uri);
+    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
+      throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
     }
+  }
   );
 
   const screenshots = config.release.media?.filter(
@@ -131,7 +131,11 @@ export const loadPublishDetailsWithChecks = async (
   )
 
   if (screenshots.length < 4) {
-    throw new Error(`At least 4 screenshots are required for publishing a new release. Found only ${screenshots.length}`)
+    showMessage(
+      "Screenshots requirements changing in version 0.9.0",
+      `At least 4 screenshots are required for publishing a new release. Found only ${screenshots.length}`,
+      "warning"
+    )
   }
 
   validateLocalizableResources(config);
