@@ -30,7 +30,6 @@ const createAppNft = async (
     storageParams: string;
     priorityFeeLamports: number;
   },
-  { dryRun }: { dryRun?: boolean }
 ) => {
   console.info(`Creating App NFT`);
 
@@ -54,17 +53,13 @@ const createAppNft = async (
       const tx = txBuilder.toTransaction(blockhash.value);
       tx.sign(mintAddress, publisher);
 
-      if (!dryRun) {
-        const txSig = await sendAndConfirmTransaction(connection, tx, [
-          publisher,
-          mintAddress,
-        ], {
-          minContextSlot: blockhash.context.slot
-        });
-        return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig};
-      }
-
-      return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: ""};
+      const txSig = await sendAndConfirmTransaction(connection, tx, [
+        publisher,
+        mintAddress,
+      ], {
+        minContextSlot: blockhash.context.slot
+      });
+      return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig };
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
@@ -100,21 +95,20 @@ export const createAppCommand = async ({
   const { app: appDetails, publisher: publisherDetails } =
     await loadPublishDetailsWithChecks();
 
-  const { appAddress, transactionSignature } = await createAppNft(
-    {
-      connection,
-      publisher: signer,
-      publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
-      appDetails,
-      storageParams,
-      priorityFeeLamports
-    },
-    { dryRun }
-  );
-
   if (!dryRun) {
-    await writeToPublishDetails({ app: { address: appAddress } });
-  }
+    const { appAddress, transactionSignature } = await createAppNft(
+      {
+        connection,
+        publisher: signer,
+        publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
+        appDetails,
+        storageParams,
+        priorityFeeLamports
+      },
+    );
 
-  return { appAddress, transactionSignature };
+    await writeToPublishDetails({ app: { address: appAddress } });
+
+    return { appAddress, transactionSignature };
+  }
 };
