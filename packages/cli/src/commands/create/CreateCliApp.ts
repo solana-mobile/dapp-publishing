@@ -10,6 +10,7 @@ import {
 import {
   Constants,
   getMetaplexInstance,
+  showMessage,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
@@ -43,21 +44,35 @@ const createAppNft = async (
     { metaplex, publisher }
   );
 
-  const blockhash = await connection.getLatestBlockhashAndContext();
-  const tx = txBuilder.toTransaction(blockhash.value);
-  tx.sign(mintAddress, publisher);
+  const maxTries = 8;
+  for (let i = 1; i <= maxTries; i++) {
+    try {
+      const blockhash = await connection.getLatestBlockhashAndContext();
+      const tx = txBuilder.toTransaction(blockhash.value);
+      tx.sign(mintAddress, publisher);
 
-  if (!dryRun) {
-    const txSig = await sendAndConfirmTransaction(connection, tx, [
-      publisher,
-      mintAddress,
-    ], {
-      minContextSlot: blockhash.context.slot
-    });
-    console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+      if (!dryRun) {
+        const txSig = await sendAndConfirmTransaction(connection, tx, [
+          publisher,
+          mintAddress,
+        ], {
+          minContextSlot: blockhash.context.slot
+        });
+        console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
+      }
+
+      return { appAddress: mintAddress.publicKey.toBase58() };
+    } catch (e) {
+      const errorMsg = (e as Error | null)?.message ?? "";
+      if (i == maxTries) {
+        showMessage("Transaction Failure", errorMsg, "error");
+        process.exit(-1)
+      } else {
+        const retryMsg = errorMsg + "\nWill Retry minting publisher."
+        showMessage("Transaction Failure", retryMsg, "standard");
+      }
+    }
   }
-
-  return { appAddress: mintAddress.publicKey.toBase58() };
 };
 
 type CreateAppCommandInput = {

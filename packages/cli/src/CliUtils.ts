@@ -113,6 +113,10 @@ export const generateNetworkSuffix = (rpcUrl: string): string => {
   return suffix;
 };
 
+export const dryRunSuccessMessage = () => {
+  showMessage("Dry run", "Dry run was successful", "standard")
+}
+
 export const showMessage = (
   titleMessage = "",
   contentMessage = "",
