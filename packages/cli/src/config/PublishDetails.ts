@@ -119,12 +119,24 @@ export const loadPublishDetailsWithChecks = async (
   }
 
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
-      const imagePath = path.join(process.cwd(), item.uri);
-      if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
-        throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
-      }
+    const imagePath = path.join(process.cwd(), item.uri);
+    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
+      throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
     }
+  }
   );
+
+  const screenshots = config.release.media?.filter(
+    (asset: any) => asset.purpose === "screenshot"
+  )
+
+  if (screenshots.length < 4) {
+    showMessage(
+      "Screenshots requirements changing in version 0.9.0",
+      `At least 4 screenshots are required for publishing a new release. Found only ${screenshots.length}`,
+      "warning"
+    )
+  }
 
   validateLocalizableResources(config);
 
@@ -146,7 +158,7 @@ const checkIconCompatibility = async (path: string, typeString: string) => {
   }
 
   if (await checkIconDimensions(path)) {
-    throw new Error("Icons must have square dimensions and be no greater than 512px by 512px.");
+    throw new Error("Icons must be 512px by 512px.");
   }
 };
 
@@ -189,7 +201,7 @@ const validateLocalizableResources = (config: PublishDetails) => {
 const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
   const size = await runImgSize(iconPath);
 
-  return size?.width != size?.height || (size?.width ?? 0) > 512;
+  return size?.width != size?.height || (size?.width ?? 0) != 512;
 };
 
 const getAndroidDetails = async (

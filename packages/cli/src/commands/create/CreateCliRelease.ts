@@ -46,6 +46,8 @@ const createReleaseNft = async ({
   storageParams: string;
   priorityFeeLamports: number;
 }) => {
+  console.info(`Creating Release NFT`);
+
   const releaseMintAddress = Keypair.generate();
 
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
@@ -62,6 +64,7 @@ const createReleaseNft = async ({
     { metaplex, publisher }
   );
 
+  console.info(`Release NFT data upload complete\nSigning transaction now`);
   const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {
@@ -74,18 +77,14 @@ const createReleaseNft = async ({
       ], {
         minContextSlot: blockhash.context.slot,
       });
-      console.info({
-        txSig,
-        releaseMintAddress: releaseMintAddress.publicKey.toBase58(),
-      });
-      return { releaseAddress: releaseMintAddress.publicKey.toBase58() };
+      return { releaseAddress: releaseMintAddress.publicKey.toBase58(), transactionSignature: txSig };
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
         showMessage("Transaction Failure", errorMsg, "error");
         process.exit(-1)
       } else {
-        const retryMsg = errorMsg + "\nWill Retry minting release"
+        const retryMsg = errorMsg + "\nWill Retry minting release NFT"
         showMessage("Transaction Failure", retryMsg, "standard");
       }
     }
@@ -107,11 +106,11 @@ export const createReleaseCommand = async ({
 
 
   if (app.android_package != release.android_details.android_package) {
-      throw new Error("App package name and release package name do not match.\nApp release specifies " + app.android_package + " while release specifies " + release.android_details.android_package)
+    throw new Error("App package name and release package name do not match.\nApp release specifies " + app.android_package + " while release specifies " + release.android_details.android_package)
   }
 
   if (!dryRun) {
-    const { releaseAddress } = await createReleaseNft({
+    const { releaseAddress, transactionSignature } = await createReleaseNft({
       appMintAddress: app.address ?? appMintAddress,
       connection,
       publisher: signer,
@@ -126,6 +125,6 @@ export const createReleaseCommand = async ({
 
     await writeToPublishDetails({ release: { address: releaseAddress }, });
 
-    return { releaseAddress };
+    return { releaseAddress, transactionSignature };
   }
 };

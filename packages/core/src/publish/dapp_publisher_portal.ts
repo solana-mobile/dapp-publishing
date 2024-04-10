@@ -43,8 +43,6 @@ export const submitRequestToSolanaDappPublisherPortal = async (
     data: JSON.stringify(request),
   } as AxiosRequestConfig;
 
-  console.info("Sending dApp publisher portal request:", config);
-
   if (!dryRun) {
     await axios(config)
       .then((response) => {

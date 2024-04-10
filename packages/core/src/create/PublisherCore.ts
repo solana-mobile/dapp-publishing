@@ -49,8 +49,6 @@ export const createPublisher = async (
   { mintAddress, publisherDetails, priorityFeeLamports }: CreatePublisherInput,
   { metaplex }: Context
 ): Promise<TransactionBuilder> => {
-  debug(`Minting publisher NFT`);
-
   const publisherJson = createPublisherJson(publisherDetails);
   validatePublisher(publisherJson);
 

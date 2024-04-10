@@ -45,8 +45,6 @@ export const createApp = async (
   { publisherMintAddress, mintAddress, appDetails, priorityFeeLamports }: CreateAppInput,
   { metaplex, publisher }: Context
 ) => {
-  debug(`Minting app NFT for publisher: ${publisherMintAddress.toBase58()}`);
-
   const appJson = createAppJson(appDetails, publisher.publicKey);
   validateApp(appJson);
 

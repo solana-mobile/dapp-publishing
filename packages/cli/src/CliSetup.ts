@@ -16,6 +16,7 @@ import {
   parseKeypair,
   showMessage
 } from "./CliUtils.js";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 import * as dotenv from "dotenv";
 import { initScaffold } from "./commands/scaffolding/index.js";
 import { loadPublishDetails, loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
@@ -47,9 +48,14 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
  * This method should be updated with each new release of the CLI, and just do nothing when there isn't anything to report
  */
 function latestReleaseMessage() {
+  const messages = [
+    `- priority fee has been updated to ${Constants.DEFAULT_PRIORITY_FEE} lamports = ${Constants.DEFAULT_PRIORITY_FEE / LAMPORTS_PER_SOL} SOL. To adjust this value use param "-p" or "--priority-fee-lamports"`,
+    `- At least 4 screenshots are now required to update or release a new app`,
+    `- App icons should be exactly 512x512.`
+  ].join('\n\n')
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
-    `- priority fee has been updated to ${Constants.DEFAULT_PRIORITY_FEE} lamports = ${Constants.DEFAULT_PRIORITY_FEE/1000000000} SOL. To adjust this value use param "-p or --priority-fee-lamports"`,
+    messages,
     "warning"
   );
 }
@@ -103,13 +109,14 @@ export const createPublisherCliCmd = createCliCmd
 
       const signer = parseKeypair(keypair);
       if (signer) {
-        const result: { publisherAddress: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
+        const result: { publisherAddress: string, transactionSignature: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
 
         if (dryRun) {
           dryRunSuccessMessage()
         } else {
-          const displayUrl = `https://solscan.io/token/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-          const resultText = `Publisher NFT successfully minted:\n${displayUrl}`;
+          const displayUrl = `https://explorer.solana.com/address/${result.publisherAddress}${generateNetworkSuffix(url)}`;
+          const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
+          const resultText = `Publisher NFT successfully minted successfully:\n${displayUrl}\n${transactionUrl}`;
 
           showMessage("Success", resultText);
         }
@@ -157,8 +164,9 @@ export const createAppCliCmd = createCliCmd
         if (dryRun) {
           dryRunSuccessMessage()
         } else {
-          const displayUrl = `https://solscan.io/token/${result.appAddress}${generateNetworkSuffix(url)}`;
-          const resultText = `App NFT successfully minted:\n${displayUrl}`;  
+          const displayUrl = `https://explorer.solana.com/address/${result.appAddress}${generateNetworkSuffix(url)}`;
+          const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
+          const resultText = `App NFT successfully minted:\n${displayUrl}\n${transactionUrl}`;  
           showMessage("Success", resultText);
         }
       }
@@ -214,8 +222,9 @@ export const createReleaseCliCmd = createCliCmd
           if (dryRun) {
             dryRunSuccessMessage()
           } else {
-            const displayUrl = `https://solscan.io/token/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
-            const resultText = `Release NFT successfully minted:\n${displayUrl}`;
+            const displayUrl = `https://explorer.solana.com/address/${result?.releaseAddress}${generateNetworkSuffix(url)}`;
+            const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
+            const resultText = `Release NFT successfully minted:\n${displayUrl}\n${transactionUrl}`;
 
             showMessage("Success", resultText);
           }

@@ -30,8 +30,9 @@ const createAppNft = async (
     storageParams: string;
     priorityFeeLamports: number;
   },
-  { dryRun }: { dryRun?: boolean }
 ) => {
+  console.info(`Creating App NFT`);
+
   const mintAddress = Keypair.generate();
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
   const txBuilder = await createApp(
@@ -44,6 +45,7 @@ const createAppNft = async (
     { metaplex, publisher }
   );
 
+  console.info(`App NFT data upload complete\nSigning transaction now`);
   const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {
@@ -51,24 +53,20 @@ const createAppNft = async (
       const tx = txBuilder.toTransaction(blockhash.value);
       tx.sign(mintAddress, publisher);
 
-      if (!dryRun) {
-        const txSig = await sendAndConfirmTransaction(connection, tx, [
-          publisher,
-          mintAddress,
-        ], {
-          minContextSlot: blockhash.context.slot
-        });
-        console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
-      }
-
-      return { appAddress: mintAddress.publicKey.toBase58() };
+      const txSig = await sendAndConfirmTransaction(connection, tx, [
+        publisher,
+        mintAddress,
+      ], {
+        minContextSlot: blockhash.context.slot
+      });
+      return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig };
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
         showMessage("Transaction Failure", errorMsg, "error");
         process.exit(-1)
       } else {
-        const retryMsg = errorMsg + "\nWill Retry minting publisher."
+        const retryMsg = errorMsg + "\nWill Retry minting app NFT."
         showMessage("Transaction Failure", retryMsg, "standard");
       }
     }
@@ -97,21 +95,20 @@ export const createAppCommand = async ({
   const { app: appDetails, publisher: publisherDetails } =
     await loadPublishDetailsWithChecks();
 
-  const { appAddress } = await createAppNft(
-    {
-      connection,
-      publisher: signer,
-      publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
-      appDetails,
-      storageParams,
-      priorityFeeLamports
-    },
-    { dryRun }
-  );
-
   if (!dryRun) {
-    await writeToPublishDetails({ app: { address: appAddress } });
-  }
+    const { appAddress, transactionSignature } = await createAppNft(
+      {
+        connection,
+        publisher: signer,
+        publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
+        appDetails,
+        storageParams,
+        priorityFeeLamports
+      },
+    );
 
-  return { appAddress };
+    await writeToPublishDetails({ app: { address: appAddress } });
+
+    return { appAddress, transactionSignature };
+  }
 };

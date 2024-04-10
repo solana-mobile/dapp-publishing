@@ -27,18 +27,16 @@ const createPublisherNft = async (
     storageParams: string;
     priorityFeeLamports: number;
   },
-  { dryRun }: { dryRun: boolean }
 ) => {
+  console.info(`Creating Publisher NFT`);
   const mintAddress = Keypair.generate();
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
-  console.info(
-    `Creating publisher at address: ${mintAddress.publicKey.toBase58()}`
-  );
   const txBuilder = await createPublisher(
     { mintAddress, publisherDetails, priorityFeeLamports },
     { metaplex, publisher }
   );
 
+  console.info(`Publisher NFT data upload complete\nSigning transaction now`);
   const maxTries = 8;
   for (let i = 1; i <= maxTries; i++) {
     try {
@@ -46,16 +44,13 @@ const createPublisherNft = async (
       const tx = txBuilder.toTransaction(blockhash.value);
       tx.sign(mintAddress, publisher);
 
-      if (!dryRun) {
-        const txSig = await sendAndConfirmTransaction(connection, tx, [
-          publisher,
-          mintAddress,
-        ], {
-          minContextSlot: blockhash.context.slot
-        });
-        console.info({ txSig, mintAddress: mintAddress.publicKey.toBase58() });
-      }
-      return { publisherAddress: mintAddress.publicKey.toBase58() };
+      const txSig = await sendAndConfirmTransaction(connection, tx, [
+        publisher,
+        mintAddress,
+      ], {
+        minContextSlot: blockhash.context.slot
+      });
+      return { publisherAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig};
     } catch (e) {
       const errorMsg = (e as Error | null)?.message ?? "";
       if (i == maxTries) {
@@ -86,19 +81,19 @@ export const createPublisherCommand = async ({
 
   const { publisher: publisherDetails } = await loadPublishDetailsWithChecks();
 
-  const { publisherAddress } = await createPublisherNft(
-    {
-      connection,
-      publisher: signer,
-      publisherDetails,
-      storageParams: storageParams,
-      priorityFeeLamports: priorityFeeLamports,
-    },
-    { dryRun }
-  );
+  if (!dryRun) {
+    const { publisherAddress, transactionSignature } = await createPublisherNft(
+      {
+        connection,
+        publisher: signer,
+        publisherDetails,
+        storageParams: storageParams,
+        priorityFeeLamports: priorityFeeLamports,
+      },
+    );
 
-  // TODO(sdlaver): dry-run should not modify config
-  await writeToPublishDetails({ publisher: { address: publisherAddress } });
+    await writeToPublishDetails({ publisher: { address: publisherAddress } });
 
-  return { publisherAddress };
+    return { publisherAddress, transactionSignature };
+  }
 };
