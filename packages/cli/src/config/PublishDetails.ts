@@ -126,6 +126,14 @@ export const loadPublishDetailsWithChecks = async (
     }
   );
 
+  const screenshots = config.release.media?.filter(
+    (asset: any) => asset.purpose === "screenshot"
+  )
+
+  if (screenshots.length < 4) {
+    throw new Error(`At least 4 screenshots are required for publishing a new release. Found only ${screenshots.length}`)
+  }
+
   validateLocalizableResources(config);
 
   const googlePkg = config.solana_mobile_dapp_publisher_portal.google_store_package;

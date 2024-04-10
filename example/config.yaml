@@ -29,6 +29,10 @@ release:
       uri: ./media/app_screenshot1.png
     - purpose: screenshot
       uri: ./media/app_screenshot2.png
+    - purpose: screenshot
+      uri: ./media/app_screenshot3.png
+    - purpose: screenshot
+      uri: ./media/app_screenshot4.png
   files:
     - purpose: install
       uri: ./files/app-debug.apk
