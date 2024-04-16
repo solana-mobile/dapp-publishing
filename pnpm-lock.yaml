@@ -59,7 +59,7 @@ importers:
         specifier: ^0.18.3
         version: 0.18.3
       '@solana-mobile/dapp-store-publishing-tools':
-        specifier: workspace:0.7.3
+        specifier: workspace:0.8.0
         version: link:../core
       '@solana/web3.js':
         specifier: 1.68.0
