@@ -42,7 +42,7 @@ export const checkForSelfUpdate = async () => {
     latestVer.minor > currentVer.minor
   ) {
     throw new Error(
-      "Please update to the latest version of the dApp Store CLI before proceeding."
+      `Please update to the latest version of the dApp Store CLI before proceeding.\nCurrent version is ${currentVer.raw}\nLatest version is ${latestVer.raw}`
     );
   }
 };
