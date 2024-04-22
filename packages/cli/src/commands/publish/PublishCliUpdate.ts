@@ -3,7 +3,7 @@ import type { SignWithPublisherKeypair } from "@solana-mobile/dapp-store-publish
 import { publishUpdate } from "@solana-mobile/dapp-store-publishing-tools";
 import { checkMintedStatus, showMessage } from "../../CliUtils.js";
 import nacl from "tweetnacl";
-import { loadPublishDetailsWithChecks } from "../../config/PublishDetails.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 type PublishUpdateCommandInput = {
   appMintAddress: string;
@@ -51,6 +51,7 @@ export const publishUpdateCommand = async ({
     app: appDetails,
     release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
+    lastUpdatedVersionOnStore: lastUpdatedVersionOnStore
   } = await loadPublishDetailsWithChecks();
 
   const sign = ((buf: Buffer) =>
@@ -59,6 +60,10 @@ export const publishUpdateCommand = async ({
   const pubAddr = publisherDetails.address;
   const appAddr = appMintAddress ?? appDetails.address;
   const releaseAddr = releaseMintAddress ?? releaseDetails.address;
+
+  if (releaseAddr === lastUpdatedVersionOnStore.address) {
+    throw new Error(`You've already submitted this version for review.`);
+  }
 
   await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
@@ -75,4 +80,8 @@ export const publishUpdateCommand = async ({
     },
     dryRun
   );
+  await writeToPublishDetails(
+    {
+      lastUpdatedVersionOnStore: { address: releaseAddr }
+    });
 };

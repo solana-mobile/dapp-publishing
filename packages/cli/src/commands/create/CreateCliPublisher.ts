@@ -62,6 +62,7 @@ const createPublisherNft = async (
       }
     }
   }
+  throw new Error("Unable to mint publisher NFT");
 };
 
 export const createPublisherCommand = async ({

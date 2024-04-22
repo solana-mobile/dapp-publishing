@@ -85,3 +85,13 @@ export type SolanaMobileDappPublisherPortal = {
   google_store_package: string;
   testing_instructions: string;
 };
+
+export type LastSubmittedVersionOnChain = {
+  address: string;
+  version_code: number;
+  apk_hash: string;
+}
+
+export type LastUpdatedVersionOnStore = {
+  address: string;
+}

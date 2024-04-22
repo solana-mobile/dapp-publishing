@@ -4,7 +4,7 @@ import { publishSubmit } from "@solana-mobile/dapp-store-publishing-tools";
 import nacl from "tweetnacl";
 import { checkMintedStatus, showMessage } from "../../CliUtils.js";
 import { Buffer } from "buffer";
-import { loadPublishDetailsWithChecks } from "../../config/PublishDetails.js";
+import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 type PublishSubmitCommandInput = {
   appMintAddress: string;
@@ -49,6 +49,7 @@ export const publishSubmitCommand = async ({
     app: appDetails,
     release: releaseDetails,
     solana_mobile_dapp_publisher_portal: solanaMobileDappPublisherPortalDetails,
+    lastUpdatedVersionOnStore: lastUpdatedVersionOnStore,
   } = await loadPublishDetailsWithChecks();
 
   const sign = ((buf: Buffer) =>
@@ -57,6 +58,10 @@ export const publishSubmitCommand = async ({
   const pubAddr = publisherDetails.address;
   const appAddr = appMintAddress ?? appDetails.address;
   const releaseAddr = releaseMintAddress ?? releaseDetails.address;
+
+  if (releaseAddr === lastUpdatedVersionOnStore.address) {
+    throw new Error(`You've already submitted this version for review.`);
+  }
 
   await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
 
@@ -72,4 +77,9 @@ export const publishSubmitCommand = async ({
     },
     dryRun
   );
+
+  await writeToPublishDetails(
+    {
+      lastUpdatedVersionOnStore: { address: releaseAddr }
+    });
 };

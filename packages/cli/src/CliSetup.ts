@@ -320,15 +320,28 @@ publishCommand
 
         const signer = parseKeypair(keypair);
         if (signer) {
-          await publishSubmitCommand({
-            appMintAddress,
-            releaseMintAddress,
-            signer,
-            url,
-            dryRun,
-            compliesWithSolanaDappStorePolicies,
-            requestorIsAuthorized,
-          });
+          if (hasAddressInConfig(config.lastUpdatedVersionOnStore)) {
+              await publishUpdateCommand({
+                appMintAddress: appMintAddress,
+                releaseMintAddress: releaseMintAddress,
+                signer: signer,
+                url: url,
+                dryRun: dryRun,
+                compliesWithSolanaDappStorePolicies: compliesWithSolanaDappStorePolicies,
+                requestorIsAuthorized: requestorIsAuthorized,
+                critical: false,
+              });
+          } else {
+            await publishSubmitCommand({
+              appMintAddress: appMintAddress,
+              releaseMintAddress: releaseMintAddress,
+              signer: signer,
+              url: url,
+              dryRun: dryRun,
+              compliesWithSolanaDappStorePolicies: compliesWithSolanaDappStorePolicies,
+              requestorIsAuthorized: requestorIsAuthorized,
+            });
+          }
 
           if (dryRun) {
             dryRunSuccessMessage()
