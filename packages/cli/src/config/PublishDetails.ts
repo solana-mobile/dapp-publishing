@@ -229,7 +229,7 @@ const getAndroidDetails = async (
     const minSdk = new RegExp(
       AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
     ).exec(stdout);
-    const permissions = [...stdout.matchAll(/uses-permission: name='(.*)'/g)];
+    const permissions = [...stdout.matchAll(/uses-permission: name='(.*)'/g)].flatMap(permission => permission[1]);
     const locales = new RegExp(
       AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
     ).exec(stdout);
@@ -245,6 +245,30 @@ const getAndroidDetails = async (
     if (localeArray.length == 2) {
       const localesSrc = localeArray[1];
       localeArray = ["en-US"].concat(localesSrc.split("' '").slice(1));
+    }
+
+    if (permissions.includes("android.permission.INSTALL_PACKAGES") || permissions.includes("android.permission.DELETE_PACKAGES")) {
+      showMessage(
+        "App requests system app install/delete permission",
+        "Your app requests system install/delete permission which is managed by Solana dApp Store.\nThis app will be not approved for listing on Solana dApp Store.",
+        "error"
+      );
+    }
+
+    if (permissions.includes("android.permission.REQUEST_INSTALL_PACKAGES") || permissions.includes("android.permission.REQUEST_DELETE_PACKAGES")) {
+      showMessage(
+        "App requests install or delete permission",
+        "App will be subject to additional security reviews for listing on Solana dApp Store and processing time may be beyond regular review time",
+        "warning"
+      );
+    }
+
+    if (permissions.includes("com.solanamobile.seedvault.ACCESS_SEED_VAULT")) {
+      showMessage(
+        "App requests Seed Vault permission",
+        "If this is not a wallet application, your app maybe rejected from listing on Solana dApp Store.",
+        "warning"
+      );
     }
 
     if (localeArray.length >= 60) {
@@ -264,7 +288,7 @@ const getAndroidDetails = async (
       version_code: parseInt(versionCode?.[1] ?? "0", 10),
       version: versionName?.[1] ?? "0",
       cert_fingerprint: await extractCertFingerprint(aaptDir, apkPath),
-      permissions: permissions.flatMap(permission => permission[1]),
+      permissions: permissions,
       locales: localeArray
     };
   } catch (e) {
