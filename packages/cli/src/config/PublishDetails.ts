@@ -132,14 +132,14 @@ export const loadPublishDetailsWithChecks = async (
   }
   );
 
-  const screenshots = config.release.media?.filter(
-    (asset: any) => asset.purpose === "screenshot"
+  const previewMediaFiles = config.release.media?.filter(
+    (asset: any) => asset.purpose === "screenshot" || asset.purpose === "video"
   )
 
-  if (screenshots.length < 4) {
+  if (previewMediaFiles.length < 4) {
     showMessage(
-      "Screenshots requirements changing in version 0.9.0",
-      `At least 4 screenshots are required for publishing a new release. Found only ${screenshots.length}`,
+      "Preview media requirements changing in version 0.9.0",
+      `At least 4 screenshots or videos are required for publishing a new release. Found only ${previewMediaFiles.length}`,
       "warning"
     )
   }
