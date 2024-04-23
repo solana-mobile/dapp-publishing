@@ -71,6 +71,7 @@ const createAppNft = async (
       }
     }
   }
+  throw new Error("Unable to mint app NFT");
 };
 
 type CreateAppCommandInput = {

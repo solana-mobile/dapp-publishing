@@ -1,6 +1,8 @@
 import type {
   AndroidDetails,
   App,
+  LastSubmittedVersionOnChain,
+  LastUpdatedVersionOnStore,
   Publisher,
   Release,
   SolanaMobileDappPublisherPortal
@@ -25,6 +27,8 @@ export interface PublishDetails {
   app: App;
   release: Release;
   solana_mobile_dapp_publisher_portal: SolanaMobileDappPublisherPortal;
+  lastSubmittedVersionOnChain: LastSubmittedVersionOnChain
+  lastUpdatedVersionOnStore: LastUpdatedVersionOnStore,
 }
 
 const AaptPrefixes = {
@@ -42,6 +46,8 @@ type SaveToConfigArgs = {
   publisher?: Pick<Publisher, "address">;
   app?: Pick<App, "address">;
   release?: Pick<Release, "address">;
+  lastSubmittedVersionOnChain?: LastSubmittedVersionOnChain;
+  lastUpdatedVersionOnStore?: LastUpdatedVersionOnStore;
 };
 
 const ajv = new Ajv({ strictTuples: false });
@@ -283,7 +289,7 @@ export const extractCertFingerprint = async (aaptDir: string, apkPath: string): 
   }
 }
 
-export const writeToPublishDetails = async ({ publisher, app, release }: SaveToConfigArgs) => {
+export const writeToPublishDetails = async ({ publisher, app, release, lastSubmittedVersionOnChain, lastUpdatedVersionOnStore }: SaveToConfigArgs) => {
   const currentConfig = await loadPublishDetailsWithChecks();
 
   delete currentConfig.publisher.icon;
@@ -302,7 +308,9 @@ export const writeToPublishDetails = async ({ publisher, app, release }: SaveToC
       ...currentConfig.release,
       address: release?.address ?? currentConfig.release.address
     },
-    solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal
+    solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal,
+    lastSubmittedVersionOnChain: lastSubmittedVersionOnChain ?? currentConfig.lastSubmittedVersionOnChain,
+    lastUpdatedVersionOnStore: lastUpdatedVersionOnStore ?? currentConfig.lastUpdatedVersionOnStore
   };
 
   fs.writeFileSync(Constants.getConfigFilePath(), dump(newConfig, {

@@ -10,12 +10,14 @@ import {
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
+import fs from "fs";
+import { createHash } from "crypto";
 import {
   Constants,
   getMetaplexInstance,
   showMessage
 } from "../../CliUtils.js";
-import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
+import { PublishDetails, loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
 
 type CreateReleaseCommandInput = {
   appMintAddress: string;
@@ -89,6 +91,7 @@ const createReleaseNft = async ({
       }
     }
   }
+  throw new Error("Unable to mint release NFT");
 };
 
 export const createReleaseCommand = async ({
@@ -102,28 +105,49 @@ export const createReleaseCommand = async ({
 }: CreateReleaseCommandInput) => {
   const connection = new Connection(url);
 
-  const { release, app, publisher } = await loadPublishDetailsWithChecks(buildToolsPath);
+  const config = await loadPublishDetailsWithChecks(buildToolsPath);
 
+  const apkEntry = config.release.files.find(
+    (asset: PublishDetails["release"]["files"][0]) => asset.purpose === "install"
+  )!;
+  const mediaBuffer = await fs.promises.readFile(apkEntry.uri);
+  const hash = createHash("sha256").update(mediaBuffer).digest("base64");
 
-  if (app.android_package != release.android_details.android_package) {
-    throw new Error("App package name and release package name do not match.\nApp release specifies " + app.android_package + " while release specifies " + release.android_details.android_package)
+  if (hash === config.lastSubmittedVersionOnChain.apk_hash) {
+    throw new Error(`The last created release used the same apk file.`);
+  }
+
+  if (config.release.android_details.version_code <= config.lastSubmittedVersionOnChain.version_code) {
+    throw new Error(`Each release NFT should have higher version code than previous minted release NFT.\nLast released version code is ${config.lastSubmittedVersionOnChain.version_code}.\nCurrent version code from apk file is ${config.release.android_details.version_code}`);
+  }
+
+  if (config.app.android_package != config.release.android_details.android_package) {
+    throw new Error("App package name and release package name do not match.\nApp release specifies " + config.app.android_package + " while release specifies " + config.release.android_details.android_package)
   }
 
   if (!dryRun) {
     const { releaseAddress, transactionSignature } = await createReleaseNft({
-      appMintAddress: app.address ?? appMintAddress,
+      appMintAddress: config.app.address ?? appMintAddress,
       connection,
       publisher: signer,
       releaseDetails: {
-        ...release,
+        ...config.release,
       },
-      appDetails: app,
-      publisherDetails: publisher,
+      appDetails: config.app,
+      publisherDetails: config.publisher,
       storageParams: storageParams,
       priorityFeeLamports: priorityFeeLamports,
     });
 
-    await writeToPublishDetails({ release: { address: releaseAddress }, });
+    await writeToPublishDetails(
+      {
+        release: { address: releaseAddress },
+        lastSubmittedVersionOnChain: {
+          address: releaseAddress,
+          version_code: config.release.android_details.version_code,
+          apk_hash: hash,
+        }
+      });
 
     return { releaseAddress, transactionSignature };
   }
