@@ -24,7 +24,15 @@ release:
     - purpose: icon
       uri: <<RELATIVE_PATH_TO_RELEASE_ICON>>
     - purpose: screenshot
-      uri: <<RELATIVE_PATH_TO_SCREENSHOT>>
+      uri: <<RELATIVE_PATH_TO_SCREENSHOT1>>
+    - purpose: screenshot
+      uri: <<RELATIVE_PATH_TO_SCREENSHOT2>>
+    - purpose: screenshot
+      uri: <<RELATIVE_PATH_TO_SCREENSHOT3>>
+    - purpose: screenshot
+      uri: <<RELATIVE_PATH_TO_SCREENSHOT4>>
+    - purpose: video
+      uri: <<RELATIVE_PATH_TO_VIDEO1>>
   files:
     - purpose: install
       uri: <<RELATIVE_PATH_TO_APK>>
