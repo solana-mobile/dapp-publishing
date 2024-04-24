@@ -61,7 +61,7 @@ export const publishUpdateCommand = async ({
   const appAddr = appMintAddress ?? appDetails.address;
   const releaseAddr = releaseMintAddress ?? releaseDetails.address;
 
-  if (releaseAddr === lastUpdatedVersionOnStore.address) {
+  if (lastUpdatedVersionOnStore != null && releaseAddr === lastUpdatedVersionOnStore.address) {
     throw new Error(`You've already submitted this version for review.`);
   }
 

@@ -11,7 +11,6 @@ import { debug, showMessage } from "../CliUtils.js";
 
 import type { Keypair } from "@solana/web3.js";
 import type { MetaplexFile } from "@metaplex-foundation/js";
-import { isMetaplexFile } from "@metaplex-foundation/js";
 import { loadPublishDetailsWithChecks } from "../config/PublishDetails.js";
 
 export const validateCommand = async ({

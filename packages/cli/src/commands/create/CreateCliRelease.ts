@@ -113,11 +113,11 @@ export const createReleaseCommand = async ({
   const mediaBuffer = await fs.promises.readFile(apkEntry.uri);
   const hash = createHash("sha256").update(mediaBuffer).digest("base64");
 
-  if (hash === config.lastSubmittedVersionOnChain.apk_hash) {
+  if (config.lastSubmittedVersionOnChain != null && hash === config.lastSubmittedVersionOnChain.apk_hash) {
     throw new Error(`The last created release used the same apk file.`);
   }
 
-  if (config.release.android_details.version_code <= config.lastSubmittedVersionOnChain.version_code) {
+  if (config.lastSubmittedVersionOnChain != null && config.release.android_details.version_code <= config.lastSubmittedVersionOnChain.version_code) {
     throw new Error(`Each release NFT should have higher version code than previous minted release NFT.\nLast released version code is ${config.lastSubmittedVersionOnChain.version_code}.\nCurrent version code from apk file is ${config.release.android_details.version_code}`);
   }
 

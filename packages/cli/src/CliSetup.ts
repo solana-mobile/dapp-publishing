@@ -310,7 +310,7 @@ publishCommand
            }) => {
       await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
-        await checkSubmissionNetwork(url);
+        checkSubmissionNetwork(url);
 
         const config = await loadPublishDetails(Constants.getConfigFilePath());
 
@@ -320,7 +320,7 @@ publishCommand
 
         const signer = parseKeypair(keypair);
         if (signer) {
-          if (hasAddressInConfig(config.lastUpdatedVersionOnStore)) {
+          if (config.lastUpdatedVersionOnStore != null && config.lastSubmittedVersionOnChain.address != null) {
               await publishUpdateCommand({
                 appMintAddress: appMintAddress,
                 releaseMintAddress: releaseMintAddress,
@@ -397,7 +397,7 @@ publishCommand
            }) => {
       await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
-        await checkSubmissionNetwork(url);
+        checkSubmissionNetwork(url);
 
         const config = await loadPublishDetails(Constants.getConfigFilePath())
 
@@ -467,7 +467,7 @@ publishCommand
            }) => {
       await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
-        await checkSubmissionNetwork(url);
+        checkSubmissionNetwork(url);
 
         const config = await loadPublishDetails(Constants.getConfigFilePath())
 
@@ -530,7 +530,7 @@ publishCommand
     ) => {
       await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
-        await checkSubmissionNetwork(url);
+        checkSubmissionNetwork(url);
 
         const config = await loadPublishDetails(Constants.getConfigFilePath())
 

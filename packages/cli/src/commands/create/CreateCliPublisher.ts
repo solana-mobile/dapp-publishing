@@ -97,4 +97,6 @@ export const createPublisherCommand = async ({
 
     return { publisherAddress, transactionSignature };
   }
+
+  return { publisherAddress: "", transactionSignature: "" };
 };
