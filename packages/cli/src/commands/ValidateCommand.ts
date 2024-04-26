@@ -36,7 +36,6 @@ export const validateCommand = async ({
 
   try {
     validatePublisher(publisherJson);
-    console.info(`Publisher JSON valid!`);
   } catch (e) {
     const errorMsg = (e as Error | null)?.message ?? "";
     showMessage(
@@ -55,7 +54,6 @@ export const validateCommand = async ({
 
   try {
     validateApp(appJson);
-    console.info(`App JSON valid!`);
   } catch (e) {
     const errorMsg = (e as Error | null)?.message ?? "";
     showMessage(
@@ -86,7 +84,6 @@ export const validateCommand = async ({
 
   try {
     validateRelease(JSON.parse(objStringified));
-    console.info(`Release JSON valid!`);
   } catch (e) {
     const errorMsg = (e as Error | null)?.message ?? "";
     showMessage(
