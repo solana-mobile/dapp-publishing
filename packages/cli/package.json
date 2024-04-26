@@ -34,9 +34,9 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "devDependencies": {
-    "@metaplex-foundation/js": "0.20.0",
     "@jest/globals": "^29.5.0",
     "@jest/types": "^29.5.0",
+    "@metaplex-foundation/js": "0.20.0",
     "@swc/jest": "^0.2.26",
     "@types/commander": "^2.12.2",
     "@types/debug": "^4.1.7",
@@ -64,6 +64,7 @@
     "dotenv": "^16.0.3",
     "esm": "^3.2.25",
     "generate-schema": "^2.6.0",
+    "get-video-dimensions": "^1.0.0",
     "image-size": "^1.0.2",
     "js-yaml": "^4.1.0",
     "semver": "^7.3.8",

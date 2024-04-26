@@ -9,6 +9,7 @@ import { Constants, mintNft } from "../CoreUtils.js";
 import * as util from "util";
 import { metaplexFileReplacer, validateRelease } from "../validate/CoreValidation.js";
 import { imageSize } from "image-size";
+import getVideoDimensions from "get-video-dimensions";
 
 import type { Keypair, PublicKey } from "@solana/web3.js";
 import type {
@@ -46,14 +47,25 @@ const getFileMetadata = async (item: Media | File) => {
 };
 
 const getMediaMetadata = async (item: Media) => {
-  const size = await runImgSize(item.uri ?? "");
   const metadata = await getFileMetadata(item);
 
-  return {
-    ...metadata,
-    width: size?.width ?? 0,
-    height: size?.height ?? 0,
-  };
+  if (item.purpose == "screenshot" || item.purpose == "icon") {
+    const size = await runImgSize(item.uri ?? "");
+
+    return {
+      ...metadata,
+      width: size?.width ?? 0,
+      height: size?.height ?? 0,
+    };
+  } else {
+    const size = await getVideoDimensions(item.uri ?? "");
+
+    return {
+      ...metadata,
+      width: size?.width ?? 0,
+      height: size?.height ?? 0,
+    };
+  }
 };
 
 export const createReleaseJson = async (
