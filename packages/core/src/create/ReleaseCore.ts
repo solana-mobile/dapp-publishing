@@ -5,7 +5,7 @@ import mime from "mime";
 import debugModule from "debug";
 import type { MetaplexFile } from "@metaplex-foundation/js";
 import { toMetaplexFile } from "@metaplex-foundation/js";
-import { Constants, mintNft, truncateAddress } from "../CoreUtils.js";
+import { Constants, mintNft } from "../CoreUtils.js";
 import * as util from "util";
 import { metaplexFileReplacer, validateRelease } from "../validate/CoreValidation.js";
 import { imageSize } from "image-size";
@@ -18,7 +18,6 @@ import type {
   Publisher,
   Release,
 } from "../types.js";
-import { str } from "ajv";
 
 const runImgSize = util.promisify(imageSize);
 const debug = debugModule("RELEASE");

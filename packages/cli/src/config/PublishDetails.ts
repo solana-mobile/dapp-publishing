@@ -137,11 +137,7 @@ export const loadPublishDetailsWithChecks = async (
   )
 
   if (previewMediaFiles.length < 4) {
-    showMessage(
-      "Preview media requirements changing in version 0.9.0",
-      `At least 4 screenshots or videos are required for publishing a new release. Found only ${previewMediaFiles.length}`,
-      "warning"
-    )
+    throw new Error(`At least 4 screenshots or videos are required for publishing a new release. Found only ${previewMediaFiles.length}`)
   }
 
   validateLocalizableResources(config);
