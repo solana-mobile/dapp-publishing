@@ -3,7 +3,7 @@ import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
 import {
-  BundlrStorageDriver,
+  IrysStorageDriver,
   keypairIdentity,
   Metaplex,
 } from "@metaplex-foundation/js";
@@ -175,16 +175,16 @@ export const getMetaplexInstance = (
     const bucketPlugin = awsStorage(awsClient, s3Mgr.s3Config.bucketName);
     metaplex.use(bucketPlugin);
   } else {
-    const bundlrStorageDriver = isDevnet
-      ? new BundlrStorageDriver(metaplex, {
+    const irysStorageDriver = isDevnet
+      ? new IrysStorageDriver(metaplex, {
         address: "https://turbo.ardrive.dev",
         providerUrl: Constants.DEFAULT_RPC_DEVNET,
       })
-      : new BundlrStorageDriver(metaplex, {
+      : new IrysStorageDriver(metaplex, {
         address: "https://turbo.ardrive.io",
       });
 
-    metaplex.storage().setDriver(bundlrStorageDriver);
+    metaplex.storage().setDriver(irysStorageDriver);
   }
 
   metaplex.storage().setDriver(
