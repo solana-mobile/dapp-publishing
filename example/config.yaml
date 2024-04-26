@@ -24,8 +24,6 @@ release:
     - purpose: icon
       uri: ./media/release_icon.png
     - purpose: screenshot
-      uri: ./media/app_screenshot.png
-    - purpose: screenshot
       uri: ./media/app_screenshot1.png
     - purpose: screenshot
       uri: ./media/app_screenshot2.png
@@ -35,7 +33,7 @@ release:
       uri: ./media/app_screenshot4.png
   files:
     - purpose: install
-      uri: ./files/app-debug.apk
+      uri: ./files/app-release.apk
   catalog:
     en-US:
       name: This is a single release
@@ -44,5 +42,5 @@ release:
       new_in_version: Something new in this version
       saga_features: Some information about saga specific features
 solana_mobile_dapp_publisher_portal:
-  google_store_package: com.company.dapp.otherpkg
+  google_store_package: com.solanamobile.cutekitten.gps
   testing_instructions: Here are some steps informing Solana Mobile of how to test this dapp. You can specify multiple lines of instructions. For example, if a login is needed, you would add those details here.
