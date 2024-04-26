@@ -117,6 +117,14 @@ export const dryRunSuccessMessage = () => {
   showMessage("Dry run", "Dry run was successful", "standard")
 }
 
+export const showNetworkWarningIfApplicable = (rpcUrl: string) => {
+  if (isDevnet(rpcUrl)) {
+    showMessage("Devnet Mode", "Running on Devnet", "warning")
+  } else if (isTestnet(rpcUrl)) {
+    showMessage("Testnet Mode", "Running on Testnet", "warning")
+  }
+}
+
 export const showMessage = (
   titleMessage = "",
   contentMessage = "",

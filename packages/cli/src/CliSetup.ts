@@ -14,7 +14,8 @@ import {
   dryRunSuccessMessage,
   generateNetworkSuffix,
   parseKeypair,
-  showMessage
+  showMessage,
+  showNetworkWarningIfApplicable
 } from "./CliUtils.js";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 import * as dotenv from "dotenv";
@@ -104,6 +105,7 @@ export const createPublisherCliCmd = createCliCmd
   .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
   .action(async ({ keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
+      showNetworkWarningIfApplicable(url)
       latestReleaseMessage();
       await checkForSelfUpdate();
 
@@ -141,6 +143,7 @@ export const createAppCliCmd = createCliCmd
   .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
   .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
+      showNetworkWarningIfApplicable(url)
       latestReleaseMessage();
       await checkForSelfUpdate();
 
@@ -194,6 +197,7 @@ export const createReleaseCliCmd = createCliCmd
   .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
   .action(async ({ appMintAddress, keypair, url, dryRun, buildToolsPath, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
+        showNetworkWarningIfApplicable(url)
         latestReleaseMessage();
         await checkForSelfUpdate();
 
