@@ -11,9 +11,9 @@ app:
   address: ''
   android_package: com.solanamobile.cutekittens
   urls:
-    license_url: https://cdn.org/license.html
-    copyright_url: https://cdn.org/copyright.html
-    privacy_policy_url: https://cdn.org/privacy.html
+    license_url: https://solanamobile.com/dapp-store-tos
+    copyright_url: https://solanamobile.com/dapp-store-tos
+    privacy_policy_url: https://solanamobile.com/privacy-policy
     website: https://solanamobile.com
   media:
     - purpose: icon
