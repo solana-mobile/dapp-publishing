@@ -5,7 +5,7 @@ publisher:
   email: hello@solanamobile.com
   media:
     - purpose: icon
-      uri: ./media/publisher_icon.jpeg
+      uri: ./media/publisher_icon.png
 app:
   name: Cute Kittens
   address: ''
@@ -17,20 +17,22 @@ app:
     website: https://solanamobile.com
   media:
     - purpose: icon
-      uri: ./media/app_icon.jpeg
+      uri: ./media/app_icon.png
 release:
   address: ''
   media:
     - purpose: icon
       uri: ./media/release_icon.png
     - purpose: screenshot
-      uri: ./media/app_screenshot1.png
+      uri: ./media/screenshot_1.png
+    - purpose: video
+      uri: ./media/demo.mp4
     - purpose: screenshot
-      uri: ./media/app_screenshot2.png
+      uri: ./media/screenshot_2.png
     - purpose: screenshot
-      uri: ./media/app_screenshot3.png
+      uri: ./media/screenshot_3.png
     - purpose: screenshot
-      uri: ./media/app_screenshot4.png
+      uri: ./media/screenshot_4.png
   files:
     - purpose: install
       uri: ./files/app-release.apk
