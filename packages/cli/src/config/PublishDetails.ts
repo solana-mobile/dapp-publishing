@@ -159,7 +159,7 @@ export const loadPublishDetailsWithChecks = async (
   for (const video of videos) {
     const mediaPath = path.join(process.cwd(), video.uri);
     if (await checkVideoSize(mediaPath)) {
-      throw new Error(`Video ${mediaPath} must be at least 1080px in width and height.`);
+      throw new Error(`Video ${mediaPath} must be at least 720px in width and height.`);
     }
   }
 
@@ -249,7 +249,7 @@ const checkScreenshotSize = async (imagePath: string): Promise<boolean> => {
 const checkVideoSize = async (imagePath: string): Promise<boolean> => {
   const size = await getVideoDimensions(imagePath);
 
-  return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
+  return (size?.width ?? 0) < 720 || (size?.height ?? 0) < 720;
 }
 
 
