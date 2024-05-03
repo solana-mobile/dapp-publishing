@@ -95,6 +95,9 @@ importers:
       generate-schema:
         specifier: ^2.6.0
         version: 2.6.0
+      get-video-dimensions:
+        specifier: ^1.0.0
+        version: 1.0.0
       image-size:
         specifier: ^1.0.2
         version: 1.0.2
@@ -196,6 +199,9 @@ importers:
       '@types/node-fetch':
         specifier: ^2.6.2
         version: 2.6.2
+      get-video-dimensions:
+        specifier: ^1.0.0
+        version: 1.0.0
       json-schema-to-typescript:
         specifier: ^11.0.2
         version: 11.0.2
@@ -3358,7 +3364,6 @@ packages:
 
   /any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
-    dev: true
 
   /anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
@@ -5119,6 +5124,11 @@ packages:
       get-intrinsic: 1.2.1
     dev: true
 
+  /get-video-dimensions@1.0.0:
+    resolution: {integrity: sha512-ceq/GQySbquAdStqoejWWWCqBk8bDejcR6/0CbFUlXNAPBrqDMDKZVmGHU0PpzsK0SPYhX2jd/8tkAsbkUF4tw==}
+    dependencies:
+      mz: 1.3.0
+
   /glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -6517,6 +6527,13 @@ packages:
   /mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
 
+  /mz@1.3.0:
+    resolution: {integrity: sha512-x+R7YSsEySSpV5uEB+C47JTmxv+YKKNsW3W+hjvq8NbLn8ntLgYXGrR5RjQ3Fs0e7Chw8Rp/1e5eo0n5LP76cw==}
+    dependencies:
+      native-or-bluebird: 1.2.0
+      thenify: 3.3.1
+      thenify-all: 1.6.0
+
   /mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
     dependencies:
@@ -6524,6 +6541,10 @@ packages:
       object-assign: 4.1.1
       thenify-all: 1.6.0
     dev: true
+
+  /native-or-bluebird@1.2.0:
+    resolution: {integrity: sha512-0SH8UubxDfe382eYiwmd12qxAbiWGzlGZv6CkMA+DPojWa/Y0oH4hE0lRtFfFgJmPQFyKXeB8XxPbZz6TvvKaQ==}
+    deprecated: '''native-or-bluebird'' is deprecated. Please use ''any-promise'' instead.'
 
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
@@ -7567,13 +7588,11 @@ packages:
     engines: {node: '>=0.8'}
     dependencies:
       thenify: 3.3.1
-    dev: true
 
   /thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
     dependencies:
       any-promise: 1.3.0
-    dev: true
 
   /through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}

@@ -5,44 +5,50 @@ publisher:
   email: hello@solanamobile.com
   media:
     - purpose: icon
-      uri: ./media/publisher_icon.jpeg
+      uri: ./media/publisher_icon.png
 app:
   name: Cute Kittens
   address: ''
   android_package: com.solanamobile.cutekittens
   urls:
-    license_url: https://cdn.org/license.html
-    copyright_url: https://cdn.org/copyright.html
-    privacy_policy_url: https://cdn.org/privacy.html
+    license_url: https://solanamobile.com/dapp-store-tos
+    copyright_url: https://solanamobile.com/dapp-store-tos
+    privacy_policy_url: https://solanamobile.com/privacy-policy
     website: https://solanamobile.com
   media:
     - purpose: icon
-      uri: ./media/app_icon.jpeg
+      uri: ./media/app_icon.png
 release:
   address: ''
   media:
     - purpose: icon
       uri: ./media/release_icon.png
     - purpose: screenshot
-      uri: ./media/app_screenshot.png
+      uri: ./media/screenshot_1.png
+    - purpose: video
+      uri: ./media/demo.mp4
     - purpose: screenshot
-      uri: ./media/app_screenshot1.png
+      uri: ./media/screenshot_2.png
     - purpose: screenshot
-      uri: ./media/app_screenshot2.png
+      uri: ./media/screenshot_3.png
     - purpose: screenshot
-      uri: ./media/app_screenshot3.png
-    - purpose: screenshot
-      uri: ./media/app_screenshot4.png
+      uri: ./media/screenshot_4.png
   files:
     - purpose: install
-      uri: ./files/app-debug.apk
+      uri: ./files/app-release.apk
   catalog:
     en-US:
-      name: This is a single release
-      short_description: A short description
+      name: Cute Kitten
+      short_description: Stories about cat
       long_description: Some wonderful release notes, in long-form
       new_in_version: Something new in this version
       saga_features: Some information about saga specific features
+    fr-Fr:
+      name: App Name (in French)
+      short_description: App description (in French)
+      long_description: Some wonderful release notes, in long-form (in French)
+      new_in_version: Something new in this version (in French)
+      saga_features: Some information about saga specific features (in French)
 solana_mobile_dapp_publisher_portal:
-  google_store_package: com.company.dapp.otherpkg
+  google_store_package: com.solanamobile.cutekitten.gps
   testing_instructions: Here are some steps informing Solana Mobile of how to test this dapp. You can specify multiple lines of instructions. For example, if a login is needed, you would add those details here.

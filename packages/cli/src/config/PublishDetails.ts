@@ -18,6 +18,7 @@ import { Constants, showMessage } from "../CliUtils.js";
 import util from "util";
 import { imageSize } from "image-size";
 import { exec } from "child_process";
+import getVideoDimensions from "get-video-dimensions";
 
 const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
@@ -125,19 +126,45 @@ export const loadPublishDetailsWithChecks = async (
   }
 
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
-    const imagePath = path.join(process.cwd(), item.uri);
-    if (!fs.existsSync(imagePath) || !checkImageExtension(imagePath)) {
-      throw new Error(`Invalid media path or file type: ${item.uri}. Please ensure the file is a jpeg, png, or webp file.`);
+    const mediaPath = path.join(process.cwd(), item.uri);
+    if (!fs.existsSync(mediaPath)) {
+      throw new Error(`File doesnt exist: ${item.uri}.`)
+    }
+
+    if (item.purpose == "screenshot" && !checkImageExtension(mediaPath)) {
+      throw new Error(`Please ensure the file ${item.uri} is a jpeg, png, or webp file.`)
+    }
+
+    if (item.purpose == "video" && !checkVideoExtension(mediaPath)) {
+      throw new Error(`Please ensure the file ${item.uri} is a mp4.`)
     }
   }
   );
 
-  const previewMediaFiles = config.release.media?.filter(
-    (asset: any) => asset.purpose === "screenshot" || asset.purpose === "video"
+  const screenshots = config.release.media?.filter(
+    (asset: any) => asset.purpose === "screenshot"
   )
 
-  if (previewMediaFiles.length < 4) {
-    throw new Error(`At least 4 screenshots or videos are required for publishing a new release. Found only ${previewMediaFiles.length}`)
+  for (const item of screenshots) {
+    const mediaPath = path.join(process.cwd(), item.uri);
+    if (await checkScreenshotSize(mediaPath)) {
+      throw new Error(`Screenshot ${mediaPath} must be at least 1080px in width and height.`);
+    }
+  }
+
+  const videos = config.release.media?.filter(
+    (asset: any) => asset.purpose === "video"
+  )
+
+  for (const video of videos) {
+    const mediaPath = path.join(process.cwd(), video.uri);
+    if (await checkVideoSize(mediaPath)) {
+      throw new Error(`Video ${mediaPath} must be at least 720px in width and height.`);
+    }
+  }
+
+  if (screenshots.length + videos.length < 4) {
+    throw new Error(`At least 4 screenshots or videos are required for publishing a new release. Found only ${screenshots.length + videos.length}`)
   }
 
   validateLocalizableResources(config);
@@ -174,6 +201,13 @@ const checkImageExtension = (uri: string): boolean => {
   );
 };
 
+const checkVideoExtension = (uri: string): boolean => {
+  const fileExt = path.extname(uri).toLowerCase();
+  return (
+    fileExt == ".mp4"
+  );
+};
+
 /**
  * We need to pre-check some things in the localized resources before we move forward
  */
@@ -205,6 +239,19 @@ const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
 
   return size?.width != size?.height || (size?.width ?? 0) != 512;
 };
+
+const checkScreenshotSize = async (imagePath: string): Promise<boolean> => {
+  const size = await runImgSize(imagePath);
+
+  return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
+}
+
+const checkVideoSize = async (imagePath: string): Promise<boolean> => {
+  const size = await getVideoDimensions(imagePath);
+
+  return (size?.width ?? 0) < 720 || (size?.height ?? 0) < 720;
+}
+
 
 const getAndroidDetails = async (
   aaptDir: string,
