@@ -359,7 +359,7 @@ const checkAbis = async (apkPath: string) => {
         ... amV7libs.length > 0 ? [`\narmeabi-v7a:\n` + amV7libs] : [],
         ... x86libs.length > 0 ? [`\nx86:\n` + x86libs] : [],
         ... x8664libs.length > 0 ? [`\nx86_64:\n` + x8664libs] : [],
-        `\n\nAlthough your app might work, these library files are unused and increase the size of apk file making the user experience worse while installing/updating your app.`,
+        `\n\nAlthough your app works fine on Saga, these library files are unused and increase the size of apk file making the download and update time longer for your app.`,
         `\n\nSee https://developer.android.com/games/optimize/64-bit#build-with-64-bit for how to optimize your app.`,
       ].join('\n')
     
