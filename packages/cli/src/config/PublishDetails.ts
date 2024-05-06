@@ -325,6 +325,8 @@ const getAndroidDetails = async (
       );
     }
 
+    checkAbis(apkPath);
+
     return {
       android_package: appPackage?.[1] ?? "",
       min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
@@ -342,6 +344,35 @@ const getAndroidDetails = async (
     }
   }
 };
+
+const checkAbis = async (apkPath: string) => {
+  try {
+    const { stdout } = await runExec(`zipinfo -s ${apkPath} | grep \.so$`);
+    const amV7libs = [...stdout.matchAll(/lib\/armeabi-v7a\/(.*)/g)].flatMap(permission => permission[1]);
+    const x86libs = [...stdout.matchAll(/lib\/x86\/(.*)/g)].flatMap(permission => permission[1]);
+    const x8664libs = [...stdout.matchAll(/lib\/x86_64\/(.*)/g)].flatMap(permission => permission[1]);
+    if (amV7libs.length > 0 || x86libs.length > 0 || x8664libs.length > 0) {
+
+      const messages = [
+        `Solana dApp Store only supports arm64-v8a abi.`,
+        `Your apk file contains following unsupported abis`,
+        ... amV7libs.length > 0 ? [`\narmeabi-v7a:\n` + amV7libs] : [],
+        ... x86libs.length > 0 ? [`\nx86:\n` + x86libs] : [],
+        ... x8664libs.length > 0 ? [`\nx86_64:\n` + x8664libs] : [],
+        `\n\nAlthough your app might work, these library files are unused and increase the size of apk file making the user experience worse while installing/updating your app.`,
+        `\n\nSee https://developer.android.com/games/optimize/64-bit#build-with-64-bit for how to optimize your app.`,
+      ].join('\n')
+    
+      showMessage(
+        `Unsupported files found in apk`,
+        messages,
+        `warning`
+      )
+    }
+  } catch (e) {
+    // Ignore this error.
+  }
+}
 
 export const extractCertFingerprint = async (aaptDir: string, apkPath: string): Promise<string> => {
   const { stdout } = await runExec(`${aaptDir}/apksigner verify --print-certs -v "${apkPath}"`);

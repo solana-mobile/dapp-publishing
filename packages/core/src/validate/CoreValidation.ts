@@ -1,11 +1,9 @@
-import fs from "fs";
 import Ajv from "ajv";
 
 import type {
   AppMetadata,
   MetaplexFileReleaseJsonMetadata,
   PublisherMetadata,
-  ReleaseJsonMetadata
 } from "../types.js";
 
 // eslint-disable-next-line require-extensions/require-extensions
