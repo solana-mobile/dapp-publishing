@@ -38,7 +38,7 @@ const AaptPrefixes = {
   packagePrefix: "package: name=",
   verCodePrefix: "versionCode=",
   verNamePrefix: "versionName=",
-  sdkPrefix: "sdkVersion:",
+  sdkPrefix: "(?:minSdk|sdk)Version:",
   debuggableApkPrefix: "application-debuggable",
   localePrefix: "locales: ",
 };
