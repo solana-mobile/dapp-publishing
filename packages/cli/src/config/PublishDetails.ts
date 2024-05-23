@@ -272,7 +272,7 @@ const getAndroidDetails = async (
     const minSdk = new RegExp(
       AaptPrefixes.sdkPrefix + AaptPrefixes.quoteRegex
     ).exec(stdout);
-    const permissions = [...stdout.matchAll(/uses-permission: name='(.*)'/g)].flatMap(permission => permission[1]);
+    const permissions = [...stdout.matchAll(/(?:uses-permission|uses-permission-sdk-23): name='([^']*)'/g)].flatMap(permission => permission[1]);
     const locales = new RegExp(
       AaptPrefixes.localePrefix + AaptPrefixes.quoteNonLazyRegex
     ).exec(stdout);
