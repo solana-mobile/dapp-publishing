@@ -77,6 +77,7 @@ const createReleaseNft = async ({
         publisher,
         releaseMintAddress,
       ], {
+        commitment: "confirmed",
         minContextSlot: blockhash.context.slot,
       });
       return { releaseAddress: releaseMintAddress.publicKey.toBase58(), transactionSignature: txSig };
@@ -103,7 +104,13 @@ export const createReleaseCommand = async ({
   storageParams,
   priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateReleaseCommandInput) => {
-  const connection = new Connection(url);
+  const connection = new Connection(
+    url,
+    {
+      commitment: "confirmed",
+      disableRetryOnRateLimit: true,
+    }
+  );
 
   const config = await loadPublishDetailsWithChecks(buildToolsPath);
 

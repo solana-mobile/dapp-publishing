@@ -48,6 +48,7 @@ const createPublisherNft = async (
         publisher,
         mintAddress,
       ], {
+        commitment: "confirmed",
         minContextSlot: blockhash.context.slot
       });
       return { publisherAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig};
@@ -78,7 +79,13 @@ export const createPublisherCommand = async ({
   storageParams: string;
   priorityFeeLamports: number;
 }) => {
-  const connection = new Connection(url);
+  const connection = new Connection(
+    url,
+    {
+      commitment: "confirmed",
+      disableRetryOnRateLimit: true,
+    }
+  );
 
   const { publisher: publisherDetails } = await loadPublishDetailsWithChecks();
 
