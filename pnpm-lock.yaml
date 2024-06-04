@@ -63,7 +63,7 @@ importers:
         specifier: ^0.20.0
         version: 0.20.0(arweave@1.14.1)
       '@solana-mobile/dapp-store-publishing-tools':
-        specifier: workspace:0.9.0
+        specifier: workspace:0.9.1
         version: link:../core
       '@solana/web3.js':
         specifier: 1.68.0
