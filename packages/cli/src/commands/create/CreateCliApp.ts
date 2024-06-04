@@ -57,6 +57,7 @@ const createAppNft = async (
         publisher,
         mintAddress,
       ], {
+        commitment: "confirmed",
         minContextSlot: blockhash.context.slot
       });
       return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig };
@@ -91,7 +92,13 @@ export const createAppCommand = async ({
   storageParams,
   priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateAppCommandInput) => {
-  const connection = new Connection(url);
+  const connection = new Connection(
+    url,
+    {
+      commitment: "confirmed",
+      disableRetryOnRateLimit: true,
+    }
+  );
 
   const { app: appDetails, publisher: publisherDetails } =
     await loadPublishDetailsWithChecks();
