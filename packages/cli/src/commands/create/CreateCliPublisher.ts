@@ -62,7 +62,6 @@ export const createPublisherCommand = async ({
     url,
     {
       commitment: "confirmed",
-      disableRetryOnRateLimit: true,
     }
   );
 

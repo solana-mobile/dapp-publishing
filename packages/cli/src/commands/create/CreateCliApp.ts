@@ -75,7 +75,6 @@ export const createAppCommand = async ({
     url,
     {
       commitment: "confirmed",
-      disableRetryOnRateLimit: true,
     }
   );
 

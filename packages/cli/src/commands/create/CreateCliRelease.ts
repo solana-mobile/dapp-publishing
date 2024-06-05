@@ -88,7 +88,6 @@ export const createReleaseCommand = async ({
     url,
     {
       commitment: "confirmed",
-      disableRetryOnRateLimit: true,
     }
   );
 
