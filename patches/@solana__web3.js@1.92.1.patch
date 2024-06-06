@@ -1,0 +1,13 @@
+diff --git a/lib/index.cjs.js b/lib/index.cjs.js
+index 013925eb21352fb560e87229ae33de94ff83115a..42ca54b5023ee9731bf8f35cb3cb49276f79dfba 100644
+--- a/lib/index.cjs.js
++++ b/lib/index.cjs.js
+@@ -6587,7 +6587,7 @@ class Connection {
+         let currentBlockHeight = await checkBlockHeight();
+         if (done) return;
+         while (currentBlockHeight <= lastValidBlockHeight) {
+-          await sleep(1000);
++          await sleep(5000);
+           if (done) return;
+           currentBlockHeight = await checkBlockHeight();
+           if (done) return;
