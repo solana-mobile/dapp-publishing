@@ -11,7 +11,6 @@ export async function sendAndConfirmTransaction(
 ): ReturnType<TransactionBuilder["sendAndConfirm"]> {
   for (let i = 0; i < 10; i++) {
     try {
-      console.log("sending transaction...");
       return await builder.sendAndConfirm(metaplex);
     } catch (e: unknown) {
       if (isTransientError(e)) {
