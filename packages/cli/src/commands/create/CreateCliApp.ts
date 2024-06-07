@@ -4,15 +4,14 @@ import {
   Connection,
   Keypair,
   PublicKey,
-  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 
 import {
   Constants,
   getMetaplexInstance,
-  showMessage,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
+import { sendAndConfirmTransaction } from "../utils.js";
 
 const createAppNft = async (
   {
@@ -46,33 +45,13 @@ const createAppNft = async (
   );
 
   console.info(`App NFT data upload complete\nSigning transaction now`);
-  const maxTries = 8;
-  for (let i = 1; i <= maxTries; i++) {
-    try {
-      const blockhash = await connection.getLatestBlockhashAndContext();
-      const tx = txBuilder.toTransaction(blockhash.value);
-      tx.sign(mintAddress, publisher);
 
-      const txSig = await sendAndConfirmTransaction(connection, tx, [
-        publisher,
-        mintAddress,
-      ], {
-        commitment: "confirmed",
-        minContextSlot: blockhash.context.slot
-      });
-      return { appAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig };
-    } catch (e) {
-      const errorMsg = (e as Error | null)?.message ?? "";
-      if (i == maxTries) {
-        showMessage("Transaction Failure", errorMsg, "error");
-        process.exit(-1)
-      } else {
-        const retryMsg = errorMsg + "\nWill Retry minting app NFT."
-        showMessage("Transaction Failure", retryMsg, "standard");
-      }
-    }
-  }
-  throw new Error("Unable to mint app NFT");
+  const { response } = await sendAndConfirmTransaction(metaplex, txBuilder);
+
+  return {
+    appAddress: mintAddress.publicKey.toBase58(),
+    transactionSignature: response.signature,
+  };
 };
 
 type CreateAppCommandInput = {
@@ -96,7 +75,6 @@ export const createAppCommand = async ({
     url,
     {
       commitment: "confirmed",
-      disableRetryOnRateLimit: true,
     }
   );
 

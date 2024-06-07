@@ -3,15 +3,14 @@ import { createPublisher } from "@solana-mobile/dapp-store-publishing-tools";
 import {
   Connection,
   Keypair,
-  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 
 import {
   Constants,
   getMetaplexInstance,
-  showMessage,
 } from "../../CliUtils.js";
 import { loadPublishDetailsWithChecks, writeToPublishDetails } from "../../config/PublishDetails.js";
+import { sendAndConfirmTransaction } from "../utils.js";
 
 const createPublisherNft = async (
   {
@@ -37,33 +36,13 @@ const createPublisherNft = async (
   );
 
   console.info(`Publisher NFT data upload complete\nSigning transaction now`);
-  const maxTries = 8;
-  for (let i = 1; i <= maxTries; i++) {
-    try {
-      const blockhash = await connection.getLatestBlockhashAndContext();
-      const tx = txBuilder.toTransaction(blockhash.value);
-      tx.sign(mintAddress, publisher);
 
-      const txSig = await sendAndConfirmTransaction(connection, tx, [
-        publisher,
-        mintAddress,
-      ], {
-        commitment: "confirmed",
-        minContextSlot: blockhash.context.slot
-      });
-      return { publisherAddress: mintAddress.publicKey.toBase58(), transactionSignature: txSig};
-    } catch (e) {
-      const errorMsg = (e as Error | null)?.message ?? "";
-      if (i == maxTries) {
-        showMessage("Transaction Failure", errorMsg, "error");
-        process.exit(-1)
-      } else {
-        const retryMsg = errorMsg + "\nWill Retry minting publisher."
-        showMessage("Transaction Failure", retryMsg, "standard");
-      }
-    }
-  }
-  throw new Error("Unable to mint publisher NFT");
+  const { response } = await sendAndConfirmTransaction(metaplex, txBuilder);
+
+  return {
+    publisherAddress: mintAddress.publicKey.toBase58(),
+    transactionSignature: response.signature,
+  };
 };
 
 export const createPublisherCommand = async ({
@@ -83,7 +62,6 @@ export const createPublisherCommand = async ({
     url,
     {
       commitment: "confirmed",
-      disableRetryOnRateLimit: true,
     }
   );
 

@@ -29,5 +29,10 @@
     "prettier": "^2.7.1",
     "shx": "^0.3.4",
     "typescript": "^4.7.4"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@solana/web3.js@1.92.1": "patches/@solana__web3.js@1.92.1.patch"
+    }
   }
 }
