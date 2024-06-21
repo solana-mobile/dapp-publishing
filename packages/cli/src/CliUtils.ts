@@ -8,7 +8,8 @@ import {
   Metaplex,
 } from "@metaplex-foundation/js";
 import updateNotifier from "update-notifier";
-import cliPackage from "./package.json" assert { type: "json" };
+import { readFile } from 'fs/promises';
+const cliPackage = JSON.parse((await readFile(new URL("./package.json", import.meta.url))).toString());
 import boxen from "boxen";
 import ver from "semver";
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
