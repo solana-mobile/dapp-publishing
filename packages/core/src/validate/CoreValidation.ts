@@ -6,12 +6,10 @@ import type {
   PublisherMetadata,
 } from "../types.js";
 
-// eslint-disable-next-line require-extensions/require-extensions
-import publisherSchema from "../schemas/publisherJsonMetadata.json" assert { type: "json" };
-// eslint-disable-next-line require-extensions/require-extensions
-import appSchema from "../schemas/appJsonMetadata.json" assert { type: "json" };
-// eslint-disable-next-line require-extensions/require-extensions
-import releaseSchema from "../schemas/releaseJsonMetadata.json" assert { type: "json" };
+import { readFile } from 'fs/promises';
+const publisherSchema = JSON.parse((await readFile(new URL("../schemas/publisherJsonMetadata.json", import.meta.url))).toString());
+const appSchema = JSON.parse((await readFile(new URL("../schemas/appJsonMetadata.json", import.meta.url))).toString());
+const releaseSchema = JSON.parse((await readFile(new URL("../schemas/releaseJsonMetadata.json", import.meta.url))).toString());
 import { isMetaplexFile } from "@metaplex-foundation/js";
 
 export const metaplexFileReplacer = (k: any, v: any) => {

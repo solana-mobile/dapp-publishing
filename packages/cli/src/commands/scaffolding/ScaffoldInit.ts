@@ -1,7 +1,7 @@
 import yaml, { dump } from "js-yaml";
 
-// eslint-disable-next-line require-extensions/require-extensions
-import releaseSchema from "../../generated/config_obj.json" assert { type: "json" };
+import { readFile } from 'fs/promises';
+const releaseSchema = JSON.parse((await readFile(new URL("../../generated/config_obj.json", import.meta.url))).toString());
 import fs from "fs";
 import { Constants } from "../../CliUtils.js";
 
