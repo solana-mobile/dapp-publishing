@@ -54,36 +54,46 @@ export const checkMintedStatus = async (
   appAddr: string,
   releaseAddr: string
 ) => {
-  const results = await conn.getMultipleAccountsInfo([
-    new PublicKey(pubAddr),
-    new PublicKey(appAddr),
-    new PublicKey(releaseAddr),
-  ]);
+  for (let i = 0; i < 5; i++) {
+    const results = await conn.getMultipleAccountsInfo([
+      new PublicKey(pubAddr),
+      new PublicKey(appAddr),
+      new PublicKey(releaseAddr),
+    ]);
 
-  const isPublisherMinted = results[0] != undefined && results[0]?.lamports > 0
-  const isAppMinted = results[1] != undefined && results[1]?.lamports > 0
-  const isReleaseMinted = results[2] != undefined && results[2]?.lamports > 0
+    const isPublisherMinted = results[0] != undefined && results[0]?.lamports > 0
+    const isAppMinted = results[1] != undefined && results[1]?.lamports > 0
+    const isReleaseMinted = results[2] != undefined && results[2]?.lamports > 0
 
-  if (!isPublisherMinted || !isAppMinted || !isReleaseMinted) {
-    let errorMessage = ``
-  
-    if (!isPublisherMinted) {
-      errorMessage = errorMessage + `Publisher NFT fetch at address ${pubAddr} failed.\n`
+    if (isPublisherMinted && isAppMinted && isReleaseMinted) {
+      return
+    } else {
+      let errorMessage = ``
+      if (!isPublisherMinted) {
+        errorMessage = errorMessage + `Publisher NFT fetch at address ${pubAddr} failed.\n`
+      }
+      if (!isAppMinted) {
+        errorMessage = errorMessage + `App NFT fetch at address ${appAddr} failed.\n`
+      }
+      if (!isReleaseMinted) {
+        errorMessage = errorMessage + `Release NFT fetch at address ${releaseAddr} failed.\n`
+      }
+      if (i == 4) {
+        throw new Error(
+          `Expected Publisher :: ${pubAddr}, App :: ${appAddr} and Release :: ${releaseAddr} to be minted before submission.\n
+          but ${errorMessage}\n
+          Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.`
+        );
+      } else {
+        sleep(2000)
+      }
     }
-    if (!isAppMinted) {
-      errorMessage = errorMessage + `App NFT fetch at address ${appAddr} failed.\n`
-    }
-    if (!isReleaseMinted) {
-      errorMessage = errorMessage + `Release NFT fetch at address ${releaseAddr} failed.\n`
-    }
-  
-    throw new Error(
-      `Expected Publisher :: ${pubAddr}, App :: ${appAddr} and Release :: ${releaseAddr} to be minted before submission.\n
-      but ${errorMessage}\n
-      Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.`
-   );
   }
 };
+
+export const sleep = (ms: number):Promise<void> => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export const parseKeypair = (pathToKeypairFile: string) => {
   try {
@@ -93,7 +103,7 @@ export const parseKeypair = (pathToKeypairFile: string) => {
     showMessage(
       "KeyPair Error",
       "Something went wrong when attempting to retrieve the keypair at " +
-        pathToKeypairFile,
+      pathToKeypairFile,
       "error"
     );
   }

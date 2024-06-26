@@ -45,7 +45,13 @@ export const publishUpdateCommand = async ({
     return;
   }
 
-  const connection = new Connection(url);
+  const connection = new Connection(
+    url,
+    {
+      commitment: "confirmed",
+    }
+  );
+
   const {
     publisher: publisherDetails,
     app: appDetails,
