@@ -14,6 +14,7 @@ type PublishUpdateCommandInput = {
   compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
   critical: boolean;
+  alphaTest?: boolean;
 };
 
 export const publishUpdateCommand = async ({
@@ -25,6 +26,7 @@ export const publishUpdateCommand = async ({
   compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
   critical = false,
+  alphaTest,
 }: PublishUpdateCommandInput) => {
 
   showMessage(
@@ -83,6 +85,7 @@ export const publishUpdateCommand = async ({
       compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
       criticalUpdate: critical,
+      alphaTest,
     },
     dryRun
   );

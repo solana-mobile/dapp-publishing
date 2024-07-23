@@ -18,6 +18,8 @@ export const TICKET_PROPERTY_GOOGLE_PLAY_STORE_PACKAGE_NAME = "google_play_store
 export const TICKET_PROPERTY_POLICY_COMPLIANT = "complies_with_solana_dapp_store_policies"; // boolean
 export const TICKET_PROPERTY_REQUEST_UNIQUE_ID = "request_unique_id"; // string (32 base-10 digits)
 export const TICKET_PROPERTY_TESTING_INSTRUCTIONS = "testing_instructions"; // string
+export const TICKET_PROPERTY_ALPHA_TEST = "alpha_test"; // boolean
+export const TICKET_PROPERTY_ALPHA_TESTERS = "alpha_testers"; // string
 
 export const FORM_SUBMIT = "1464247f-6804-46e1-8114-952f372daa81";
 export const FORM_UPDATE = "87b4cbe7-957f-495c-a132-8b789678883d";

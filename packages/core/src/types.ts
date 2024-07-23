@@ -84,6 +84,7 @@ export type Release = {
 export type SolanaMobileDappPublisherPortal = {
   google_store_package: string;
   testing_instructions: string;
+  alpha_testers?: string;
 };
 
 export type LastSubmittedVersionOnChain = {

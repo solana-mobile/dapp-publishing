@@ -14,6 +14,7 @@ type PublishSubmitCommandInput = {
   dryRun: boolean;
   compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
+  alphaTest?: boolean;
 };
 
 export const publishSubmitCommand = async ({
@@ -24,6 +25,7 @@ export const publishSubmitCommand = async ({
   dryRun = false,
   compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
+  alphaTest
 }: PublishSubmitCommandInput) => {
   showMessage(
     `Publishing Estimates`,
@@ -74,6 +76,7 @@ export const publishSubmitCommand = async ({
       solanaMobileDappPublisherPortalDetails,
       compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
+      alphaTest,
     },
     dryRun
   );
