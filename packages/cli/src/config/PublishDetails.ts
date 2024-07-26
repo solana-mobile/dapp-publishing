@@ -181,16 +181,18 @@ export const loadPublishDetailsWithChecks = async (
   }
 
   const alpha_testers = config.solana_mobile_dapp_publisher_portal.alpha_testers;
-  for (const wallet of alpha_testers) {
-    try {
-      void new PublicKey(wallet.address);
-    } catch (e: unknown) {
-      throw new Error(`invalid alpha tester wallet address <${wallet}>`);
+  if (alpha_testers !== undefined) {
+    for (const wallet of alpha_testers) {
+      try {
+        void new PublicKey(wallet.address);
+      } catch (e: unknown) {
+        throw new Error(`invalid alpha tester wallet address <${wallet}>`);
+      }
     }
-  }
 
-  if (alpha_testers.size > 10) {
-    throw new Error(`Alpha testers are limited to 10 per app submission`);
+    if (alpha_testers.size > 10) {
+      throw new Error(`Alpha testers are limited to 10 per app submission`);
+    }
   }
 
   return config;

@@ -114,7 +114,7 @@ const createUpdateRequest = async (
     );
   }
 
-  if (solanaMobileDappPublisherPortalDetails.alpha_testers.length > 0) {
+  if (solanaMobileDappPublisherPortalDetails.alpha_testers !== undefined && solanaMobileDappPublisherPortalDetails.alpha_testers.length > 0) {
     request.fields.push({
       objectTypeId: TICKET_OBJECT_ID,
       name: TICKET_PROPERTY_ALPHA_TESTERS,
