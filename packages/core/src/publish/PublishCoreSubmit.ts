@@ -111,11 +111,11 @@ const createSubmitRequest = async (
     );
   }
 
-  if (solanaMobileDappPublisherPortalDetails.alpha_testers !== undefined) {
+  if (solanaMobileDappPublisherPortalDetails.alpha_testers.length > 0) {
     request.fields.push({
       objectTypeId: TICKET_OBJECT_ID,
       name: TICKET_PROPERTY_ALPHA_TESTERS,
-      value: solanaMobileDappPublisherPortalDetails.alpha_testers,
+      value: solanaMobileDappPublisherPortalDetails.alpha_testers.map(tester => tester.address).toString(),
     });
   }
 
