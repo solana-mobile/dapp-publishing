@@ -54,6 +54,10 @@ export const publishSubmitCommand = async ({
     lastUpdatedVersionOnStore: lastUpdatedVersionOnStore,
   } = await loadPublishDetailsWithChecks();
 
+  if (alphaTest && solanaMobileDappPublisherPortalDetails.alpha_testers == undefined) {
+    throw new Error(`Alpha test submission without specifying any testers.\nAdd field alpha_testers in your 'config.yaml' file.`)
+  }
+
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
