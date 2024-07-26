@@ -143,6 +143,15 @@ export const dryRunSuccessMessage = () => {
   showMessage("Dry run", "Dry run was successful", "standard")
 }
 
+export const alphaAppSubmissionMessage = () => {
+  showMessage(
+    "Alpha release", 
+    "Apps are not auto-reviewed on alpha track and are meant for internal testing only.\n" +
+    "Reach out to the mobile team contact to upgrade your alpha app to release.",
+    "warning"
+  )
+}
+
 export const showNetworkWarningIfApplicable = (rpcUrl: string) => {
   if (isDevnet(rpcUrl)) {
     showMessage("Devnet Mode", "Running on Devnet", "warning")

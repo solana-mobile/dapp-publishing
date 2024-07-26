@@ -11,6 +11,7 @@ import {
   checkForSelfUpdate,
   checkSubmissionNetwork,
   Constants,
+  alphaAppSubmissionMessage,
   dryRunSuccessMessage,
   generateNetworkSuffix,
   parseKeypair,
@@ -325,6 +326,10 @@ publishCommand
           throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
         }
 
+        if (alpha) {
+          alphaAppSubmissionMessage()
+        }
+
         const signer = parseKeypair(keypair);
         if (signer) {
           if (config.lastUpdatedVersionOnStore != null && config.lastSubmittedVersionOnChain.address != null) {
@@ -414,6 +419,10 @@ publishCommand
 
         if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
           throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
+        }
+
+        if (alpha) {
+          alphaAppSubmissionMessage()
         }
 
         const signer = parseKeypair(keypair);
