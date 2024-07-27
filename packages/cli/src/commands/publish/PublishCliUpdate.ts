@@ -93,8 +93,10 @@ export const publishUpdateCommand = async ({
     },
     dryRun
   );
-  await writeToPublishDetails(
-    {
-      lastUpdatedVersionOnStore: { address: releaseAddr }
-    });
+  if (!alphaTest) {
+    await writeToPublishDetails(
+      {
+        lastUpdatedVersionOnStore: { address: releaseAddr }
+      });
+  }
 };
