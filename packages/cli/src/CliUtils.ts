@@ -146,8 +146,8 @@ export const dryRunSuccessMessage = () => {
 export const alphaAppSubmissionMessage = () => {
   showMessage(
     "Alpha release", 
-    "Apps are not auto-reviewed on alpha track and are meant for internal testing only.\n" +
-    "Reach out to the mobile team contact to upgrade your alpha app to release.",
+    "Alpha releases are not reviewed on dApp store and are meant for internal testing only.\n" +
+    "Run the `npx dapp-store publish submit ...` command again without the `--alpha` param to publish the app",
     "warning"
   )
 }
