@@ -48,7 +48,23 @@ export const submitRequestToSolanaDappPublisherPortal = async (
   if (!dryRun) {
     await axios(config)
       .then((response) => {
-        console.info(`dApp publisher portal response:`, response.data);
+        const isAlphaObject = request.fields.find((obj: { objectTypeId: string, name: string; value: string}) => {
+          return obj.name === TICKET_PROPERTY_ALPHA_TEST
+        })
+
+        if (isAlphaObject !== undefined && isAlphaObject.value) {
+          const requestUniqueId = request.fields.find((obj: { objectTypeId: string, name: string; value: string}) => {
+            return obj.name === TICKET_PROPERTY_REQUEST_UNIQUE_ID
+          }).value
+          console.log(
+            `Your alpha submission has been received.\n` +
+            `It will not be reviewed or published to users.\n` + 
+            `Use nonce '${requestUniqueId}' to launch alpha app.\n` + 
+            `This can only be used on devices for which the genesis token was listed in your 'config.yaml'`
+          )
+        } else {
+          console.info(`dApp publisher portal response:`, response.data);
+        }
       })
       .catch((error) => {
         if (error.response) {
