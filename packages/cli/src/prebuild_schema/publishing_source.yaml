@@ -52,3 +52,8 @@ solana_mobile_dapp_publisher_portal:
   google_store_package: <<ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION_IF_DIFFERENT>>
   testing_instructions: >-
     <<TESTING_INSTRUCTIONS>>
+  alpha_testers: 
+    - address: <<genesis token wallet address>>
+      comment: <<Optional. For internal use only>>
+    - address: <<genesis token wallet address>>
+      comment: <<Optional. For internal use only>>

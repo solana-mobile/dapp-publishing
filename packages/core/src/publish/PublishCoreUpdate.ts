@@ -8,6 +8,8 @@ import {
   CONTACT_PROPERTY_WEBSITE,
   submitRequestToSolanaDappPublisherPortal,
   TICKET_OBJECT_ID,
+  TICKET_PROPERTY_ALPHA_TEST,
+  TICKET_PROPERTY_ALPHA_TESTERS,
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
   TICKET_PROPERTY_CRITICAL_UPDATE,
@@ -29,7 +31,8 @@ const createUpdateRequest = async (
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal,
   compliesWithSolanaDappStorePolicies: boolean,
   requestorIsAuthorized: boolean,
-  criticalUpdate: boolean
+  criticalUpdate: boolean,
+  alphaTest?: boolean
 ) => {
   const { attestationPayload, requestUniqueId } = await createAttestationPayload(connection, sign);
 
@@ -93,6 +96,14 @@ const createUpdateRequest = async (
     );
   }
 
+  if (alphaTest) {
+    request.fields.push({
+      objectTypeId: TICKET_OBJECT_ID,
+      name: TICKET_PROPERTY_ALPHA_TEST,
+      value: true,
+    });
+  }
+
   if (solanaMobileDappPublisherPortalDetails.testing_instructions !== undefined) {
     request.fields.push(
       {
@@ -101,6 +112,14 @@ const createUpdateRequest = async (
         value: solanaMobileDappPublisherPortalDetails.testing_instructions
       }
     );
+  }
+
+  if (solanaMobileDappPublisherPortalDetails.alpha_testers !== undefined && solanaMobileDappPublisherPortalDetails.alpha_testers.length > 0) {
+    request.fields.push({
+      objectTypeId: TICKET_OBJECT_ID,
+      name: TICKET_PROPERTY_ALPHA_TESTERS,
+      value: solanaMobileDappPublisherPortalDetails.alpha_testers.map(tester => tester.address).toString(),
+    });
   }
 
   return request;
@@ -114,6 +133,7 @@ export type PublishUpdateInput = {
   compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
   criticalUpdate: boolean;
+  alphaTest?: boolean;
 };
 
 export const publishUpdate = async (
@@ -126,6 +146,7 @@ export const publishUpdate = async (
     compliesWithSolanaDappStorePolicies,
     requestorIsAuthorized,
     criticalUpdate,
+    alphaTest,
   } : PublishUpdateInput,
   dryRun: boolean,
 ) => {
@@ -138,7 +159,9 @@ export const publishUpdate = async (
     solanaMobileDappPublisherPortalDetails,
     compliesWithSolanaDappStorePolicies,
     requestorIsAuthorized,
-    criticalUpdate);
+    criticalUpdate,
+    alphaTest
+  );
 
   return submitRequestToSolanaDappPublisherPortal(updateRequest, URL_FORM_UPDATE, dryRun);
 };

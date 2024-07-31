@@ -81,9 +81,15 @@ export type Release = {
   };
 };
 
+export type AlphaTester = {
+  address: string;
+  comment: string;
+}
+
 export type SolanaMobileDappPublisherPortal = {
   google_store_package: string;
   testing_instructions: string;
+  alpha_testers: AlphaTester[];
 };
 
 export type LastSubmittedVersionOnChain = {

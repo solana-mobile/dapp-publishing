@@ -143,6 +143,15 @@ export const dryRunSuccessMessage = () => {
   showMessage("Dry run", "Dry run was successful", "standard")
 }
 
+export const alphaAppSubmissionMessage = () => {
+  showMessage(
+    "Alpha release", 
+    "Alpha releases are not reviewed on dApp store and are meant for internal testing only.\n" +
+    "Run the `npx dapp-store publish submit ...` command again without the `--alpha` param to publish the app",
+    "warning"
+  )
+}
+
 export const showNetworkWarningIfApplicable = (rpcUrl: string) => {
   if (isDevnet(rpcUrl)) {
     showMessage("Devnet Mode", "Running on Devnet", "warning")

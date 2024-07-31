@@ -8,6 +8,8 @@ import {
   CONTACT_PROPERTY_WEBSITE,
   submitRequestToSolanaDappPublisherPortal,
   TICKET_OBJECT_ID,
+  TICKET_PROPERTY_ALPHA_TEST,
+  TICKET_PROPERTY_ALPHA_TESTERS,
   TICKET_PROPERTY_ATTESTATION_PAYLOAD,
   TICKET_PROPERTY_AUTHORIZED_REQUEST,
   TICKET_PROPERTY_DAPP_COLLECTION_ACCOUNT_ADDRESS,
@@ -28,7 +30,8 @@ const createSubmitRequest = async (
   publisherDetails: Publisher,
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal,
   compliesWithSolanaDappStorePolicies: boolean,
-  requestorIsAuthorized: boolean
+  requestorIsAuthorized: boolean,
+  alphaTest?: boolean
 ) => {
   const { attestationPayload, requestUniqueId } = await createAttestationPayload(connection, sign);
 
@@ -90,6 +93,14 @@ const createSubmitRequest = async (
     });
   }
 
+  if (alphaTest) {
+    request.fields.push({
+      objectTypeId: TICKET_OBJECT_ID,
+      name: TICKET_PROPERTY_ALPHA_TEST,
+      value: true,
+    });
+  }
+
   if (solanaMobileDappPublisherPortalDetails.testing_instructions !== undefined) {
     request.fields.push(
       {
@@ -98,6 +109,14 @@ const createSubmitRequest = async (
         value: solanaMobileDappPublisherPortalDetails.testing_instructions
       },
     );
+  }
+
+  if (solanaMobileDappPublisherPortalDetails.alpha_testers !== undefined && solanaMobileDappPublisherPortalDetails.alpha_testers.length > 0) {
+    request.fields.push({
+      objectTypeId: TICKET_OBJECT_ID,
+      name: TICKET_PROPERTY_ALPHA_TESTERS,
+      value: solanaMobileDappPublisherPortalDetails.alpha_testers.map(tester => tester.address).toString(),
+    });
   }
 
   return request;
@@ -110,6 +129,7 @@ export type PublishSubmitInput = {
   solanaMobileDappPublisherPortalDetails: SolanaMobileDappPublisherPortal;
   compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
+  alphaTest?: boolean;
 };
 
 export const publishSubmit = async (
@@ -121,6 +141,7 @@ export const publishSubmit = async (
     solanaMobileDappPublisherPortalDetails,
     compliesWithSolanaDappStorePolicies,
     requestorIsAuthorized,
+    alphaTest,
   } : PublishSubmitInput,
   dryRun: boolean,
 ) => {
@@ -132,7 +153,9 @@ export const publishSubmit = async (
     publisherDetails,
     solanaMobileDappPublisherPortalDetails,
     compliesWithSolanaDappStorePolicies,
-    requestorIsAuthorized);
+    requestorIsAuthorized,
+    alphaTest
+  );
 
   return submitRequestToSolanaDappPublisherPortal(submitRequest, URL_FORM_SUBMIT, dryRun);
 };

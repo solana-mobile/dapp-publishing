@@ -14,6 +14,7 @@ type PublishUpdateCommandInput = {
   compliesWithSolanaDappStorePolicies: boolean;
   requestorIsAuthorized: boolean;
   critical: boolean;
+  alphaTest?: boolean;
 };
 
 export const publishUpdateCommand = async ({
@@ -25,6 +26,7 @@ export const publishUpdateCommand = async ({
   compliesWithSolanaDappStorePolicies = false,
   requestorIsAuthorized = false,
   critical = false,
+  alphaTest,
 }: PublishUpdateCommandInput) => {
 
   showMessage(
@@ -60,6 +62,10 @@ export const publishUpdateCommand = async ({
     lastUpdatedVersionOnStore: lastUpdatedVersionOnStore
   } = await loadPublishDetailsWithChecks();
 
+  if (alphaTest && solanaMobileDappPublisherPortalDetails.alpha_testers == undefined) {
+    throw new Error(`Alpha test submission without specifying any testers.\nAdd field alpha_testers in your 'config.yaml' file.`)
+  }
+
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
@@ -83,11 +89,14 @@ export const publishUpdateCommand = async ({
       compliesWithSolanaDappStorePolicies,
       requestorIsAuthorized,
       criticalUpdate: critical,
+      alphaTest,
     },
     dryRun
   );
-  await writeToPublishDetails(
-    {
-      lastUpdatedVersionOnStore: { address: releaseAddr }
-    });
+  if (!alphaTest) {
+    await writeToPublishDetails(
+      {
+        lastUpdatedVersionOnStore: { address: releaseAddr }
+      });
+  }
 };

@@ -20,6 +20,7 @@ import util from "util";
 import { imageSize } from "image-size";
 import { exec } from "child_process";
 import getVideoDimensions from "get-video-dimensions";
+import { PublicKey } from "@solana/web3.js";
 
 const runImgSize = util.promisify(imageSize);
 const runExec = util.promisify(exec);
@@ -176,6 +177,21 @@ export const loadPublishDetailsWithChecks = async (
 
     if (!pkgCompare?.length) {
       throw new Error("Please provide a valid Google store package name in the Publisher Portal section of your configuration file.");
+    }
+  }
+
+  const alpha_testers = config.solana_mobile_dapp_publisher_portal.alpha_testers;
+  if (alpha_testers !== undefined) {
+    for (const wallet of alpha_testers) {
+      try {
+        void new PublicKey(wallet.address);
+      } catch (e: unknown) {
+        throw new Error(`invalid alpha tester wallet address <${wallet}>`);
+      }
+    }
+
+    if (alpha_testers.size > 10) {
+      throw new Error(`Alpha testers are limited to 10 per app submission`);
     }
   }
 

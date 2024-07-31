@@ -11,6 +11,7 @@ import {
   checkForSelfUpdate,
   checkSubmissionNetwork,
   Constants,
+  alphaAppSubmissionMessage,
   dryRunSuccessMessage,
   generateNetworkSuffix,
   parseKeypair,
@@ -303,6 +304,7 @@ publishCommand
     "-d, --dry-run",
     "Flag for dry run. Doesn't submit the request to the publisher portal."
   )
+  .option("-l, --alpha", "Flag to mark the submission as alpha test.")
   .action(
     async ({
              appMintAddress,
@@ -312,6 +314,7 @@ publishCommand
              compliesWithSolanaDappStorePolicies,
              requestorIsAuthorized,
              dryRun,
+             alpha,
            }) => {
       await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
@@ -321,6 +324,10 @@ publishCommand
 
         if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
           throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
+        }
+
+        if (alpha) {
+          alphaAppSubmissionMessage()
         }
 
         const signer = parseKeypair(keypair);
@@ -335,6 +342,7 @@ publishCommand
                 compliesWithSolanaDappStorePolicies: compliesWithSolanaDappStorePolicies,
                 requestorIsAuthorized: requestorIsAuthorized,
                 critical: false,
+                alphaTest: alpha,
               });
           } else {
             await publishSubmitCommand({
@@ -345,6 +353,7 @@ publishCommand
               dryRun: dryRun,
               compliesWithSolanaDappStorePolicies: compliesWithSolanaDappStorePolicies,
               requestorIsAuthorized: requestorIsAuthorized,
+              alphaTest: alpha,
             });
           }
 
@@ -389,6 +398,7 @@ publishCommand
     "-d, --dry-run",
     "Flag for dry run. Doesn't submit the request to the publisher portal."
   )
+  .option("-l, --alpha", "Flag to mark the submission as alpha test.")
   .action(
     async ({
              appMintAddress,
@@ -399,6 +409,7 @@ publishCommand
              requestorIsAuthorized,
              critical,
              dryRun,
+             alpha,
            }) => {
       await tryWithErrorMessage(async () => {
         await checkForSelfUpdate();
@@ -408,6 +419,10 @@ publishCommand
 
         if (!hasAddressInConfig(config.release) && !releaseMintAddress) {
           throw new Error("Either specify a release mint address in the config file or specify as a CLI argument to this command.")
+        }
+
+        if (alpha) {
+          alphaAppSubmissionMessage()
         }
 
         const signer = parseKeypair(keypair);
@@ -421,6 +436,7 @@ publishCommand
             compliesWithSolanaDappStorePolicies,
             requestorIsAuthorized,
             critical,
+            alphaTest: alpha,
           });
 
           if (dryRun) {

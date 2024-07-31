@@ -18,6 +18,8 @@ export const TICKET_PROPERTY_GOOGLE_PLAY_STORE_PACKAGE_NAME = "google_play_store
 export const TICKET_PROPERTY_POLICY_COMPLIANT = "complies_with_solana_dapp_store_policies"; // boolean
 export const TICKET_PROPERTY_REQUEST_UNIQUE_ID = "request_unique_id"; // string (32 base-10 digits)
 export const TICKET_PROPERTY_TESTING_INSTRUCTIONS = "testing_instructions"; // string
+export const TICKET_PROPERTY_ALPHA_TEST = "alpha_test"; // boolean
+export const TICKET_PROPERTY_ALPHA_TESTERS = "alpha_testers"; // string
 
 export const FORM_SUBMIT = "1464247f-6804-46e1-8114-952f372daa81";
 export const FORM_UPDATE = "87b4cbe7-957f-495c-a132-8b789678883d";
@@ -46,7 +48,23 @@ export const submitRequestToSolanaDappPublisherPortal = async (
   if (!dryRun) {
     await axios(config)
       .then((response) => {
-        console.info(`dApp publisher portal response:`, response.data);
+        const isAlphaObject = request.fields.find((obj: { objectTypeId: string, name: string; value: string}) => {
+          return obj.name === TICKET_PROPERTY_ALPHA_TEST
+        })
+
+        if (isAlphaObject !== undefined && isAlphaObject.value) {
+          const requestUniqueId = request.fields.find((obj: { objectTypeId: string, name: string; value: string}) => {
+            return obj.name === TICKET_PROPERTY_REQUEST_UNIQUE_ID
+          }).value
+          console.log(
+            `Your alpha submission has been received.\n` +
+            `It will not be reviewed or published to users.\n` + 
+            `Use nonce '${requestUniqueId}' to launch alpha app.\n` + 
+            `This can only be used on devices for which the genesis token was listed in your 'config.yaml'`
+          )
+        } else {
+          console.info(`dApp publisher portal response:`, response.data);
+        }
       })
       .catch((error) => {
         if (error.response) {
