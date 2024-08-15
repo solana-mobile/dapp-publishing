@@ -68,11 +68,11 @@ export const submitRequestToSolanaDappPublisherPortal = async (
       })
       .catch((error) => {
         if (error.response) {
-          console.error(`ERROR: failed to submit request to dApp publisher portal: ${error.response.status} /`, error.response.data);
+          throw new Error(`Failed to submit request\nError status code: ${error.response.status}\nError message: ${error.response.data}`);
         } else if (error.request) {
-          console.error(`ERROR: failed sending request to dApp publisher portal:`, error.request);
+          throw new Error(`Failed to submit request: ${error.request}`);
         } else {
-          console.error(`ERROR: failed sending request:`, error);
+          throw new Error(`Failed to submit request: ${error}`);
         }
       });
   } else {
