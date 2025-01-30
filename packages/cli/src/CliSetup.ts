@@ -51,6 +51,7 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
  */
 function latestReleaseMessage() {
   const messages = [
+    `- Banner image of size 1024x500px is now required for all updates.`,
     `- App details page now supports video files. (mp4 file format only and minimum resolution 720p)`,
     `- priority fee has been updated to ${Constants.DEFAULT_PRIORITY_FEE} lamports = ${Constants.DEFAULT_PRIORITY_FEE / LAMPORTS_PER_SOL} SOL. To adjust this value use param "-p" or "--priority-fee-lamports"`,
     `- At least 4 screenshots are now required to update or release a new app`,
