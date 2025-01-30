@@ -160,7 +160,7 @@ export const loadPublishDetailsWithChecks = async (
 
   for (const item of screenshots) {
     const mediaPath = path.join(process.cwd(), item.uri);
-    if (await checkScreenshotSize(mediaPath)) {
+    if (await checkScreenshotDimensions(mediaPath)) {
       throw new Error(`Screenshot ${mediaPath} must be at least 1080px in width and height.`);
     }
   }
@@ -171,7 +171,7 @@ export const loadPublishDetailsWithChecks = async (
 
   for (const video of videos) {
     const mediaPath = path.join(process.cwd(), video.uri);
-    if (await checkVideoSize(mediaPath)) {
+    if (await checkVideoDimensions(mediaPath)) {
       throw new Error(`Video ${mediaPath} must be at least 720px in width and height.`);
     }
   }
@@ -278,19 +278,19 @@ const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
   return size?.width != size?.height || (size?.width ?? 0) != 512;
 };
 
-const checkScreenshotSize = async (imagePath: string): Promise<boolean> => {
+const checkScreenshotDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
   return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
 }
 
-const checkBannerSize = async (imagePath: string): Promise<boolean> => {
+const checkBannerDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
   return (size?.width ?? 0) === 1024 || (size?.height ?? 0) === 500;
 }
 
-const checkVideoSize = async (imagePath: string): Promise<boolean> => {
+const checkVideoDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await getVideoDimensions(imagePath);
 
   return (size?.width ?? 0) < 720 || (size?.height ?? 0) < 720;
