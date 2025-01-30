@@ -1,5 +1,5 @@
 
-## dApp Store NFT Specification - v0.2.6
+## dApp Store NFT Specification - v0.2.7
 
 The following is documentation of the NFT & JSON metadata specification for the dApp store.
 
@@ -25,7 +25,7 @@ The following is a readable example instance with sample data filled in:
 
 ```json
 {
-  "schema_version": "v0.2.6",
+  "schema_version": "v0.2.7",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -64,6 +64,14 @@ The following is a readable example instance with sample data filled in:
           "uri": "http://cdn.org/app_icon.png",
           "width": 512,
           "height": 512,
+          "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
+        },
+        {
+          "mime": "image/png",
+          "purpose": "banner",
+          "uri": "http://cdn.org/banner.png",
+          "width": 1024,
+          "height": 500,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         },
         {
@@ -163,7 +171,7 @@ The following is a readable example instance with sample data filled in:
 
 ```json
 {
-  "schema_version": "v0.2.6",
+  "schema_version": "v0.2.7",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
@@ -194,7 +202,7 @@ The following is a readable example instance with sample data filled in:
 
 ```json
 {
-  "schema_version": "v0.2.6",
+  "schema_version": "v0.2.7",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {

@@ -127,6 +127,15 @@ export const loadPublishDetailsWithChecks = async (
     throw new Error("Please specify at least one media entry of type icon in your configuration file");
   }
 
+  const banner = config.release.media?.find(
+    (asset: any) => asset.purpose === "banner"
+  )?.uri;
+
+  if (banner) {
+    const bannerPath = path.join(process.cwd(), banner);
+    await checkBannerCompatibility(bannerPath);
+  }
+
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
     const mediaPath = path.join(process.cwd(), item.uri);
     if (!fs.existsSync(mediaPath)) {
@@ -208,6 +217,16 @@ const checkIconCompatibility = async (path: string, typeString: string) => {
   }
 };
 
+const checkBannerCompatibility = async (path: string) => {
+  if (!fs.existsSync(path) || !checkImageExtension(path)) {
+    throw new Error(`Please check the path to your banner image and ensure the file is a jpeg, png, or webp file.`);
+  }
+
+  if (await checkBannerDimensions(path)) {
+    throw new Error("Banners must be 1024px by 500px.");
+  }
+};
+
 const checkImageExtension = (uri: string): boolean => {
   const fileExt = path.extname(uri).toLowerCase();
   return (
@@ -261,6 +280,12 @@ const checkScreenshotSize = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
   return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
+}
+
+const checkBannerSize = async (imagePath: string): Promise<boolean> => {
+  const size = await runImgSize(imagePath);
+
+  return (size?.width ?? 0) < 1024 || (size?.height ?? 0) < 500;
 }
 
 const checkVideoSize = async (imagePath: string): Promise<boolean> => {
