@@ -127,6 +127,17 @@ export const loadPublishDetailsWithChecks = async (
     throw new Error("Please specify at least one media entry of type icon in your configuration file");
   }
 
+  const banner = config.release.media?.find(
+    (asset: any) => asset.purpose === "banner"
+  )?.uri;
+
+  if (banner) {
+    const bannerPath = path.join(process.cwd(), banner);
+    await checkBannerCompatibility(bannerPath);
+  } else {
+    throw new Error("Please specify at least one media entry of type banner in your configuration file");
+  }
+
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
     const mediaPath = path.join(process.cwd(), item.uri);
     if (!fs.existsSync(mediaPath)) {
@@ -149,7 +160,7 @@ export const loadPublishDetailsWithChecks = async (
 
   for (const item of screenshots) {
     const mediaPath = path.join(process.cwd(), item.uri);
-    if (await checkScreenshotSize(mediaPath)) {
+    if (await checkScreenshotDimensions(mediaPath)) {
       throw new Error(`Screenshot ${mediaPath} must be at least 1080px in width and height.`);
     }
   }
@@ -160,7 +171,7 @@ export const loadPublishDetailsWithChecks = async (
 
   for (const video of videos) {
     const mediaPath = path.join(process.cwd(), video.uri);
-    if (await checkVideoSize(mediaPath)) {
+    if (await checkVideoDimensions(mediaPath)) {
       throw new Error(`Video ${mediaPath} must be at least 720px in width and height.`);
     }
   }
@@ -205,6 +216,16 @@ const checkIconCompatibility = async (path: string, typeString: string) => {
 
   if (await checkIconDimensions(path)) {
     throw new Error("Icons must be 512px by 512px.");
+  }
+};
+
+const checkBannerCompatibility = async (path: string) => {
+  if (!fs.existsSync(path) || !checkImageExtension(path)) {
+    throw new Error(`Please check the path to your banner image and ensure the file is a jpeg, png, or webp file.`);
+  }
+
+  if (await checkBannerDimensions(path)) {
+    throw new Error("Banners must be 1024px by 500px.");
   }
 };
 
@@ -257,13 +278,19 @@ const checkIconDimensions = async (iconPath: string): Promise<boolean> => {
   return size?.width != size?.height || (size?.width ?? 0) != 512;
 };
 
-const checkScreenshotSize = async (imagePath: string): Promise<boolean> => {
+const checkScreenshotDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
   return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
 }
 
-const checkVideoSize = async (imagePath: string): Promise<boolean> => {
+const checkBannerDimensions = async (imagePath: string): Promise<boolean> => {
+  const size = await runImgSize(imagePath);
+
+  return (size?.width ?? 0) != 1024 || (size?.height ?? 0) != 500;
+}
+
+const checkVideoDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await getVideoDimensions(imagePath);
 
   return (size?.width ?? 0) < 720 || (size?.height ?? 0) < 720;

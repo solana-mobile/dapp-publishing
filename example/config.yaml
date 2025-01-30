@@ -23,6 +23,8 @@ release:
   media:
     - purpose: icon
       uri: ./media/release_icon.png
+    - purpose: banner
+      uri: ./media/banner.png
     - purpose: screenshot
       uri: ./media/screenshot_1.png
     - purpose: video
