@@ -287,7 +287,7 @@ const checkScreenshotSize = async (imagePath: string): Promise<boolean> => {
 const checkBannerSize = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
-  return (size?.width ?? 0) < 1024 || (size?.height ?? 0) < 500;
+  return (size?.width ?? 0) === 1024 || (size?.height ?? 0) === 500;
 }
 
 const checkVideoSize = async (imagePath: string): Promise<boolean> => {
