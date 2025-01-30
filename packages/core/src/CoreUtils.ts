@@ -8,7 +8,7 @@ import type {
 import { ComputeBudgetProgram } from "@solana/web3.js";
 
 export class Constants {
-  static PUBLISHING_SCHEMA_VER = "0.2.6";
+  static PUBLISHING_SCHEMA_VER = "0.3.0";
 }
 export const truncateAddress = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(

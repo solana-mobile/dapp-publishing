@@ -134,6 +134,8 @@ export const loadPublishDetailsWithChecks = async (
   if (banner) {
     const bannerPath = path.join(process.cwd(), banner);
     await checkBannerCompatibility(bannerPath);
+  } else {
+    throw new Error("Please specify at least one media entry of type banner in your configuration file");
   }
 
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
