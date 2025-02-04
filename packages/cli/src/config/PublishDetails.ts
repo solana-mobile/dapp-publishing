@@ -134,8 +134,6 @@ export const loadPublishDetailsWithChecks = async (
   if (featureGraphic) {
     const featureGraphicPath = path.join(process.cwd(), featureGraphic);
     await checkFeatureGraphicCompatibility(featureGraphicPath);
-  } else {
-    throw new Error("Please specify at least one media entry of type featureGraphic in your configuration file");
   }
 
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
