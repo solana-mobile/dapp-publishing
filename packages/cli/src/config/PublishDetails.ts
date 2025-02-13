@@ -223,7 +223,7 @@ const checkFeatureGraphicCompatibility = async (path: string) => {
   }
 
   if (await checkFeatureGraphicDimensions(path)) {
-    throw new Error("Feature Graphic must be 1024px by 500px.");
+    throw new Error("Feature Graphic must be 1200px by 1200px.");
   }
 };
 
@@ -285,7 +285,7 @@ const checkScreenshotDimensions = async (imagePath: string): Promise<boolean> =>
 const checkFeatureGraphicDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
-  return (size?.width ?? 0) != 1024 || (size?.height ?? 0) != 500;
+  return (size?.width ?? 0) != 1200 || (size?.height ?? 0) != 1200;
 }
 
 const checkVideoDimensions = async (imagePath: string): Promise<boolean> => {
