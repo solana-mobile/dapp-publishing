@@ -127,15 +127,13 @@ export const loadPublishDetailsWithChecks = async (
     throw new Error("Please specify at least one media entry of type icon in your configuration file");
   }
 
-  const banner = config.release.media?.find(
-    (asset: any) => asset.purpose === "banner"
+  const featureGraphic = config.release.media?.find(
+    (asset: any) => asset.purpose === "featureGraphic"
   )?.uri;
 
-  if (banner) {
-    const bannerPath = path.join(process.cwd(), banner);
-    await checkBannerCompatibility(bannerPath);
-  } else {
-    throw new Error("Please specify at least one media entry of type banner in your configuration file");
+  if (featureGraphic) {
+    const featureGraphicPath = path.join(process.cwd(), featureGraphic);
+    await checkFeatureGraphicCompatibility(featureGraphicPath);
   }
 
   config.release.media.forEach((item: PublishDetails["release"]["media"][0]) => {
@@ -219,13 +217,13 @@ const checkIconCompatibility = async (path: string, typeString: string) => {
   }
 };
 
-const checkBannerCompatibility = async (path: string) => {
+const checkFeatureGraphicCompatibility = async (path: string) => {
   if (!fs.existsSync(path) || !checkImageExtension(path)) {
-    throw new Error(`Please check the path to your banner image and ensure the file is a jpeg, png, or webp file.`);
+    throw new Error(`Please check the path to your featureGraphic image and ensure the file is a jpeg, png, or webp file.`);
   }
 
-  if (await checkBannerDimensions(path)) {
-    throw new Error("Banners must be 1024px by 500px.");
+  if (await checkFeatureGraphicDimensions(path)) {
+    throw new Error("Feature Graphic must be 1200px by 1200px.");
   }
 };
 
@@ -284,10 +282,10 @@ const checkScreenshotDimensions = async (imagePath: string): Promise<boolean> =>
   return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
 }
 
-const checkBannerDimensions = async (imagePath: string): Promise<boolean> => {
+const checkFeatureGraphicDimensions = async (imagePath: string): Promise<boolean> => {
   const size = await runImgSize(imagePath);
 
-  return (size?.width ?? 0) != 1024 || (size?.height ?? 0) != 500;
+  return (size?.width ?? 0) != 1200 || (size?.height ?? 0) != 1200;
 }
 
 const checkVideoDimensions = async (imagePath: string): Promise<boolean> => {
