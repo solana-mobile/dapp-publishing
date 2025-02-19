@@ -132,8 +132,8 @@ export const loadPublishDetailsWithChecks = async (
     )?.uri;
 
     if (banner) {
-      const bannerGraphicPath = path.join(process.cwd(), banner);
-      await checkBannerCompatibility(bannerGraphicPath);
+      const bannerPath = path.join(process.cwd(), banner);
+      await checkBannerCompatibility(bannerPath);
     }
 
   const featureGraphic = config.release.media?.find(
