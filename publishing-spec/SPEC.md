@@ -68,10 +68,18 @@ The following is a readable example instance with sample data filled in:
         },
         {
           "mime": "image/png",
+          "purpose": "banner",
+          "uri": "http://cdn.org/banner.png",
+          "width": 1200,
+          "height": 600,
+          "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
+        },
+        {
+          "mime": "image/png",
           "purpose": "featureGraphic",
           "uri": "http://cdn.org/feature_graphic.png",
-          "width": 1024,
-          "height": 500,
+          "width": 1200,
+          "height": 1200,
           "sha256": "6ed00a7cb9dca84025473fc6b4d1f7d4680a34fcda54432504b0cdeb5e27801b"
         },
         {

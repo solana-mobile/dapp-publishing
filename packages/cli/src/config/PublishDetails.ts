@@ -127,6 +127,15 @@ export const loadPublishDetailsWithChecks = async (
     throw new Error("Please specify at least one media entry of type icon in your configuration file");
   }
 
+  const banner = config.release.media?.find(
+      (asset: any) => asset.purpose === "banner"
+    )?.uri;
+
+    if (banner) {
+      const bannerGraphicPath = path.join(process.cwd(), banner);
+      await checkBannerCompatibility(bannerGraphicPath);
+    }
+
   const featureGraphic = config.release.media?.find(
     (asset: any) => asset.purpose === "featureGraphic"
   )?.uri;
@@ -217,6 +226,16 @@ const checkIconCompatibility = async (path: string, typeString: string) => {
   }
 };
 
+const checkBannerCompatibility = async (path: string) => {
+  if (!fs.existsSync(path) || !checkImageExtension(path)) {
+    throw new Error(`Please check the path to your banner image and ensure the file is a jpeg, png, or webp file.`);
+  }
+
+  if (await checkBannerDimensions(path)) {
+    throw new Error("Banner must be 1200px by 600px.");
+  }
+};
+
 const checkFeatureGraphicCompatibility = async (path: string) => {
   if (!fs.existsSync(path) || !checkImageExtension(path)) {
     throw new Error(`Please check the path to your featureGraphic image and ensure the file is a jpeg, png, or webp file.`);
@@ -280,6 +299,12 @@ const checkScreenshotDimensions = async (imagePath: string): Promise<boolean> =>
   const size = await runImgSize(imagePath);
 
   return (size?.width ?? 0) < 1080 || (size?.height ?? 0) < 1080;
+}
+
+const checkBannerDimensions = async (imagePath: string): Promise<boolean> => {
+  const size = await runImgSize(imagePath);
+
+  return (size?.width ?? 0) != 1200 || (size?.height ?? 0) != 600;
 }
 
 const checkFeatureGraphicDimensions = async (imagePath: string): Promise<boolean> => {
