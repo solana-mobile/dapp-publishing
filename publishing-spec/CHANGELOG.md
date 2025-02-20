@@ -4,7 +4,8 @@ NOTE: The versions referenced in this changelog relate only to the publishing JS
 
 ## 0.3.0
 
-- `featureGraphic` value added to `android_details`'s `media` region of the release schema as required field
+- `banner` value added to `android_details`'s `media` region of the release schema as optional field
+- `featureGraphic` value added to `android_details`'s `media` region of the release schema as optional field
 
 ## 0.2.6
 

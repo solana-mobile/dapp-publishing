@@ -49,7 +49,7 @@ const getFileMetadata = async (item: Media | File) => {
 const getMediaMetadata = async (item: Media) => {
   const metadata = await getFileMetadata(item);
 
-  if (item.purpose == "screenshot" || item.purpose == "icon" || item.purpose == "featureGraphic") {
+  if (item.purpose == "screenshot" || item.purpose == "icon" || item.purpose == "banner" || item.purpose == "featureGraphic") {
     const size = await runImgSize(item.uri ?? "");
 
     return {
