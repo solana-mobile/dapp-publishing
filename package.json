@@ -33,6 +33,9 @@
   "pnpm": {
     "patchedDependencies": {
       "@solana/web3.js@1.92.1": "patches/@solana__web3.js@1.92.1.patch"
+    },
+    "overrides": {
+      "crypto-js": "4.2.0"
     }
   }
 }
