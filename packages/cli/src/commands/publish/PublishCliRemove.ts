@@ -47,11 +47,10 @@ export const publishRemoveCommand = async ({
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
-  const pubAddr = publisherDetails.address;
   const appAddr = appMintAddress ?? appDetails.address;
   const releaseAddr = releaseMintAddress ?? releaseDetails.address;
 
-  await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
+  await checkMintedStatus(connection, appAddr, releaseAddr);
 
   await publishRemove(
     { connection, sign },

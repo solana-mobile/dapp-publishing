@@ -50,13 +50,11 @@ export const checkForSelfUpdate = async () => {
 
 export const checkMintedStatus = async (
   conn: Connection,
-  pubAddr: string,
   appAddr: string,
   releaseAddr: string
 ) => {
   for (let i = 0; i < 5; i++) {
     const results = await conn.getMultipleAccountsInfo([
-      new PublicKey(pubAddr),
       new PublicKey(appAddr),
       new PublicKey(releaseAddr),
     ]);
@@ -69,9 +67,6 @@ export const checkMintedStatus = async (
       return
     } else {
       let errorMessage = ``
-      if (!isPublisherMinted) {
-        errorMessage = errorMessage + `Publisher NFT fetch at address ${pubAddr} failed.\n`
-      }
       if (!isAppMinted) {
         errorMessage = errorMessage + `App NFT fetch at address ${appAddr} failed.\n`
       }
@@ -80,7 +75,7 @@ export const checkMintedStatus = async (
       }
       if (i == 4) {
         throw new Error(
-          `Expected Publisher :: ${pubAddr}, App :: ${appAddr} and Release :: ${releaseAddr} to be minted before submission.\n
+          `Expected App :: ${appAddr} and Release :: ${releaseAddr} to be minted before submission.\n
           but ${errorMessage}\n
           Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.`
         );
