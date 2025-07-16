@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Store Mock Page</title>
+  <style>
+    :root {
+      --bg-light: #f8f9fa;
+      --bg-dark: #0d1615;
+      --bg-white: #ffffff;
+      --text-muted: #fff;
+      --primary-color: #1e88e5;
+      --star-color: #ffaa00;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background-color: var(--bg-dark);
+      color: #fff;
+    }
+    
+    img {
+      width: 100%;
+    }
+
+    .banner {
+      width: 100%;
+      height: 160px;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    .app-header {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      background-color: var(--bg-dark);
+      border-bottom: 1px solid #ccc;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .app-icon {
+      width: 72px;
+      height: 72px;
+      background-color: #ccc;
+      border-radius: 16px;
+      flex-shrink: 0;
+    }
+
+    .app-meta {
+      flex: 1;
+    }
+
+    .app-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .app-developer {
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    .ratings {
+      margin-top: 8px;
+      color: var(--star-color);
+      font-size: 1rem;
+    }
+
+    .install-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .section {
+      padding: 16px;
+      background-color: var(--bg-dark);
+      margin-top: 10px;
+    }
+
+    .screenshots {
+      display: flex;
+      background-color: var(--bg-dark);
+      gap: 10px;
+      overflow-x: auto;
+      padding-top: 10px;
+    }
+
+    .screenshot {
+      width: 160px;
+      height: 280px;
+      background-color: #eee;
+      flex: 0 0 auto;
+      border-radius: 10px;
+    }
+
+    .description, .reviews {
+      margin-top: 10px;
+    }
+
+    .review {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .review .stars {
+      color: var(--star-color);
+      font-size: 1rem;
+    }
+
+    .review .text {
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    /* Larger screen tweaks */
+    @media (min-width: 600px) {
+      .app-header {
+        flex-direction: row;
+        align-items: center;
+      }
+
+      .app-meta {
+        margin-right: auto;
+      }
+
+      .install-btn {
+        width: auto;
+        margin-top: 0;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="banner" id="banner">[ Banner Image Placeholder ]</div>
+
+  <div class="app-header">
+    <div class="header-top">
+      <div class="app-icon" id="app-icon"></div>
+      <div class="app-meta">
+        <div class="app-title" id="app-title">[ App Title ]</div>
+        <div class="app-developer" id="app-developer">[ Developer Name ]</div>
+        <div class="ratings">★★★★☆ (4.2)</div>
+      </div>
+    </div>
+    <button class="install-btn">Install</button>
+  </div>
+
+  <div class="section">
+    <h3>Screenshots</h3>
+    <div class="screenshots" id="screenshots">
+      <div class="screenshot"></div>
+      <div class="screenshot"></div>
+      <div class="screenshot"></div>
+      <div class="screenshot"></div>
+    </div>
+  </div>
+
+  <div class="section description" id="description">
+    <h3>About this app</h3>
+    <p>This is a placeholder for the long description of the app. It gives details about features, benefits, and usage.</p>
+  </div>
+
+  <div class="section reviews">
+    <h3>User Reviews</h3>
+
+    <div class="review">
+      <div class="stars">★★★★★</div>
+      <div class="text">"Amazing app! Very helpful and easy to use."</div>
+    </div>
+
+    <div class="review">
+      <div class="stars">★★★☆☆</div>
+      <div class="text">"It's okay, but needs some improvements."</div>
+    </div>
+
+    <div class="review">
+      <div class="stars">★★★★☆</div>
+      <div class="text">"Great design and functionality. Highly recommend."</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
