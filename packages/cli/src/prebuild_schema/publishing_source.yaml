@@ -1,6 +1,5 @@
 publisher:
   name: <<YOUR_PUBLISHER_NAME>>
-  address: ""
   website: <<URL_OF_PUBLISHER_WEBSITE>>
   email: <<EMAIL_ADDRESS_TO_CONTACT_PUBLISHER>>
   media:
