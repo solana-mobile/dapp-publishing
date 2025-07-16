@@ -93,41 +93,7 @@ export const initCliCmd = mainCli
 
 export const createCliCmd = mainCli
   .command("create")
-  .description("Create a `publisher`, `app`, or `release`")
-
-export const createPublisherCliCmd = createCliCmd
-  .command("publisher")
-  .description("Create a publisher")
-  .requiredOption(
-    "-k, --keypair <path-to-keypair-file>",
-    "Path to keypair file"
-  )
-  .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
-  .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
-  .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
-  .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
-  .action(async ({ keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
-    await tryWithErrorMessage(async () => {
-      showNetworkWarningIfApplicable(url)
-      latestReleaseMessage();
-      await checkForSelfUpdate();
-
-      const signer = parseKeypair(keypair);
-      if (signer) {
-        const result: { publisherAddress: string, transactionSignature: string } = await createPublisherCommand({ signer, url, dryRun, storageParams: storageConfig, priorityFeeLamports });
-
-        if (dryRun) {
-          dryRunSuccessMessage()
-        } else {
-          const displayUrl = `https://explorer.solana.com/address/${result.publisherAddress}${generateNetworkSuffix(url)}`;
-          const transactionUrl = `https://explorer.solana.com/tx/${result.transactionSignature}${generateNetworkSuffix(url)}`;
-          const resultText = `Publisher NFT successfully minted successfully:\n${displayUrl}\n${transactionUrl}`;
-
-          showMessage("Success", resultText);
-        }
-      }
-    });
-  });
+  .description("Create an, `app`, or `release`")
 
 export const createAppCliCmd = createCliCmd
   .command("app")
