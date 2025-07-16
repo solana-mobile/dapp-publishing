@@ -373,7 +373,7 @@ const getAndroidDetails = async (
       );
     }
 
-    if (permissions.includes("com.solanamobile.seedvault.ACCESS_SEED_VAULT")) {
+    if (permissions.includes("com.solanamobile.seedvault.ACCESS_SEED_VAULT") || permissions.includes("com.solanamobile.seedvault.ACCESS_SEED_VAULT_PRIVILEGED")) {
       showMessage(
         "App requests Seed Vault permission",
         "If this is not a wallet application, your app maybe rejected from listing on Solana dApp Store.",
