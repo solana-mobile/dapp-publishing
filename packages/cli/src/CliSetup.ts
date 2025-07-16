@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { validateCommand } from "./commands/index.js";
+import { previewCommand } from "./commands/index.js";
 import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
 import {
   publishRemoveCommand,
@@ -270,6 +271,13 @@ mainCli
       }
     });
   });
+
+const prevCommand = mainCli
+  .command("preview")
+  .description(
+    "Preview what the app looks like in the Solana Mobile dApp-store"
+  )
+  .action(previewCommand);
 
 const publishCommand = mainCli
   .command("publish")
