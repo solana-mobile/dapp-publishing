@@ -3,7 +3,6 @@ import { createApp } from "@solana-mobile/dapp-store-publishing-tools";
 import {
   Connection,
   Keypair,
-  PublicKey,
 } from "@solana/web3.js";
 
 import {
@@ -17,14 +16,12 @@ const createAppNft = async (
   {
     appDetails,
     connection,
-    publisherMintAddress,
     publisher,
     storageParams,
     priorityFeeLamports,
   }: {
     appDetails: App;
     connection: Connection;
-    publisherMintAddress: string;
     publisher: Keypair;
     storageParams: string;
     priorityFeeLamports: number;
@@ -36,7 +33,6 @@ const createAppNft = async (
   const metaplex = getMetaplexInstance(connection, publisher, storageParams);
   const txBuilder = await createApp(
     {
-      publisherMintAddress: new PublicKey(publisherMintAddress),
       mintAddress,
       appDetails,
       priorityFeeLamports
@@ -55,7 +51,6 @@ const createAppNft = async (
 };
 
 type CreateAppCommandInput = {
-  publisherMintAddress: string;
   signer: Keypair;
   url: string;
   dryRun?: boolean;
@@ -67,7 +62,6 @@ export const createAppCommand = async ({
   signer,
   url,
   dryRun,
-  publisherMintAddress,
   storageParams,
   priorityFeeLamports = Constants.DEFAULT_PRIORITY_FEE,
 }: CreateAppCommandInput) => {
@@ -78,7 +72,7 @@ export const createAppCommand = async ({
     }
   );
 
-  const { app: appDetails, publisher: publisherDetails } =
+  const { app: appDetails } =
     await loadPublishDetailsWithChecks();
 
   if (!dryRun) {
@@ -86,7 +80,6 @@ export const createAppCommand = async ({
       {
         connection,
         publisher: signer,
-        publisherMintAddress: publisherDetails.address ?? publisherMintAddress,
         appDetails,
         storageParams,
         priorityFeeLamports

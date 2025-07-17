@@ -102,30 +102,19 @@ export const createAppCliCmd = createCliCmd
     "-k, --keypair <path-to-keypair-file>",
     "Path to keypair file"
   )
-  .option(
-    "-p, --publisher-mint-address <publisher-mint-address>",
-    "The mint address of the publisher NFT"
-  )
   .option("-u, --url <url>", "RPC URL", Constants.DEFAULT_RPC_DEVNET)
   .option("-d, --dry-run", "Flag for dry run. Doesn't mint an NFT")
   .option("-s, --storage-config <storage-config>", "Provide alternative storage configuration details")
   .option("-p, --priority-fee-lamports <priority-fee-lamports>", "Priority Fee lamports")
-  .action(async ({ publisherMintAddress, keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
+  .action(async ({keypair, url, dryRun, storageConfig, priorityFeeLamports }) => {
     await tryWithErrorMessage(async () => {
       showNetworkWarningIfApplicable(url)
       latestReleaseMessage();
       await checkForSelfUpdate();
 
-      const config = await loadPublishDetailsWithChecks();
-
-      if (!hasAddressInConfig(config.publisher) && !publisherMintAddress) {
-        throw new Error("Either specify a publisher mint address in the config file or specify as a CLI argument to this command.");
-      }
-
       const signer = parseKeypair(keypair);
       if (signer) {
         const result = await createAppCommand({
-          publisherMintAddress: publisherMintAddress,
           signer,
           url,
           dryRun,
