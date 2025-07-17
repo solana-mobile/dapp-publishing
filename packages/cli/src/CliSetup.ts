@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { validateCommand } from "./commands/index.js";
-import { createAppCommand, createPublisherCommand, createReleaseCommand } from "./commands/create/index.js";
+import { createAppCommand, createReleaseCommand } from "./commands/create/index.js";
 import {
   publishRemoveCommand,
   publishSubmitCommand,

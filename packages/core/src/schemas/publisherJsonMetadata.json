@@ -8,35 +8,6 @@
       "type": "string",
       "maxLength": 32
     },
-    "image": {
-      "type": "string"
-    },
-    "properties": {
-      "type": "object",
-      "properties": {
-        "category": {
-          "type": "string"
-        },
-        "creators": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "address": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "address"
-            ]
-          }
-        }
-      },
-      "required": [
-        "category",
-        "creators"
-      ]
-    },
     "extensions": {
       "type": "object",
       "properties": {
@@ -78,8 +49,6 @@
   "required": [
     "schema_version",
     "name",
-    "image",
-    "properties",
     "extensions"
   ]
 }

@@ -8,9 +8,7 @@ import type {
 
 export type { ReleaseJsonMetadata } from "./generated";
 
-export type PublisherMetadata = Omit<PublisherJsonMetadata, "image"> & {
-  image: string | MetaplexFile;
-};
+export type PublisherMetadata = PublisherJsonMetadata;
 
 export type AppMetadata = Omit<AppJsonMetadata, "image"> & {
   image: string | MetaplexFile;
