@@ -59,11 +59,10 @@ export const checkMintedStatus = async (
       new PublicKey(releaseAddr),
     ]);
 
-    const isPublisherMinted = results[0] != undefined && results[0]?.lamports > 0
-    const isAppMinted = results[1] != undefined && results[1]?.lamports > 0
-    const isReleaseMinted = results[2] != undefined && results[2]?.lamports > 0
+    const isAppMinted = results[0] != undefined && results[0]?.lamports > 0
+    const isReleaseMinted = results[1] != undefined && results[1]?.lamports > 0
 
-    if (isPublisherMinted && isAppMinted && isReleaseMinted) {
+    if (isAppMinted && isReleaseMinted) {
       return
     } else {
       let errorMessage = ``
