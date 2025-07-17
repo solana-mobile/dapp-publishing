@@ -2,7 +2,6 @@ import { beforeEach, expect } from "@jest/globals";
 import {
   createAppCliCmd,
   createCliCmd,
-  createPublisherCliCmd,
   createReleaseCliCmd,
   initCliCmd,
   mainCli
@@ -71,25 +70,6 @@ describe("Cli Setup & Execution", () => {
     expect(errorOutput).toEqual(createHelp)
   });
 
-  test("Calling create publisher command with no arguments warns about required argument", () => {
-    createPublisherCliCmd.exitOverride()
-
-    expect(() => {
-        createPublisherCliCmd.parse(["dapp-store", "create", "publisher"]);
-      }
-    ).toThrow(keyPairArgHelp);
-  });
-
-  test("Calling create publisher command with help flag shows contextual help", () => {
-    createPublisherCliCmd.exitOverride()
-
-    expect(() => {
-      createPublisherCliCmd.parse(["dapp-store", "create", "publisher", "-h"]);
-    }).toThrow(outputHelpReference)
-
-    expect(otherOutput).toEqual(createPublisherHelp)
-  });
-
   test("Calling create app command with no arguments warns about required argument", () => {
     createAppCliCmd.exitOverride()
 
@@ -140,7 +120,7 @@ Options:
 
 Commands:
   init                First-time initialization of tooling configuration
-  create              Create a \`publisher\`, \`app\`, or \`release\`
+  create              Create a \`app\`, or \`release\`
   validate [options]  Validates details prior to publishing
   publish             Submit a publishing request (\`submit\`, \`update\`, \`remove\`, or \`support\`) to the Solana Mobile dApp publisher portal
   help [command]      display help for command
@@ -158,21 +138,20 @@ Options:
 
   const createHelp = `Usage: dapp-store create [options] [command]
 
-Create a \`publisher\`, \`app\`, or \`release\`
+Create a \`app\`, or \`release\`
 
 Options:
-  -h, --help           display help for command
+  -h, --help         display help for command
 
 Commands:
-  publisher [options]  Create a publisher
-  app [options]        Create a app
-  release [options]    Create a release
-  help [command]       display help for command
+  app [options]      Create a app
+  release [options]  Create a release
+  help [command]     display help for command
 `;
 
-  const createPublisherHelp = `Usage: dapp-store create publisher [options]
+  const createAppHelp = `Usage: dapp-store create app [options]
 
-Create a publisher
+Create a app
 
 Options:
   -k, --keypair <path-to-keypair-file>                 Path to keypair file
@@ -181,20 +160,6 @@ Options:
   -s, --storage-config <storage-config>                Provide alternative storage configuration details
   -p, --priority-fee-lamports <priority-fee-lamports>  Priority Fee lamports
   -h, --help                                           display help for command
-`;
-
-  const createAppHelp = `Usage: dapp-store create app [options]
-
-Create a app
-
-Options:
-  -k, --keypair <path-to-keypair-file>                   Path to keypair file
-  -p, --publisher-mint-address <publisher-mint-address>  The mint address of the publisher NFT
-  -u, --url <url>                                        RPC URL (default: "https://api.devnet.solana.com")
-  -d, --dry-run                                          Flag for dry run. Doesn't mint an NFT
-  -s, --storage-config <storage-config>                  Provide alternative storage configuration details
-  -p, --priority-fee-lamports <priority-fee-lamports>    Priority Fee lamports
-  -h, --help                                             display help for command
 `;
 
   const createReleaseHelp = `Usage: dapp-store create release [options]

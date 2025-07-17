@@ -93,7 +93,7 @@ export const initCliCmd = mainCli
 
 export const createCliCmd = mainCli
   .command("create")
-  .description("Create an, `app`, or `release`")
+  .description("Create a `app`, or `release`")
 
 export const createAppCliCmd = createCliCmd
   .command("app")
