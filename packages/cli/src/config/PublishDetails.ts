@@ -90,18 +90,6 @@ export const loadPublishDetailsWithChecks = async (
     );
   }
 
-  const publisherIcon = config.publisher.media?.find(
-    (asset: any) => asset.purpose === "icon"
-  )?.uri;
-
-  if (publisherIcon) {
-    const iconPath = path.join(process.cwd(), publisherIcon);
-    await checkIconCompatibility(iconPath, "Publisher");
-
-    const iconBuffer = await fs.promises.readFile(iconPath);
-    config.publisher.icon = toMetaplexFile(iconBuffer, publisherIcon);
-  }
-
   const appIcon = config.app.media?.find(
     (asset: any) => asset.purpose === "icon"
   )?.uri;
@@ -454,7 +442,7 @@ export const extractCertFingerprint = async (aaptDir: string, apkPath: string): 
   }
 }
 
-export const writeToPublishDetails = async ({ publisher, app, release, lastSubmittedVersionOnChain, lastUpdatedVersionOnStore }: SaveToConfigArgs) => {
+export const writeToPublishDetails = async ({ app, release, lastSubmittedVersionOnChain, lastUpdatedVersionOnStore }: SaveToConfigArgs) => {
   const currentConfig = await loadPublishDetailsWithChecks();
 
   delete currentConfig.publisher.icon;
@@ -463,7 +451,6 @@ export const writeToPublishDetails = async ({ publisher, app, release, lastSubmi
   const newConfig: PublishDetails = {
     publisher: {
       ...currentConfig.publisher,
-      address: publisher?.address ?? currentConfig.publisher.address
     },
     app: {
       ...currentConfig.app,

@@ -1,11 +1,7 @@
 publisher:
   name: Solana Mobile
-  address: ''
   website: https://solanamobile.com
   email: hello@solanamobile.com
-  media:
-    - purpose: icon
-      uri: ./media/publisher_icon.png
 app:
   name: Cute Kittens
   address: ''

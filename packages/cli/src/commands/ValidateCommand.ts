@@ -1,9 +1,7 @@
 import {
   createAppJson,
-  createPublisherJson,
   createReleaseJson,
   validateApp,
-  validatePublisher,
   validateRelease,
   metaplexFileReplacer,
 } from "@solana-mobile/dapp-store-publishing-tools";
@@ -27,24 +25,6 @@ export const validateCommand = async ({
   } = await loadPublishDetailsWithChecks(buildToolsPath);
 
   debug({ publisherDetails, appDetails, releaseDetails });
-
-  const publisherJson = createPublisherJson(publisherDetails);
-  if (typeof publisherJson.image !== "string") {
-    publisherJson.image = (publisherJson.image as MetaplexFile)?.fileName;
-  }
-  debug("publisherJson=", JSON.stringify({ publisherJson }, metaplexFileReplacer, 2));
-
-  try {
-    validatePublisher(publisherJson);
-  } catch (e) {
-    const errorMsg = (e as Error | null)?.message ?? "";
-    showMessage(
-      "Publisher JSON invalid",
-      errorMsg,
-      "error"
-    )
-    return
-  }
 
   const appJson = createAppJson(appDetails, signer.publicKey);
   if (typeof appJson.image !== "string") {

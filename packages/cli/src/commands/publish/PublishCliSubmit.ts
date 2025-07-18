@@ -61,7 +61,6 @@ export const publishSubmitCommand = async ({
   const sign = ((buf: Buffer) =>
     nacl.sign(buf, signer.secretKey)) as SignWithPublisherKeypair;
 
-  const pubAddr = publisherDetails.address;
   const appAddr = appMintAddress ?? appDetails.address;
   const releaseAddr = releaseMintAddress ?? releaseDetails.address;
 
@@ -69,7 +68,7 @@ export const publishSubmitCommand = async ({
     throw new Error(`You've already submitted this version for review.`);
   }
 
-  await checkMintedStatus(connection, pubAddr, appAddr, releaseAddr);
+  await checkMintedStatus(connection, appAddr, releaseAddr);
 
   await publishSubmit(
     { connection, sign },
