@@ -18,7 +18,6 @@ import {
   showMessage,
   showNetworkWarningIfApplicable
 } from "./CliUtils.js";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 import * as dotenv from "dotenv";
 import { initScaffold } from "./commands/scaffolding/index.js";
 import { loadPublishDetails, loadPublishDetailsWithChecks } from "./config/PublishDetails.js";
@@ -51,11 +50,8 @@ function resolveBuildToolsPath(buildToolsPath: string | undefined) {
  */
 function latestReleaseMessage() {
   const messages = [
-    `- App details page now supports a Banner Graphic image of size 1200x600px and a Feature Graphic image of size 1200x1200px (optional)`,
-    `- App details page now supports video files. (mp4 file format only and minimum resolution 720p)`,
-    `- priority fee has been updated to ${Constants.DEFAULT_PRIORITY_FEE} lamports = ${Constants.DEFAULT_PRIORITY_FEE / LAMPORTS_PER_SOL} SOL. To adjust this value use param "-p" or "--priority-fee-lamports"`,
-    `- At least 4 screenshots are now required to update or release a new app`,
-    `- App icons should be exactly 512x512.`
+    `- Banner Graphic image of size 1200x600px is now manadatory for publishing updates.`,
+    `- Feature Graphic image of size 1200x1200px is required to be featured in Editor's choice carousel. (optional)`,
   ].join('\n\n')
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
