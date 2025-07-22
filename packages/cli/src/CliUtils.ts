@@ -19,7 +19,7 @@ import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
 import { S3StorageManager } from "./config/index.js";
 
 export class Constants {
-  static CLI_VERSION = "0.10.0";
+  static CLI_VERSION = "0.11.0";
   static CONFIG_FILE_NAME = "config.yaml";
   static DEFAULT_RPC_DEVNET = "https://api.devnet.solana.com";
   static DEFAULT_PRIORITY_FEE = 500000;
