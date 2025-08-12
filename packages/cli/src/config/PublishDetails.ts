@@ -1,4 +1,4 @@
-import type {
+import {
   AndroidDetails,
   App,
   LastSubmittedVersionOnChain,
@@ -48,7 +48,7 @@ const AaptPrefixes = {
 type SaveToConfigArgs = {
   publisher?: Pick<Publisher, "address">;
   app?: Pick<App, "address">;
-  release?: Pick<Release, "address">;
+  release?: Release;
   lastSubmittedVersionOnChain?: LastSubmittedVersionOnChain;
   lastUpdatedVersionOnStore?: LastUpdatedVersionOnStore;
 };
@@ -83,10 +83,13 @@ export const loadPublishDetailsWithChecks = async (
     throw new Error("Invalid path to APK file.");
   }
 
+  const developerOverridenLocales = config.release.android_details.locales
+
   if (buildToolsDir) {
     config.release.android_details = await getAndroidDetails(
       buildToolsDir,
-      apkPath
+      apkPath,
+      developerOverridenLocales
     );
   }
 
@@ -312,7 +315,8 @@ const checkVideoDimensions = async (imagePath: string): Promise<boolean> => {
 
 const getAndroidDetails = async (
   aaptDir: string,
-  apkPath: string
+  apkPath: string,
+  developerOverridenLocales: [string]
 ): Promise<AndroidDetails> => {
   try {
     const { stdout } = await runExec(`${aaptDir}/aapt2 dump badging "${apkPath}"`);
@@ -371,6 +375,20 @@ const getAndroidDetails = async (
       );
     }
 
+    if (developerOverridenLocales == null && localeArray.length >= 60 || developerOverridenLocales.length > 60) {
+      showMessage(
+        "Excessive language support detected",
+        "The bundle apk claims supports for following locales \n" +
+        localeArray +
+        "\nYou config.yaml claims support for following locales\n" + 
+        developerOverridenLocales +
+        "\nIf this release does not support all these locales the release may be rejected\n." +
+        "You can override this list of supported locales in config.yaml" +
+        "\nSee details at https://developer.android.com/guide/topics/resources/multilingual-support#design for configuring the supported locales in your apk file",
+        "warning"
+      );
+    }
+    
     return {
       android_package: appPackage?.[1] ?? "",
       min_sdk: parseInt(minSdk?.[1] ?? "0", 10),
@@ -378,7 +396,7 @@ const getAndroidDetails = async (
       version: versionName?.[1] ?? "0",
       cert_fingerprint: await extractCertFingerprint(aaptDir, apkPath),
       permissions: permissions,
-      locales: localeArray
+      locales: developerOverridenLocales ?? localeArray
     };
   } catch (e) {
     if (e instanceof TypeError) {
@@ -418,7 +436,14 @@ export const writeToPublishDetails = async ({ app, release, lastSubmittedVersion
     },
     release: {
       ...currentConfig.release,
-      address: release?.address ?? currentConfig.release.address
+      address: release?.address ?? currentConfig.release.address,
+      android_details: {
+        cert_fingerprint: release?.android_details?.cert_fingerprint ?? currentConfig.release.android_details.cert_fingerprint,
+        min_sdk: release?.android_details?.min_sdk ?? currentConfig.release.android_details.min_sdk,
+        version: release?.android_details?.version ?? currentConfig.release.android_details.version,
+        version_code: release?.android_details?.version_code ?? currentConfig.release.android_details.version_code,
+        locales: release?.android_details?.locales ?? currentConfig.release.android_details.locales
+      }
     },
     solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal,
     lastSubmittedVersionOnChain: lastSubmittedVersionOnChain ?? currentConfig.lastSubmittedVersionOnChain,
