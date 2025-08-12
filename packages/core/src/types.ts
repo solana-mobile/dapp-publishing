@@ -33,6 +33,7 @@ export type AndroidDetails = {
   android_package: string;
   min_sdk: number;
   version_code: number;
+  cert_fingerprint: string;
   version: string;
   permissions: string[];
   locales: string[];

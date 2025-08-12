@@ -49,9 +49,9 @@ release:
       saga_features: >-
         <<ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA>>
 solana_mobile_dapp_publisher_portal:
-  google_store_package: <<ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION_IF_DIFFERENT>>
+  google_store_package: <<ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION>>
   testing_instructions: >-
-    <<TESTING_INSTRUCTIONS>>
+    <<TESTING_INSTRUCTIONS. Please provide any test account details if applicable>>
   alpha_testers: 
     - address: <<genesis token wallet address>>
       comment: <<Optional. For internal use only>>

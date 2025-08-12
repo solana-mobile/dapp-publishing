@@ -127,7 +127,16 @@ export const createReleaseCommand = async ({
 
     await writeToPublishDetails(
       {
-        release: { address: releaseAddress },
+        release: { 
+          address: releaseAddress,
+          android_details: {
+            cert_fingerprint: config.release.android_details.cert_fingerprint,
+            min_sdk: config.release.android_details.min_sdk,
+            version: config.release.android_details.version,
+            version_code: config.release.android_details.version_code,
+            locales: config.release.android_details.locales
+          }
+        },
         lastSubmittedVersionOnChain: {
           address: releaseAddress,
           version_code: config.release.android_details.version_code,
