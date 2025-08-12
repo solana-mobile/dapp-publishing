@@ -375,7 +375,7 @@ const getAndroidDetails = async (
       );
     }
 
-    if (developerOverridenLocales == null && localeArray.length >= 60 || developerOverridenLocales.length > 60) {
+    if (developerOverridenLocales == null && localeArray.length >= 60 || developerOverridenLocales?.length >= 60) {
       showMessage(
         "Excessive language support detected",
         "The bundle apk claims supports for following locales \n" +
