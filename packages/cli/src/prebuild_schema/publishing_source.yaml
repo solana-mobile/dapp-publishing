@@ -1,59 +1,63 @@
 publisher:
-  name: <<YOUR_PUBLISHER_NAME>>
-  website: <<URL_OF_PUBLISHER_WEBSITE>>
-  email: <<EMAIL_ADDRESS_TO_CONTACT_PUBLISHER>>
+  name: <<[REQUIRED] YOUR_PUBLISHER_NAME>>
+  website: <<[REQUIRED] URL_OF_PUBLISHER_WEBSITE>>
+  email: <<[REQUIRED] EMAIL_ADDRESS_TO_CONTACT_PUBLISHER>>
 app:
-  name: <<APP_NAME>>
+  name: <<[REQUIRED] APP_NAME>>
   address: ""
-  android_package: <<ANDROID_PACKAGE_NAME>>
+  android_package: <<[REQUIRED] ANDROID_PACKAGE_NAME>>
   urls:
-    license_url: <<URL_OF_APP_LICENSE_OR_TERMS_OF_SERVICE>>
-    copyright_url: <<URL_OF_COPYRIGHT_DETAILS_FOR_APP>>
-    privacy_policy_url: <<URL_OF_APP_PRIVACY_POLICY>>
-    website: <<URL_OF_APP_WEBSITE>>
+    license_url: <<[REQUIRED] URL For App's T&C. Don't put placeholder urls.>>
+    copyright_url: <<[REQUIRED] URL For App's Copyright. Don't put placeholder urls.>>
+    privacy_policy_url: <<[REQUIRED] URL For App's Privacy Policy. Don't put placeholder urls.>>
+    website: <<[REQUIRED] URL_OF_APP_WEBSITE>>
   media:
     - purpose: icon
-      uri: <<RELATIVE_PATH_TO_APP_ICON>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_APP_ICON>>
 release:
   address: ""
   media:
     - purpose: icon
-      uri: <<RELATIVE_PATH_TO_RELEASE_ICON>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_RELEASE_ICON>>
     - purpose: banner
-      uri: <<RELATIVE_PATH_TO_BANNER>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_BANNER>>
     - purpose: featureGraphic
-      uri: <<RELATIVE_PATH_TO_FEATURE_GRAPHIC>>
+      uri: <<[Optional] RELATIVE_PATH_TO_FEATURE_GRAPHIC>>
     - purpose: screenshot
-      uri: <<RELATIVE_PATH_TO_SCREENSHOT1>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_SCREENSHOT1>>
     - purpose: screenshot
-      uri: <<RELATIVE_PATH_TO_SCREENSHOT2>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_SCREENSHOT2>>
     - purpose: screenshot
-      uri: <<RELATIVE_PATH_TO_SCREENSHOT3>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_SCREENSHOT3>>
     - purpose: screenshot
-      uri: <<RELATIVE_PATH_TO_SCREENSHOT4>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_SCREENSHOT4>>
     - purpose: video
-      uri: <<RELATIVE_PATH_TO_VIDEO1>>
+      uri: <<[Optional] RELATIVE_PATH_TO_VIDEO1>>
   files:
     - purpose: install
-      uri: <<RELATIVE_PATH_TO_APK>>
+      uri: <<[REQUIRED] RELATIVE_PATH_TO_APK>>
   catalog:
     en-US:
       name: >-
-        <<APP_NAME>>
+        <<[REQUIRED] APP_NAME>>
       short_description: >-
-        <<SHORT_APP_DESCRIPTION>>
+        <<[REQUIRED] SHORT_APP_DESCRIPTION>>
       long_description: >-
-        <<LONG_APP_DESCRIPTION>>
+        <<[REQUIRED] LONG_APP_DESCRIPTION>>
       new_in_version: >-
-        <<WHATS_NEW_IN_THIS_VERSION>>
+        <<[REQUIRED] WHATS_NEW_IN_THIS_VERSION>>
       saga_features: >-
-        <<ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA>>
+        <<[Optional.] ANY_FEATURES_ONLY_AVAILBLE_WHEN_RUNNING_ON_SAGA>>
+  android_details:
+    locales: 
+      - en-US
+      - <Add more supported locales>
 solana_mobile_dapp_publisher_portal:
-  google_store_package: <<ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION>>
+  google_store_package: <<[Optional] ANDROID_PACKAGE_NAME_OF_GOOGLE_PLAY_STORE_VERSION>>
   testing_instructions: >-
-    <<TESTING_INSTRUCTIONS. Please provide any test account details if applicable>>
+    <<[REQUIRED] TESTING_INSTRUCTIONS. Please provide any test account details if applicable>>
   alpha_testers: 
-    - address: <<genesis token wallet address>>
+    - address: <<Optional. genesis token wallet address>>
       comment: <<Optional. For internal use only>>
-    - address: <<genesis token wallet address>>
+    - address: <<Optional. genesis token wallet address>>
       comment: <<Optional. For internal use only>>
