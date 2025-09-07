@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import type { MetaplexFile, StorageDriver } from "@metaplex-foundation/js";
 import { createHash } from "crypto";
 
@@ -86,7 +87,7 @@ export class CachedStorageDriver implements StorageDriver {
     };
 
     await fs.promises.writeFile(
-      `${process.cwd()}/${this.assetManifestPath}`,
+      path.join(process.cwd(), this.assetManifestPath),
       // Something is really weird, I can't seem to stringify `this.assetManifest` straight-up. Here be dragons
       JSON.stringify({ assets: { ...this.assetManifest.assets } }, null, 2),
       "utf-8"
