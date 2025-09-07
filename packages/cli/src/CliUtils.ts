@@ -12,6 +12,7 @@ import { readFile } from 'fs/promises';
 const cliPackage = JSON.parse((await readFile(new URL("./package.json", import.meta.url))).toString());
 import boxen from "boxen";
 import ver from "semver";
+import path from "path";
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
 import { EnvVariables } from "./config/index.js";
 import { S3Client } from "@aws-sdk/client-s3";
@@ -25,7 +26,7 @@ export class Constants {
   static DEFAULT_PRIORITY_FEE = 500000;
 
   static getConfigFilePath = () => {
-    return `${process.cwd()}/${Constants.CONFIG_FILE_NAME}`;
+    return path.join(process.cwd(), Constants.CONFIG_FILE_NAME);
   };
 }
 
