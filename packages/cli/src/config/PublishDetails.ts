@@ -83,7 +83,7 @@ export const loadPublishDetailsWithChecks = async (
     throw new Error("Invalid path to APK file.");
   }
 
-  const developerOverridenLocales = config.release.android_details.locales
+  const developerOverridenLocales = config.release?.android_details?.locales
 
   if (buildToolsDir) {
     config.release.android_details = await getAndroidDetails(
@@ -438,11 +438,11 @@ export const writeToPublishDetails = async ({ app, release, lastSubmittedVersion
       ...currentConfig.release,
       address: release?.address ?? currentConfig.release.address,
       android_details: {
-        cert_fingerprint: release?.android_details?.cert_fingerprint ?? currentConfig.release.android_details.cert_fingerprint,
-        min_sdk: release?.android_details?.min_sdk ?? currentConfig.release.android_details.min_sdk,
-        version: release?.android_details?.version ?? currentConfig.release.android_details.version,
-        version_code: release?.android_details?.version_code ?? currentConfig.release.android_details.version_code,
-        locales: release?.android_details?.locales ?? currentConfig.release.android_details.locales
+        cert_fingerprint: release?.android_details?.cert_fingerprint ?? currentConfig.release.android_details?.cert_fingerprint,
+        min_sdk: release?.android_details?.min_sdk ?? currentConfig.release.android_details?.min_sdk,
+        version: release?.android_details?.version ?? currentConfig.release.android_details?.version,
+        version_code: release?.android_details?.version_code ?? currentConfig.release.android_details?.version_code,
+        locales: release?.android_details?.locales ?? currentConfig.release.android_details?.locales
       }
     },
     solana_mobile_dapp_publisher_portal: currentConfig.solana_mobile_dapp_publisher_portal,
