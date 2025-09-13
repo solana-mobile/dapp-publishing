@@ -2,11 +2,7 @@ import fs from "fs";
 import type { Connection } from "@solana/web3.js";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import debugModule from "debug";
-import {
-  IrysStorageDriver,
-  keypairIdentity,
-  Metaplex,
-} from "@metaplex-foundation/js";
+import { keypairIdentity, Metaplex, type MetaplexFile, type Amount, lamports } from "@metaplex-foundation/js";
 import updateNotifier from "update-notifier";
 import { readFile } from 'fs/promises';
 const cliPackage = JSON.parse((await readFile(new URL("./package.json", import.meta.url))).toString());
@@ -14,6 +10,7 @@ import boxen from "boxen";
 import ver from "semver";
 import path from "path";
 import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
+import { TurboStorageDriver } from "./upload/TurboStorageDriver.js";
 import { EnvVariables } from "./config/index.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
@@ -205,16 +202,23 @@ export const getMetaplexInstance = (
     const bucketPlugin = awsStorage(awsClient, s3Mgr.s3Config.bucketName);
     metaplex.use(bucketPlugin);
   } else {
-    const irysStorageDriver = isDevnet
-      ? new IrysStorageDriver(metaplex, {
-        address: "https://turbo.ardrive.dev",
-        providerUrl: Constants.DEFAULT_RPC_DEVNET,
-      })
-      : new IrysStorageDriver(metaplex, {
-        address: "https://turbo.ardrive.io",
-      });
+    const turboDriver = new TurboStorageDriver(
+      keypair,
+      isDevnet ? "devnet" : "mainnet",
+      Number(process.env.TURBO_BUFFER_PERCENTAGE || 20)
+    );
 
-    metaplex.storage().setDriver(irysStorageDriver);
+    const metaplexAdapter = {
+      async upload(file: MetaplexFile): Promise<string> {
+        return turboDriver.upload(file);
+      },
+      async getUploadPrice(bytes: number): Promise<Amount> {
+        const price = await turboDriver.getUploadPrice(bytes);
+        return lamports(price);
+      },
+    };
+
+    metaplex.storage().setDriver(metaplexAdapter);
   }
 
   metaplex.storage().setDriver(
