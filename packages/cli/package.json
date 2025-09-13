@@ -51,6 +51,7 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@ardrive/turbo-sdk": "^1.31.1",
     "@aws-sdk/client-s3": "^3.321.1",
     "@metaplex-foundation/js-plugin-aws": "^0.20.0",
     "@solana-mobile/dapp-store-publishing-tools": "workspace:0.13.0",
@@ -58,6 +59,7 @@
     "@types/semver": "^7.3.13",
     "ajv": "^8.11.0",
     "boxen": "^7.0.1",
+    "bs58": "^5.0.0",
     "chokidar": "^3.5.3",
     "commander": "^9.4.1",
     "debug": "^4.3.4",
