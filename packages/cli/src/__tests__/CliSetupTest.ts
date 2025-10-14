@@ -148,8 +148,8 @@ Commands:
   release [options]  Create a release
   help [command]     display help for command
 
-Release metadata requirements:
-  Ensure publisher.support_email is set in your config. Releases expose this to end users, while publisher.email remains for Solana Mobile outreach.
+Release metadata notes:
+  We include publisher.support_email when provided; if omitted we fall back to publisher.email.
 `;
 
   const createAppHelp = `Usage: dapp-store create app [options]

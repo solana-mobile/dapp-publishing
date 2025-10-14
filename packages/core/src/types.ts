@@ -43,7 +43,7 @@ export type Publisher = {
   name: string;
   website: string;
   email: string;
-  support_email: string;
+  support_email?: string;
 };
 
 export type App = {

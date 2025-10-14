@@ -2,7 +2,7 @@ publisher:
   name: <<[REQUIRED] YOUR_PUBLISHER_NAME>>
   website: <<[REQUIRED] URL_OF_PUBLISHER_WEBSITE>>
   email: <<[REQUIRED] EMAIL_ADDRESS_TO_CONTACT_PUBLISHER>>
-  support_email: <<[REQUIRED] SUPPORT_EMAIL_ADDRESS_FOR_END_USERS>>
+  support_email: <<[Optional] SUPPORT_EMAIL_ADDRESS_FOR_END_USERS>>
 app:
   name: <<[REQUIRED] APP_NAME>>
   address: ""

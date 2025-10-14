@@ -161,7 +161,7 @@ The following is a readable example instance with sample data filled in:
 }
 ```
 
-The `publisher_details` block includes both a `contact` address used by Solana Mobile to reach the publisher team directly and a `support_email` that is surfaced to end users in the dApp Store.
+The `publisher_details` block includes both a `contact` address used by Solana Mobile to reach the publisher team directly and a `support_email` that is surfaced to end users in the dApp Store. If `support_email` is omitted when we fallback to `contact`.
 
 ## App NFT JSON
 

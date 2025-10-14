@@ -18,7 +18,7 @@ try {
 
   schema["properties"]
     ["publisher"]
-    .required = ["name", "website", "email", "support_email"];
+    .required = ["name", "website", "email"];
 
   // Generator adds some keys/values we don't need & mess up validation
   delete schema.$schema;

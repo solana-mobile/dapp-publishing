@@ -52,7 +52,7 @@ function latestReleaseMessage() {
   const messages = [
     `- Banner Graphic image of size 1200x600px is now manadatory for publishing updates.`,
     `- Feature Graphic image of size 1200x1200px is required to be featured in Editor's choice carousel. (optional)`,
-    `- Release metadata must now include publisher.support_email (shown to end users) alongside publisher.email for Solana Mobile outreach.`,
+    `- Release metadata now publishes publisher.support_email when provided; otherwise we reuse publisher.email for end-user support.`,
   ].join('\n\n')
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
@@ -88,7 +88,6 @@ export const initCliCmd = mainCli
     })
   });
 
-
 export const createCliCmd = mainCli
   .command("create")
   .description("Create a `app`, or `release`")
@@ -97,8 +96,8 @@ createCliCmd.addHelpText(
   "after",
   [
     "",
-    "Release metadata requirements:",
-    "  Ensure publisher.support_email is set in your config. Releases expose this to end users, while publisher.email remains for Solana Mobile outreach.",
+    "Release metadata notes:",
+    "  We include publisher.support_email when provided; if omitted we fall back to publisher.email.",
   ].join("\n")
 );
 
