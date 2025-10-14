@@ -24,11 +24,11 @@ describe("Cli Setup & Execution", () => {
       getErrHelpWidth(): number { return 250;},
 
       writeOut(str: string) {
-        otherOutput = str;
+        otherOutput += str;
       },
 
       writeErr(str: string) {
-        errorOutput = str;
+        errorOutput += str;
       }
     });
   });
@@ -136,7 +136,7 @@ Options:
 
   const keyPairArgHelp = "error: required option '-k, --keypair <path-to-keypair-file>' not specified"
 
-  const createHelp = `Usage: dapp-store create [options] [command]
+const createHelp = `Usage: dapp-store create [options] [command]
 
 Create a \`app\`, or \`release\`
 
@@ -147,6 +147,9 @@ Commands:
   app [options]      Create a app
   release [options]  Create a release
   help [command]     display help for command
+
+Release metadata requirements:
+  Ensure publisher.support_email is set in your config. Releases expose this to end users, while publisher.email remains for Solana Mobile outreach.
 `;
 
   const createAppHelp = `Usage: dapp-store create app [options]
