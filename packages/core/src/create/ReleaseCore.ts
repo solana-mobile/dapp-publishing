@@ -130,6 +130,7 @@ export const createReleaseJson = async (
           name: publisherDetails.name,
           website: publisherDetails.website,
           contact: publisherDetails.email,
+          support_email: publisherDetails.support_email,
         },
         release_details: {
           updated_on: new Date().toISOString(),

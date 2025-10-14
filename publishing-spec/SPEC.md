@@ -161,6 +161,8 @@ The following is a readable example instance with sample data filled in:
 }
 ```
 
+The `publisher_details` block includes both a `contact` address used by Solana Mobile to reach the publisher team directly and a `support_email` that is surfaced to end users in the dApp Store.
+
 ## App NFT JSON
 
 All releases for a dApp store entry will be grouped under an "App" collection, which itself will be an NFT that contains JSON metadata representing “global” immutable data for a dApp’s catalog entry. This actually ends up being just _one_ extension property, the app package name.

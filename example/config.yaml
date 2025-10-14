@@ -2,6 +2,7 @@ publisher:
   name: Solana Mobile
   website: https://solanamobile.com
   email: hello@solanamobile.com
+  support_email: support@solanamobile.com
 app:
   name: Cute Kittens
   address: ''

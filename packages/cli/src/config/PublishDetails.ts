@@ -74,6 +74,10 @@ export const loadPublishDetailsWithChecks = async (
 ): Promise<PublishDetails> => {
   const config = await loadPublishDetails(Constants.getConfigFilePath());
 
+  if (!config.publisher?.support_email?.length) {
+    throw new Error("Please specify `publisher.support_email` in your configuration file. This email is displayed to dApp Store users for end-user support.");
+  }
+
   // We validate that the config is going to have at least one installable asset
   const apkEntry = config.release.files.find(
     (asset: PublishDetails["release"]["files"][0]) => asset.purpose === "install"

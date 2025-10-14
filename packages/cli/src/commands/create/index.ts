@@ -15,7 +15,7 @@ export * from "./CreateCliRelease.js";
 // Publisher
 // Public key attached to a publisher must also verify applications and releases
 // Most information here can be be edited after the fact
-// Only required fields are name, address, publisher website, and contact
+// Only required fields are name, address, publisher website, contact email, and support_email
 // Optional fields are: description, image_url (need dimensions!)
 
 // App

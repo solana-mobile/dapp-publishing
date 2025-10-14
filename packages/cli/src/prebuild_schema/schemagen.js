@@ -16,6 +16,10 @@ try {
     ["properties"]
     ["en-US"].required = ["short_description"];
 
+  schema["properties"]
+    ["publisher"]
+    .required = ["name", "website", "email", "support_email"];
+
   // Generator adds some keys/values we don't need & mess up validation
   delete schema.$schema;
   delete schema.title;
