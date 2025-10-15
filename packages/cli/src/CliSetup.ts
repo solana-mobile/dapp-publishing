@@ -52,6 +52,7 @@ function latestReleaseMessage() {
   const messages = [
     `- Banner Graphic image of size 1200x600px is now manadatory for publishing updates.`,
     `- Feature Graphic image of size 1200x1200px is required to be featured in Editor's choice carousel. (optional)`,
+    `- Release metadata now publishes publisher.support_email when provided; otherwise we reuse publisher.email for end-user support.`,
   ].join('\n\n')
   showMessage(
     `Publishing Tools Version ${ Constants.CLI_VERSION }`,
@@ -90,6 +91,15 @@ export const initCliCmd = mainCli
 export const createCliCmd = mainCli
   .command("create")
   .description("Create a `app`, or `release`")
+
+createCliCmd.addHelpText(
+  "after",
+  [
+    "",
+    "Release metadata notes:",
+    "  We include publisher.support_email when provided; if omitted we fall back to publisher.email.",
+  ].join("\n")
+);
 
 export const createAppCliCmd = createCliCmd
   .command("app")

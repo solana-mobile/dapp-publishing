@@ -53,9 +53,13 @@
                 "contact": {
                   "type": "string",
                   "pattern": "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+                },
+                "support_email": {
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
                 }
               },
-              "required": ["name", "website", "contact"]
+              "required": ["name", "website", "contact", "support_email"]
             },
             "release_details": {
               "type": "object",
