@@ -2,6 +2,10 @@
 
 NOTE: The versions referenced in this changelog relate only to the publishing JSON schema spec (for Publisher/App/Release) and not the versions of the CLI tooling. The CLI tooling is versioned independently. 
 
+## 0.4.0
+
+- Added `support_email` to the release schema's `publisher_details`, if `publisher.support_email` is not provided in config fallback to using `publisher.email`
+
 ## 0.3.0
 
 - `banner` value added to `android_details`'s `media` region of the release schema as optional field
