@@ -1,6 +1,6 @@
 {
   "name": "@solana-mobile/dapp-store-cli",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
@@ -54,7 +54,7 @@
     "@ardrive/turbo-sdk": "^1.31.1",
     "@aws-sdk/client-s3": "^3.321.1",
     "@metaplex-foundation/js-plugin-aws": "^0.20.0",
-    "@solana-mobile/dapp-store-publishing-tools": "workspace:0.13.1",
+    "@solana-mobile/dapp-store-publishing-tools": "workspace:0.14.0",
     "@solana/web3.js": "1.92.1",
     "@types/semver": "^7.3.13",
     "ajv": "^8.11.0",
