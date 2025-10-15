@@ -1,5 +1,5 @@
 
-## dApp Store NFT Specification - v0.3.0
+## dApp Store NFT Specification - v0.4.0
 
 The following is documentation of the NFT & JSON metadata specification for the dApp store.
 
@@ -25,7 +25,7 @@ The following is a readable example instance with sample data filled in:
 
 ```json
 {
-  "schema_version": "v0.3.0",
+  "schema_version": "v0.4.0",
   "name": "Wallet-visible name; 32 char limit [Metaplex compatibility]",
   "description": "Wallet-visible description [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
@@ -173,7 +173,7 @@ The following is a readable example instance with sample data filled in:
 
 ```json
 {
-  "schema_version": "v0.3.0",
+  "schema_version": "v0.4.0",
   "name": "Wallet-visible collection name - 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
@@ -204,7 +204,7 @@ The following is a readable example instance with sample data filled in:
 
 ```json
 {
-  "schema_version": "v0.3.0",
+  "schema_version": "v0.4.0",
   "name": "Wallet-visible Publisher; 32 char limit [Metaplex compatibility]",
   "image": "http://cdn.org/wallet_display.png [Metaplex compatibility]",
   "properties": {
