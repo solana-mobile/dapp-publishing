@@ -142,8 +142,8 @@ export class TurboStorageDriver {
         }
 
         const wincPerSol = BigInt(String(exchangeRate.winc));
-        const lamportsNeeded =
-          (wincAmount * BigInt(CONSTANTS.SOL_IN_LAMPORTS)) / wincPerSol;
+        // Manual ceiling division for bigint
+        const lamportsNeeded = (wincAmount * BigInt(CONSTANTS.SOL_IN_LAMPORTS) + wincPerSol - 1n) / wincPerSol;
 
         debug(
           `Buying ${wincAmount} Winston Credits for ~${
