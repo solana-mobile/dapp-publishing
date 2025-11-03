@@ -137,6 +137,11 @@ export class TurboStorageDriver {
   }
 
   private async topUpCredits(wincAmount: bigint): Promise<void> {
+    if (wincAmount === 0n) {
+      debug("No Winston Credits requested; skipping top-up.");
+      return;
+    }
+
     try {
       await this.withRetry(async () => {
         const exchangeRate = await this.turbo.getWincForToken?.({
