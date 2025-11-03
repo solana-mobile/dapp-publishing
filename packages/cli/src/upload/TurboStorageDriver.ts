@@ -22,11 +22,17 @@ interface TurboClient {
   }): Promise<{ id: string }>;
 }
 
+const SOL_IN_LAMPORTS = 1_000_000_000;
+const MIN_TOP_UP_LAMPORTS = 1_000_000;
+const MIN_TOP_UP_SOL = MIN_TOP_UP_LAMPORTS / SOL_IN_LAMPORTS;
+
 const CONSTANTS = {
   FREE_UPLOAD_LIMIT: 97_280, // 95 KiB
   UPLOAD_DELAY_MS: 2000,
   MAX_RETRIES: 5,
-  SOL_IN_LAMPORTS: 1_000_000_000,
+  SOL_IN_LAMPORTS,
+  MIN_TOP_UP_SOL,
+  MIN_TOP_UP_LAMPORTS,
   BACKOFF: {
     BASE_MS: 500,
     MAX_MS: 8000,
@@ -131,6 +137,11 @@ export class TurboStorageDriver {
   }
 
   private async topUpCredits(wincAmount: bigint): Promise<void> {
+    if (wincAmount === 0n) {
+      debug("No Winston Credits requested; skipping top-up.");
+      return;
+    }
+
     try {
       await this.withRetry(async () => {
         const exchangeRate = await this.turbo.getWincForToken?.({
@@ -142,17 +153,35 @@ export class TurboStorageDriver {
         }
 
         const wincPerSol = BigInt(String(exchangeRate.winc));
-        const lamportsNeeded =
-          (wincAmount * BigInt(CONSTANTS.SOL_IN_LAMPORTS)) / wincPerSol;
+        if (wincPerSol <= 0n) {
+          throw new Error("Invalid Winston Credits exchange rate");
+        }
+
+        const solInLamports = BigInt(CONSTANTS.SOL_IN_LAMPORTS);
+        const numerator = wincAmount * solInLamports;
+        const lamportsCalculated =
+          (numerator + (wincPerSol - 1n)) / wincPerSol;
+
+        const minLamports = BigInt(CONSTANTS.MIN_TOP_UP_LAMPORTS);
+        const lamportsToUse =
+          lamportsCalculated < minLamports ? minLamports : lamportsCalculated;
+
+        if (lamportsToUse > lamportsCalculated) {
+          debug(
+            `Applying minimum top-up of ${CONSTANTS.MIN_TOP_UP_SOL} SOL (${CONSTANTS.MIN_TOP_UP_LAMPORTS} lamports)`
+          );
+        }
+        const solAmount =
+          Number(lamportsToUse) / CONSTANTS.SOL_IN_LAMPORTS;
 
         debug(
-          `Buying ${wincAmount} Winston Credits for ~${
-            Number(lamportsNeeded) / 1e9
-          } SOL`
+          `Buying at least ${wincAmount} Winston Credits (~${solAmount.toFixed(9)} SOL / ${lamportsToUse} lamports)`
         );
 
         await this.turbo.topUpWithTokens?.({
-          tokenAmount: String(lamportToTokenAmount(lamportsNeeded.toString())),
+          tokenAmount: String(
+            lamportToTokenAmount(lamportsToUse.toString())
+          ),
         });
 
         debug(`Top-up initiated for ${wincAmount} Winston Credits`);
