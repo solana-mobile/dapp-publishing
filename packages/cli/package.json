@@ -51,7 +51,7 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
-    "@ardrive/turbo-sdk": "^1.31.1",
+    "@ardrive/turbo-sdk": "^1.41.0",
     "@aws-sdk/client-s3": "^3.321.1",
     "@metaplex-foundation/js-plugin-aws": "^0.20.0",
     "@solana-mobile/dapp-store-publishing-tools": "workspace:0.15.0",
