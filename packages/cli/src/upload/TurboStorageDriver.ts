@@ -3,6 +3,7 @@ import type { MetaplexFile } from "@metaplex-foundation/js";
 import { TurboFactory, lamportToTokenAmount } from "@ardrive/turbo-sdk";
 import bs58 from "bs58";
 import debugModule from "debug";
+import { buildPublicContentUrl, type StorageNetwork } from "./contentGateway.js";
 
 const debug = debugModule("cli:turbo-storage");
 
@@ -22,6 +23,12 @@ interface TurboClient {
   }): Promise<{ id: string }>;
 }
 
+type TurboServiceConfig = {
+  gatewayUrl?: string;
+  paymentServiceConfig?: { url: string };
+  uploadServiceConfig?: { url: string };
+};
+
 const SOL_IN_LAMPORTS = 1_000_000_000;
 const MIN_TOP_UP_LAMPORTS = 1_000_000;
 const MIN_TOP_UP_SOL = MIN_TOP_UP_LAMPORTS / SOL_IN_LAMPORTS;
@@ -37,9 +44,12 @@ const CONSTANTS = {
     BASE_MS: 500,
     MAX_MS: 8000,
   },
-  GATEWAYS: {
-    devnet: "https://turbo.ardrive.dev/raw",
-    mainnet: "https://arweave.net",
+  SERVICE_URLS: {
+    devnet: {
+      gatewayUrl: "https://api.devnet.solana.com",
+      uploadServiceConfig: { url: "https://upload.ardrive.dev" },
+      paymentServiceConfig: { url: "https://payment.ardrive.dev" },
+    },
   },
 } as const;
 
@@ -49,7 +59,7 @@ const delay = (ms: number): Promise<void> =>
 export class TurboStorageDriver {
   private turbo: TurboClient;
   private bufferPercentage: number;
-  private network: "devnet" | "mainnet";
+  private network: StorageNetwork;
 
   private uploadQueue: Array<{
     file: MetaplexFile;
@@ -60,7 +70,7 @@ export class TurboStorageDriver {
 
   constructor(
     keypair: Keypair,
-    network: "devnet" | "mainnet" = "mainnet",
+    network: StorageNetwork = "mainnet",
     bufferPercentage = 20
   ) {
     this.network = network;
@@ -69,16 +79,8 @@ export class TurboStorageDriver {
     this.turbo = TurboFactory.authenticated({
       privateKey: bs58.encode(keypair.secretKey),
       token: "solana",
-      ...this.getServiceUrls(network === "devnet"),
+      ...getTurboServiceConfig(network),
     }) as TurboClient;
-  }
-
-  private getServiceUrls(isDev: boolean) {
-    const base = isDev ? "ardrive.dev" : "ardrive.io";
-    return {
-      uploadUrl: `https://upload.${base}`,
-      paymentUrl: `https://payment.${base}`,
-    };
   }
 
   async getUploadPrice(bytes: number): Promise<bigint> {
@@ -248,8 +250,7 @@ export class TurboStorageDriver {
           dataItemOpts: { tags },
         });
 
-        const gateway = CONSTANTS.GATEWAYS[this.network];
-        const url = `${gateway}/${uploadResult.id}`;
+        const url = buildPublicContentUrl(uploadResult.id, this.network);
         debug(`Upload complete: ${url}`);
         item.resolve(url);
 
@@ -275,3 +276,8 @@ export class TurboStorageDriver {
     });
   }
 }
+
+export const getTurboServiceConfig = (
+  network: StorageNetwork
+): TurboServiceConfig =>
+  network === "devnet" ? CONSTANTS.SERVICE_URLS.devnet : {};

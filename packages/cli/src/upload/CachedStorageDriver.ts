@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { MetaplexFile, StorageDriver } from "@metaplex-foundation/js";
 import { createHash } from "crypto";
+import { normalizePublicContentUrl } from "./contentGateway.js";
 
 type URI = string;
 
@@ -44,11 +45,83 @@ export class CachedStorageDriver implements StorageDriver {
     return this.storageDriver.getUploadPrice(bytes);
   }
 
+  private resolveAssetManifestPath(filename = this.assetManifestPath): string {
+    return path.resolve(process.cwd(), filename);
+  }
+
+  private normalizeAsset(
+    filename: string,
+    asset: unknown
+  ): Asset | undefined {
+    if (!asset || typeof asset !== "object") return;
+
+    const candidate = asset as Partial<Asset>;
+    const pathValue =
+      typeof candidate.path === "string" ? candidate.path : filename;
+
+    if (
+      typeof candidate.sha256 !== "string" ||
+      typeof candidate.uri !== "string"
+    ) {
+      return;
+    }
+
+    return {
+      path: pathValue,
+      sha256: candidate.sha256,
+      uri: candidate.uri,
+    };
+  }
+
+  private normalizeAssetManifest(
+    assetManifest: Partial<AssetManifestSchema> | undefined
+  ): AssetManifestSchema | undefined {
+    if (!assetManifest || typeof assetManifest !== "object") return;
+
+    const assets: Record<string, Asset> = {};
+    const assetEntries =
+      assetManifest.assets && typeof assetManifest.assets === "object"
+        ? Object.entries(assetManifest.assets)
+        : [];
+
+    for (const [filename, asset] of assetEntries) {
+      const normalizedAsset = this.normalizeAsset(filename, asset);
+      if (normalizedAsset) {
+        assets[filename] = normalizedAsset;
+      }
+    }
+
+    return {
+      schema_version:
+        typeof assetManifest.schema_version === "string"
+          ? assetManifest.schema_version
+          : CachedStorageDriver.SCHEMA_VERSION,
+      assets,
+    };
+  }
+
+  private async writeAssetManifest(): Promise<void> {
+    const normalizedAssetManifest = this.normalizeAssetManifest(
+      this.assetManifest
+    );
+
+    if (!normalizedAssetManifest) {
+      throw new Error("Asset manifest is not serializable");
+    }
+
+    this.assetManifest = normalizedAssetManifest;
+    await fs.promises.writeFile(
+      this.resolveAssetManifestPath(),
+      JSON.stringify(this.assetManifest, null, 2),
+      "utf-8"
+    );
+  }
+
   loadAssetManifest(filename: string): AssetManifestSchema | undefined {
     try {
-      return JSON.parse(
-        fs.readFileSync(filename, "utf-8")
-      ) as AssetManifestSchema;
+      return this.normalizeAssetManifest(
+        JSON.parse(fs.readFileSync(this.resolveAssetManifestPath(filename), "utf-8"))
+      );
     } catch (error) {
       console.warn(`Failed opening ${filename}; initializing with a blank asset manifest`);
       return;
@@ -65,20 +138,32 @@ export class CachedStorageDriver implements StorageDriver {
   async upload(file: MetaplexFile): Promise<string> {
     // `inline.json` is the NFT-related metadata. This data is not stable so we'll skip the caching step
     if (file.fileName === "inline.json") {
-      return await this.storageDriver.upload(file);
+      return normalizePublicContentUrl(await this.storageDriver.upload(file));
     }
     const hash = createHash("sha256").update(file.buffer).digest("base64");
 
     const uploadedAsset = this.uploadedAsset(file.fileName, { sha256: hash });
     if (uploadedAsset) {
+      const normalizedUri = normalizePublicContentUrl(uploadedAsset.uri);
+      if (normalizedUri !== uploadedAsset.uri) {
+        uploadedAsset.uri = normalizedUri;
+        try {
+          await this.writeAssetManifest();
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          console.warn(
+            `Failed to rewrite ${this.assetManifestPath}; continuing with normalized URL: ${message}`
+          );
+        }
+      }
       console.log(
-        `Asset ${file.fileName} already uploaded at ${uploadedAsset.uri}`
+        `Asset ${file.fileName} already uploaded at ${normalizedUri}`
       );
-      return uploadedAsset.uri;
+      return normalizedUri;
     }
 
     console.log(`Uploading ${file.fileName}`);
-    const uri = await this.storageDriver.upload(file);
+    const uri = normalizePublicContentUrl(await this.storageDriver.upload(file));
 
     this.assetManifest.assets[file.fileName] = {
       path: file.fileName,
@@ -86,12 +171,7 @@ export class CachedStorageDriver implements StorageDriver {
       uri,
     };
 
-    await fs.promises.writeFile(
-      path.join(process.cwd(), this.assetManifestPath),
-      // Something is really weird, I can't seem to stringify `this.assetManifest` straight-up. Here be dragons
-      JSON.stringify({ assets: { ...this.assetManifest.assets } }, null, 2),
-      "utf-8"
-    );
+    await this.writeAssetManifest();
     console.log(`${file.fileName} uploaded at ${uri}`)
 
     return uri;
