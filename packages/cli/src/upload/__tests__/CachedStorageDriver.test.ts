@@ -2,6 +2,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { createHash } from "crypto";
+import { jest } from "@jest/globals";
 import type { MetaplexFile, StorageDriver } from "@metaplex-foundation/js";
 import { CachedStorageDriver } from "../CachedStorageDriver";
 
@@ -72,6 +73,54 @@ describe("CachedStorageDriver", () => {
     );
   });
 
+  test("supports absolute asset manifest paths", async () => {
+    const file = makeMetaplexFile("absolute-icon.png", Buffer.from("cached-asset"));
+    const hash = hashBuffer(file.buffer);
+    const manifestPath = path.join(tempDir, ".asset-manifest.json");
+
+    fs.writeFileSync(
+      manifestPath,
+      JSON.stringify(
+        {
+          assets: {
+            [file.fileName]: {
+              path: file.fileName,
+              sha256: hash,
+              uri: "https://arweave.net/absolute-id",
+            },
+          },
+        },
+        null,
+        2
+      )
+    );
+
+    let uploadCalls = 0;
+    const storageDriver: MockStorageDriver = {
+      getUploadPrice: async (_bytes: number) => {
+        throw new Error("getUploadPrice should not be called in this test");
+      },
+      upload: async (_file: MetaplexFile) => {
+        uploadCalls += 1;
+        throw new Error("upload should not be called in this test");
+      },
+    };
+
+    const driver = new CachedStorageDriver(storageDriver as StorageDriver, {
+      assetManifestPath: manifestPath,
+    });
+
+    await expect(driver.upload(file)).resolves.toBe(
+      "https://dappstorecontent.com/absolute-id"
+    );
+    expect(uploadCalls).toBe(0);
+
+    const rewrittenManifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+    expect(rewrittenManifest.assets[file.fileName].uri).toBe(
+      "https://dappstorecontent.com/absolute-id"
+    );
+  });
+
   test("normalizes fresh uploads before persisting them in the manifest", async () => {
     const file = makeMetaplexFile("banner.png", Buffer.from("fresh-asset"));
     const manifestPath = ".asset-manifest.json";
@@ -129,6 +178,61 @@ describe("CachedStorageDriver", () => {
     expect(fs.existsSync(path.join(tempDir, ".asset-manifest.json"))).toBe(
       false
     );
+  });
+
+  test("returns a normalized cached URL even when manifest rewrite persistence fails", async () => {
+    const file = makeMetaplexFile("icon.png", Buffer.from("cached-asset"));
+    const hash = hashBuffer(file.buffer);
+    const manifestPath = ".asset-manifest.json";
+
+    fs.writeFileSync(
+      path.join(tempDir, manifestPath),
+      JSON.stringify(
+        {
+          assets: {
+            [file.fileName]: {
+              path: file.fileName,
+              sha256: hash,
+              uri: "https://arweave.net/rewrite-failure-id",
+            },
+          },
+        },
+        null,
+        2
+      )
+    );
+
+    const writeFileSpy = jest
+      .spyOn(fs.promises, "writeFile")
+      .mockRejectedValueOnce(new Error("disk full"));
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+
+    const storageDriver: MockStorageDriver = {
+      getUploadPrice: async (_bytes: number) => {
+        throw new Error("getUploadPrice should not be called in this test");
+      },
+      upload: async (_file: MetaplexFile) => {
+        throw new Error("upload should not be called in this test");
+      },
+    };
+
+    const driver = new CachedStorageDriver(storageDriver as StorageDriver, {
+      assetManifestPath: manifestPath,
+    });
+
+    try {
+      await expect(driver.upload(file)).resolves.toBe(
+        "https://dappstorecontent.com/rewrite-failure-id"
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Failed to rewrite .asset-manifest.json; continuing with normalized URL"
+        )
+      );
+    } finally {
+      writeFileSpy.mockRestore();
+      warnSpy.mockRestore();
+    }
   });
 });
 

@@ -45,8 +45,8 @@ export class CachedStorageDriver implements StorageDriver {
     return this.storageDriver.getUploadPrice(bytes);
   }
 
-  private resolveAssetManifestPath(): string {
-    return path.join(process.cwd(), this.assetManifestPath);
+  private resolveAssetManifestPath(filename = this.assetManifestPath): string {
+    return path.resolve(process.cwd(), filename);
   }
 
   private normalizeAsset(
@@ -120,7 +120,7 @@ export class CachedStorageDriver implements StorageDriver {
   loadAssetManifest(filename: string): AssetManifestSchema | undefined {
     try {
       return this.normalizeAssetManifest(
-        JSON.parse(fs.readFileSync(this.resolveAssetManifestPath(), "utf-8"))
+        JSON.parse(fs.readFileSync(this.resolveAssetManifestPath(filename), "utf-8"))
       );
     } catch (error) {
       console.warn(`Failed opening ${filename}; initializing with a blank asset manifest`);
@@ -147,7 +147,14 @@ export class CachedStorageDriver implements StorageDriver {
       const normalizedUri = normalizePublicContentUrl(uploadedAsset.uri);
       if (normalizedUri !== uploadedAsset.uri) {
         uploadedAsset.uri = normalizedUri;
-        await this.writeAssetManifest();
+        try {
+          await this.writeAssetManifest();
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          console.warn(
+            `Failed to rewrite ${this.assetManifestPath}; continuing with normalized URL: ${message}`
+          );
+        }
       }
       console.log(
         `Asset ${file.fileName} already uploaded at ${normalizedUri}`
