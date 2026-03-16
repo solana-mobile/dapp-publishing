@@ -1,6 +1,5 @@
 import { beforeEach, expect } from "@jest/globals";
 import {
-  createAppCliCmd,
   createCliCmd,
   createReleaseCliCmd,
   initCliCmd,
@@ -70,25 +69,6 @@ describe("Cli Setup & Execution", () => {
     expect(errorOutput).toEqual(createHelp)
   });
 
-  test("Calling create app command with no arguments warns about required argument", () => {
-    createAppCliCmd.exitOverride()
-
-    expect(() => {
-      createAppCliCmd.parse(["dapp-store", "create", "app"]);
-      }
-    ).toThrow(keyPairArgHelp);
-  });
-
-  test("Calling create app command with help flag shows contextual help", () => {
-    createAppCliCmd.exitOverride()
-
-    expect(() => {
-      createAppCliCmd.parse(["dapp-store", "create", "app", "-h"]);
-    }).toThrow(outputHelpReference)
-
-    expect(otherOutput).toEqual(createAppHelp)
-  });
-
   test("Calling create release command with no arguments warns about required argument", () => {
     createReleaseCliCmd.exitOverride()
 
@@ -120,7 +100,7 @@ Options:
 
 Commands:
   init                First-time initialization of tooling configuration
-  create              Create a \`app\`, or \`release\`
+  create              Create a \`release\` NFT
   validate [options]  Validates details prior to publishing
   publish             Submit a publishing request (\`submit\`, \`update\`, \`remove\`, or \`support\`) to the Solana Mobile dApp publisher portal
   help [command]      display help for command
@@ -138,31 +118,17 @@ Options:
 
 const createHelp = `Usage: dapp-store create [options] [command]
 
-Create a \`app\`, or \`release\`
+Create a \`release\` NFT
 
 Options:
   -h, --help         display help for command
 
 Commands:
-  app [options]      Create a app
   release [options]  Create a release
   help [command]     display help for command
 
 Release metadata notes:
   We include publisher.support_email when provided; if omitted we fall back to publisher.email.
-`;
-
-  const createAppHelp = `Usage: dapp-store create app [options]
-
-Create a app
-
-Options:
-  -k, --keypair <path-to-keypair-file>                 Path to keypair file
-  -u, --url <url>                                      RPC URL (default: "https://api.devnet.solana.com")
-  -d, --dry-run                                        Flag for dry run. Doesn't mint an NFT
-  -s, --storage-config <storage-config>                Provide alternative storage configuration details
-  -p, --priority-fee-lamports <priority-fee-lamports>  Priority Fee lamports
-  -h, --help                                           display help for command
 `;
 
   const createReleaseHelp = `Usage: dapp-store create release [options]
