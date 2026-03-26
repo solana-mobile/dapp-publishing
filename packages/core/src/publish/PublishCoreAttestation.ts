@@ -1,31 +1,26 @@
-import { Connection } from "@solana/web3.js";
-import { SignWithPublisherKeypair } from "./types";
+import { Connection } from '@solana/web3.js';
 
-//
-// Construct and sign attestation payloads
-//
+import {
+  createAttestationPayload as createPortalAttestationPayload,
+  type PublicationAttestationResult,
+} from '../portal/attestation.js';
 
-type Attestation = {
-  slot_number: number;
-  blockhash: string;
-  request_unique_id: string;
-};
+export type SignWithPublisherKeypair = (buf: Buffer) => Buffer;
 
-export const createAttestationPayload = async (connection: Connection, sign: SignWithPublisherKeypair) => {
-  const REQUEST_UNIQUE_ID_LEN = 32;
-  const REQUEST_UNIQUE_ID_CHAR_SET = "0123456789";
-  const requestUniqueId = Array(REQUEST_UNIQUE_ID_LEN).fill(undefined).map((_) =>
-    REQUEST_UNIQUE_ID_CHAR_SET.charAt(Math.floor(Math.random() * REQUEST_UNIQUE_ID_CHAR_SET.length))
-  ).join("")
+type Attestation = PublicationAttestationResult;
 
-  const blockhash = await connection.getLatestBlockhashAndContext("finalized");
-
-  const attestation: Attestation = {
-    slot_number: blockhash.context.slot,
-    blockhash: blockhash.value.blockhash,
-    request_unique_id: requestUniqueId
-  };
-  const signedAttestation = sign(Buffer.from(JSON.stringify(attestation)));
-
-  return { attestationPayload: Buffer.from(signedAttestation.buffer).toString("base64"), requestUniqueId };
+export const createAttestationPayload = async (
+  connection: Connection,
+  sign: SignWithPublisherKeypair,
+): Promise<Attestation> => {
+  const blockhash = await connection.getLatestBlockhashAndContext('finalized');
+  return createPortalAttestationPayload(
+    {
+      slot: blockhash.context.slot,
+      blockhash: blockhash.value.blockhash,
+    },
+    {
+      signMessage: async (message: Uint8Array) => sign(Buffer.from(message)),
+    },
+  );
 };

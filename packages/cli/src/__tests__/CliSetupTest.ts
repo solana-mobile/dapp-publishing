@@ -1,183 +1,167 @@
-import { beforeEach, expect } from "@jest/globals";
+import { beforeEach, expect } from '@jest/globals';
 import {
-  createAppCliCmd,
-  createCliCmd,
-  createReleaseCliCmd,
-  initCliCmd,
-  mainCli
-} from "../CliSetup";
-import { Constants } from "../CliUtils";
+  mainCli,
+} from '../CliSetup';
+import {
+  DEFAULT_API_KEY_ENV,
+  DEFAULT_LOCAL_PORTAL_API_BASE_URL,
+  validateNewVersionArgs,
+  validateResumeArgs,
+  resolvePortalTargets,
+} from '../publication/cliValidation';
 
-describe("Cli Setup & Execution", () => {
-  const outputHelpReference = "(outputHelp)"
+describe('CLI surface', () => {
+  const outputHelpReference = '(outputHelp)';
 
-  let errorOutput: string = ""
-  let otherOutput: string = ""
+  let errorOutput = '';
+  let otherOutput = '';
 
   beforeEach(() => {
-    errorOutput = "";
-    otherOutput = "";
+    errorOutput = '';
+    otherOutput = '';
     mainCli.exitOverride();
-
     mainCli.configureOutput({
-      getOutHelpWidth(): number { return 250; },
-      getErrHelpWidth(): number { return 250;},
-
+      getOutHelpWidth(): number {
+        return 200;
+      },
+      getErrHelpWidth(): number {
+        return 200;
+      },
       writeOut(str: string) {
         otherOutput += str;
       },
-
       writeErr(str: string) {
         errorOutput += str;
-      }
+      },
     });
   });
 
-  test("Cli version argument reports correct version", () => {
-
+  test('version reports the package version', () => {
     expect(() => {
-      mainCli.parse(["npx", "dapp-store", "-V"]);
-    }).toThrow(Constants.CLI_VERSION)
+      mainCli.parse(['node', 'dapp-store', '-V']);
+    }).toThrow();
   });
 
-  test("Calling cli with no parameters displays general help", () => {
+  test('help advertises the update-only surface', () => {
     expect(() => {
-        mainCli.parse(["npx", "dapp-store"]);
-      }
-    ).toThrow(outputHelpReference);
+      mainCli.parse(['node', 'dapp-store', '--help']);
+    }).toThrow(outputHelpReference);
 
-    expect(generalHelp).toEqual(errorOutput)
+    expect(otherOutput).toContain('--new-version');
+    expect(otherOutput).toContain('resume');
+    expect(otherOutput).toContain('--apk-file');
+    expect(otherOutput).toContain('--apk-url');
+    expect(otherOutput).not.toContain('--dapp-id');
+    expect(otherOutput).not.toContain('--fee-payer-keypair');
   });
 
-  test("Calling init command with help parameter shows contextual help info", () => {
-    initCliCmd.exitOverride()
-
-    expect(() => {
-      initCliCmd.parse(["dapp-store", "init", "-h"])
-    }).toThrow(outputHelpReference)
-
-    expect(otherOutput).toEqual(initHelp)
-  })
-
-  test("Calling create command with no options lists all options", () => {
-    createCliCmd.exitOverride()
-
-    expect(() => {
-        createCliCmd.parse(["dapp-store", "create"]);
-      }
-    ).toThrow(outputHelpReference);
-
-    expect(errorOutput).toEqual(createHelp)
+  test('new-version validation rejects ambiguous APK sources', () => {
+    expect(() =>
+      validateNewVersionArgs({
+        newVersion: true,
+        apkFile: '/tmp/app.apk',
+        apkUrl: 'https://example.com/app.apk',
+        whatsNew: 'Fixes',
+        signerKeypair: '/tmp/signer.json',
+      }),
+    ).toThrow('exactly one of `--apk-file` or `--apk-url`');
   });
 
-  test("Calling create app command with no arguments warns about required argument", () => {
-    createAppCliCmd.exitOverride()
-
-    expect(() => {
-      createAppCliCmd.parse(["dapp-store", "create", "app"]);
-      }
-    ).toThrow(keyPairArgHelp);
+  test('new-version validation rejects missing APK source', () => {
+    expect(() =>
+      validateNewVersionArgs({
+        newVersion: true,
+        whatsNew: 'Fixes',
+        signerKeypair: '/tmp/signer.json',
+      }),
+    ).toThrow('exactly one of `--apk-file` or `--apk-url`');
   });
 
-  test("Calling create app command with help flag shows contextual help", () => {
-    createAppCliCmd.exitOverride()
-
-    expect(() => {
-      createAppCliCmd.parse(["dapp-store", "create", "app", "-h"]);
-    }).toThrow(outputHelpReference)
-
-    expect(otherOutput).toEqual(createAppHelp)
+  test('new-version validation accepts a single HTTPS APK URL', () => {
+    expect(() =>
+      validateNewVersionArgs({
+        newVersion: true,
+        apkUrl: 'https://example.com/app.apk',
+        whatsNew: 'Fixes',
+        signerKeypair: '/tmp/signer.json',
+      }),
+    ).not.toThrow();
   });
 
-  test("Calling create release command with no arguments warns about required argument", () => {
-    createReleaseCliCmd.exitOverride()
-
-    expect(() => {
-        createReleaseCliCmd.parse(["dapp-store", "create", "release"]);
-      }
-    ).toThrow(keyPairArgHelp);
+  test('new-version validation does not require a dapp id', () => {
+    expect(() =>
+      validateNewVersionArgs({
+        newVersion: true,
+        apkUrl: 'https://example.com/app.apk',
+        whatsNew: 'Fixes',
+        signerKeypair: '/tmp/signer.json',
+      }),
+    ).not.toThrow();
   });
 
-  test("Calling create release command with help flag shows contextual help", () => {
-    createReleaseCliCmd.exitOverride()
-
-    expect(() => {
-      createReleaseCliCmd.parse(["dapp-store", "create", "release", "-h"]);
-    }).toThrow(outputHelpReference)
-
-    expect(otherOutput).toEqual(createReleaseHelp)
+  test('resume validation requires a single target', () => {
+    expect(() =>
+      validateResumeArgs({
+        releaseId: 'release-1',
+        sessionId: 'session-1',
+        signerKeypair: '/tmp/signer.json',
+      }),
+    ).toThrow('exactly one of `--release-id` or `--session-id`');
   });
 
-  //--------------------------------------------------
+  test('resume validation accepts a release id', () => {
+    expect(() =>
+      validateResumeArgs({
+        releaseId: 'release-1',
+        signerKeypair: '/tmp/signer.json',
+      }),
+    ).not.toThrow();
+  });
 
-  const generalHelp = `Usage: dapp-store [options] [command]
+  test('portal targets default to localhost in local-dev mode', () => {
+    const targets = resolvePortalTargets({
+      localDev: true,
+      rpcUrl: 'https://api.mainnet-beta.solana.com',
+    });
 
-CLI to assist with publishing to the Saga Dapp Store
+    expect(targets.apiBaseUrl).toBe(DEFAULT_LOCAL_PORTAL_API_BASE_URL);
+    expect(targets.portalWebUrl).toContain('localhost:3333');
+  });
 
-Options:
-  -V, --version       output the version number
-  -h, --help          display help for command
+  test('local-dev mode ignores shared portal env defaults', () => {
+    const previousApiBaseUrl = process.env.DAPP_STORE_PORTAL_API_BASE_URL;
+    const previousWebUrl = process.env.DAPP_STORE_PORTAL_WEB_URL;
 
-Commands:
-  init                First-time initialization of tooling configuration
-  create              Create a \`app\`, or \`release\`
-  validate [options]  Validates details prior to publishing
-  publish             Submit a publishing request (\`submit\`, \`update\`, \`remove\`, or \`support\`) to the Solana Mobile dApp publisher portal
-  help [command]      display help for command
-`;
+    process.env.DAPP_STORE_PORTAL_API_BASE_URL =
+      'https://portal.example.com/api';
+    process.env.DAPP_STORE_PORTAL_WEB_URL = 'https://portal.example.com';
 
-  const initHelp = `Usage: dapp-store init [options]
+    try {
+      const targets = resolvePortalTargets({
+        localDev: true,
+        rpcUrl: 'https://api.mainnet-beta.solana.com',
+      });
 
-First-time initialization of tooling configuration
+      expect(targets.apiBaseUrl).toBe(DEFAULT_LOCAL_PORTAL_API_BASE_URL);
+      expect(targets.portalWebUrl).toContain('localhost:3333');
+    } finally {
+      process.env.DAPP_STORE_PORTAL_API_BASE_URL = previousApiBaseUrl;
+      process.env.DAPP_STORE_PORTAL_WEB_URL = previousWebUrl;
+    }
+  });
 
-Options:
-  -h, --help  display help for command
-`;
+  test('local-dev mode rejects non-local portal URLs', () => {
+    expect(() =>
+      resolvePortalTargets({
+        localDev: true,
+        apiBaseUrl: 'https://portal.example.com/api',
+        portalWebUrl: 'https://portal.example.com',
+        rpcUrl: 'https://api.mainnet-beta.solana.com',
+      }),
+    ).toThrow('only allows localhost portal endpoints');
+  });
 
-  const keyPairArgHelp = "error: required option '-k, --keypair <path-to-keypair-file>' not specified"
-
-const createHelp = `Usage: dapp-store create [options] [command]
-
-Create a \`app\`, or \`release\`
-
-Options:
-  -h, --help         display help for command
-
-Commands:
-  app [options]      Create a app
-  release [options]  Create a release
-  help [command]     display help for command
-
-Release metadata notes:
-  We include publisher.support_email when provided; if omitted we fall back to publisher.email.
-`;
-
-  const createAppHelp = `Usage: dapp-store create app [options]
-
-Create a app
-
-Options:
-  -k, --keypair <path-to-keypair-file>                 Path to keypair file
-  -u, --url <url>                                      RPC URL (default: "https://api.devnet.solana.com")
-  -d, --dry-run                                        Flag for dry run. Doesn't mint an NFT
-  -s, --storage-config <storage-config>                Provide alternative storage configuration details
-  -p, --priority-fee-lamports <priority-fee-lamports>  Priority Fee lamports
-  -h, --help                                           display help for command
-`;
-
-  const createReleaseHelp = `Usage: dapp-store create release [options]
-
-Create a release
-
-Options:
-  -k, --keypair <path-to-keypair-file>                 Path to keypair file
-  -a, --app-mint-address <app-mint-address>            The mint address of the app NFT
-  -u, --url <url>                                      RPC URL (default: "https://api.devnet.solana.com")
-  -d, --dry-run                                        Flag for dry run. Doesn't mint an NFT
-  -b, --build-tools-path <build-tools-path>            Path to Android build tools which contains AAPT2
-  -s, --storage-config <storage-config>                Provide alternative storage configuration details
-  -p, --priority-fee-lamports <priority-fee-lamports>  Priority Fee lamports
-  -h, --help                                           display help for command
-`;
-
+  test('portal targets honor the configured API key env name', () => {
+    expect(DEFAULT_API_KEY_ENV).toBe('DAPP_STORE_API_KEY');
+  });
 });

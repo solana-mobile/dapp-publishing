@@ -1,35 +1,51 @@
 
 # dApp Publishing CLI
 
-Tooling for publishing to the Solana Mobile dApp Store.
+Update-only CLI for Solana Mobile dApp release publishing.
 
-For all documentation regarding usage of the tooling, including a thorough walkthrough of the dApp publishing process, visit the [Solana Mobile docs site](https://docs.solanamobile.com/dapp-publishing/intro).
+The legacy config-driven `init`, `create`, `validate`, and direct
+`publish submit|update|remove|support` flows are no longer part of the active
+CLI surface. The supported entrypoints are:
 
-# Installation
-
-Please run the CLI with Node version 18 or greater.
-
-```shell
-corepack enable
-corepack prepare pnpm@`npm info pnpm --json | jq -r .version` --activate
+```bash
+dapp-store --new-version --apk-file ./app.apk --whats-new "Bug fixes"
+dapp-store --new-version --apk-url https://example.com/app.apk --whats-new "Bug fixes"
+dapp-store resume --release-id <release-id>
 ```
 
-If you don't have [jq](https://stedolan.github.io/jq/), you can manually get the current version of pnpm with `npm info pnpm` and setup like this:
+Secrets and local development:
 
-```shell
-corepack prepare pnpm@7.13.4 --activate
+```bash
+# API key from env
+export DAPP_STORE_API_KEY=...
+export DAPP_STORE_PORTAL_URL=https://staging.publish.solanamobile.com
+
+# If DAPP_STORE_PORTAL_URL is omitted, the CLI defaults to:
+# https://publish.solanamobile.com
+
+# Or read the API key from stdin
+printf '%s' "$DAPP_STORE_API_KEY" | dapp-store --new-version ...
+
+# Local portal development
+dapp-store --new-version \
+  --local-dev \
+  --skip-self-update \
+  --portal-url http://localhost:3333
 ```
 
-```shell
-mkdir publishing
-cd publishing
+The CLI expects a signer keypair path and a portal API key. For
+`new-version`, the target app is inferred from the APK package name by the
+portal. Resume accepts either `--release-id` or `--session-id`; release id
+resumes are resolved through the portal. The active update workflow only
+needs the portal base URL; the CLI derives the `/api` endpoint from
+`DAPP_STORE_PORTAL_URL` or `--portal-url`. If no portal URL is provided, it
+defaults to `https://publish.solanamobile.com`. Solana RPC submission is
+handled by the portal backend, so the update-only workflow does not require a
+separate RPC URL. Local-dev mode still rejects non-local portal endpoints and
+skips self-update gating only when `--local-dev` is explicitly provided.
 
-pnpm init
-pnpm install --save-dev @solana-mobile/dapp-store-cli
-npx dapp-store init
-npx dapp-store --help
-```
-
-# License
-
-Apache 2.0
+This means you do not need to pass a dApp id for update publications. The
+portal extracts the APK metadata, matches the Android package name to the
+existing app, and applies the update to that app. Resume does not re-detect
+the app from the APK; it continues from the existing release or publication
+session you specify.
