@@ -1,21 +1,11 @@
 import fs from "fs";
 import { createHash } from "node:crypto";
-import type { Connection } from "@solana/web3.js";
-import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
-import debugModule from "debug";
-import { keypairIdentity, Metaplex, type MetaplexFile, type Amount, lamports } from "@metaplex-foundation/js";
+import { Keypair, Transaction } from "@solana/web3.js";
 import updateNotifier from "update-notifier";
 import { readFile } from 'fs/promises';
 const cliPackage = JSON.parse((await readFile(new URL("./package.json", import.meta.url))).toString());
 import boxen from "boxen";
 import ver from "semver";
-import path from "path";
-import { CachedStorageDriver } from "./upload/CachedStorageDriver.js";
-import { TurboStorageDriver } from "./upload/TurboStorageDriver.js";
-import { EnvVariables } from "./config/index.js";
-import { S3Client } from "@aws-sdk/client-s3";
-import { awsStorage } from "@metaplex-foundation/js-plugin-aws";
-import { S3StorageManager } from "./config/index.js";
 import nacl from "tweetnacl";
 import {
   createPublicationSigner,
@@ -46,16 +36,7 @@ import {
 
 export class Constants {
   static CLI_VERSION = "0.16.0";
-  static CONFIG_FILE_NAME = "config.yaml";
-  static DEFAULT_RPC_DEVNET = "https://api.devnet.solana.com";
-  static DEFAULT_PRIORITY_FEE = 500000;
-
-  static getConfigFilePath = () => {
-    return path.join(process.cwd(), Constants.CONFIG_FILE_NAME);
-  };
 }
-
-export const debug = debugModule("CLI");
 
 export const checkForSelfUpdate = async () => {
   const notifier = updateNotifier({ pkg: cliPackage });
@@ -73,47 +54,6 @@ export const checkForSelfUpdate = async () => {
     );
   }
 };
-
-export const checkMintedStatus = async (
-  conn: Connection,
-  appAddr: string,
-  releaseAddr: string
-) => {
-  for (let i = 0; i < 5; i++) {
-    const results = await conn.getMultipleAccountsInfo([
-      new PublicKey(appAddr),
-      new PublicKey(releaseAddr),
-    ]);
-
-    const isAppMinted = results[0] != undefined && results[0]?.lamports > 0
-    const isReleaseMinted = results[1] != undefined && results[1]?.lamports > 0
-
-    if (isAppMinted && isReleaseMinted) {
-      return
-    } else {
-      let errorMessage = ``
-      if (!isAppMinted) {
-        errorMessage = errorMessage + `App NFT fetch at address ${appAddr} failed.\n`
-      }
-      if (!isReleaseMinted) {
-        errorMessage = errorMessage + `Release NFT fetch at address ${releaseAddr} failed.\n`
-      }
-      if (i == 4) {
-        throw new Error(
-          `Expected App :: ${appAddr} and Release :: ${releaseAddr} to be minted before submission.\n
-          but ${errorMessage}\n
-          Please ensure you have minted all of your NFTs before submitting to the Solana Mobile dApp publisher portal.`
-        );
-      } else {
-        sleep(2000)
-      }
-    }
-  }
-};
-
-export const sleep = (ms: number):Promise<void> => {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export const parseKeypair = (pathToKeypairFile: string) => {
   try {
@@ -1724,58 +1664,4 @@ export const showMessage = (
 
   console.log(msg);
   return msg;
-};
-
-export const getMetaplexInstance = (
-  connection: Connection,
-  keypair: Keypair,
-  storageParams: string = ""
-) => {
-  const metaplex = Metaplex.make(connection).use(keypairIdentity(keypair));
-  const isDevnet = connection.rpcEndpoint.includes("devnet");
-
-  //TODO: Use DI for this
-  const s3Mgr = new S3StorageManager(new EnvVariables());
-  s3Mgr.parseCmdArg(storageParams);
-
-  if (s3Mgr.hasS3Config) {
-    const awsClient = new S3Client({
-      region: s3Mgr.s3Config.regionName,
-      credentials: {
-        accessKeyId: s3Mgr.s3Config.accessKey,
-        secretAccessKey: s3Mgr.s3Config.secretKey,
-      },
-    });
-
-    const bucketPlugin = awsStorage(awsClient, s3Mgr.s3Config.bucketName);
-    metaplex.use(bucketPlugin);
-  } else {
-    const turboDriver = new TurboStorageDriver(
-      keypair,
-      isDevnet ? "devnet" : "mainnet",
-      Number(process.env.TURBO_BUFFER_PERCENTAGE || 20)
-    );
-
-    const metaplexAdapter = {
-      async upload(file: MetaplexFile): Promise<string> {
-        return turboDriver.upload(file);
-      },
-      async getUploadPrice(bytes: number): Promise<Amount> {
-        const price = await turboDriver.getUploadPrice(bytes);
-        return lamports(price);
-      },
-    };
-
-    metaplex.storage().setDriver(metaplexAdapter);
-  }
-
-  metaplex.storage().setDriver(
-    new CachedStorageDriver(metaplex.storage().driver(), {
-      assetManifestPath: isDevnet
-        ? "./.asset-manifest-devnet.json"
-        : "./.asset-manifest.json",
-    })
-  );
-
-  return metaplex;
 };
