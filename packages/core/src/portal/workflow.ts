@@ -1222,7 +1222,7 @@ export const createPublicationWorkflow = (
           stage: publicationSession.stage,
         });
 
-        return runPublicationWorkflow(
+        return await runPublicationWorkflow(
           client,
           publicationBundle,
           input.signer,

@@ -795,6 +795,11 @@ function mapBackendBundleToPublicationBundle(
             "",
         },
       ],
+      releaseMetadataUri:
+        releaseMetadataUri ||
+        (typeof release.nftMetadataUri === "string"
+          ? release.nftMetadataUri
+          : null),
     },
     signerAuthority: {
       dappWalletAddress: String(
@@ -919,6 +924,10 @@ function translateBackendPublicationSession(
           ? backendSession.metadataUri
           : null,
     }),
+    metadataUri:
+      typeof backendSession.metadataUri === "string"
+        ? backendSession.metadataUri
+        : null,
     releaseMintAddress:
       typeof backendSession.expectedMintAddress === "string"
         ? backendSession.expectedMintAddress
