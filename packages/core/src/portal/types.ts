@@ -334,9 +334,15 @@ export type PublicationCreateIngestionSessionInput = {
   dappId?: string;
 };
 
-export type PublicationGetIngestionSessionInput = {
-  sessionId: string;
-};
+export type PublicationGetIngestionSessionInput =
+  | {
+      sessionId: string;
+      ingestionSessionId?: string;
+    }
+  | {
+      sessionId?: string;
+      ingestionSessionId: string;
+    };
 
 export type PublicationGetBundleInput = {
   releaseId: string;
@@ -345,6 +351,17 @@ export type PublicationGetBundleInput = {
 export type PublicationGetSessionInput = {
   publicationSessionId?: string;
   releaseId?: string;
+};
+
+export type PublicationCleanupReleaseInput = {
+  releaseId: string;
+};
+
+export type PublicationCleanupReleaseResult = {
+  success: boolean;
+  releaseId: string;
+  action: 'deleted' | 'preservedSubmitted';
+  message: string;
 };
 
 export type PublicationPrepareReleaseNftTransactionInput = {

@@ -42,7 +42,7 @@ describe('CLI surface', () => {
     }).toThrow();
   });
 
-  test('help advertises the update-only surface', () => {
+  test('help advertises the version publication surface', () => {
     expect(() => {
       mainCli.parse(['node', 'dapp-store', '--help']);
     }).toThrow(outputHelpReference);

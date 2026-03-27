@@ -24,6 +24,7 @@ import {
   type ResumeCliOptions,
   type ResolvedPortalTargets,
 } from './publication/cliValidation.js';
+import { createPublicationProgressReporter } from './publication/PublicationProgressReporter.js';
 import { runPublicationWorkflow } from './publication/runPublicationWorkflow.js';
 import type {
   PublicationResumeInput,
@@ -37,25 +38,28 @@ export const mainCli = new Command();
 mainCli
   .name('dapp-store')
   .version(Constants.CLI_VERSION)
-  .description('Update-only CLI for Solana Mobile dApp publishing')
+  .description('Portal-backed CLI for Solana Mobile dApp version publishing')
   .showHelpAfterError();
 
 mainCli
-  .option('--new-version', 'Publish a new APK-backed app update')
+  .option(
+    '--new-version',
+    'Publish a new APK-backed version for an existing portal app',
+  )
   .option('--apk-file <path>', 'Path to the APK file to publish')
   .option('--apk-url <url>', 'HTTPS URL for an externally hosted APK')
   .option('--whats-new <text>', 'What changed in this version')
-  .option('--portal-url <url>', 'Developer portal base URL')
+  .option('--portal-url <url>', 'Publishing portal base URL')
   .addOption(
     new Option(
       '--api-base-url <url>',
-      'Developer portal API base URL',
+      'Publishing portal API base URL',
     ).hideHelp(),
   )
   .addOption(
     new Option(
       '--portal-web-url <url>',
-      'Developer portal web base URL',
+      'Publishing portal web base URL',
     ).hideHelp(),
   )
   .option(
@@ -90,17 +94,17 @@ resumeCommand
   .option('--resume-release <id>', 'Alias for --release-id')
   .option('--session-id <id>', 'Publication session identifier')
   .option('--resume-session <id>', 'Alias for --session-id')
-  .option('--portal-url <url>', 'Developer portal base URL')
+  .option('--portal-url <url>', 'Publishing portal base URL')
   .addOption(
     new Option(
       '--api-base-url <url>',
-      'Developer portal API base URL',
+      'Publishing portal API base URL',
     ).hideHelp(),
   )
   .addOption(
     new Option(
       '--portal-web-url <url>',
-      'Developer portal web base URL',
+      'Publishing portal web base URL',
     ).hideHelp(),
   )
   .option(
@@ -136,6 +140,8 @@ mainCli.addHelpText(
     '  Set DAPP_STORE_PORTAL_URL to the portal origin (for example https://staging.publish.solanamobile.com).',
     '  The CLI derives the /api endpoint from that URL for the active publication workflow.',
     `  If unset, it defaults to ${DEFAULT_PRODUCTION_PORTAL_URL}.`,
+    '  The target app must already exist in the portal and already have its App NFT.',
+    '  The portal decides whether the submission is the first release for an existing app or a later update.',
     '',
     'Secrets:',
     `  Portal API key defaults to ${DEFAULT_API_KEY_ENV} or the name passed via --api-key-env.`,
@@ -153,7 +159,7 @@ async function runRootAction() {
 
     if (!options.newVersion) {
       if (hasPublicationInputs(options)) {
-        throw new Error('Use `--new-version` to start an update publication.');
+        throw new Error('Use `--new-version` to start a version publication.');
       }
 
       mainCli.outputHelp();
@@ -167,14 +173,36 @@ async function runRootAction() {
     const apiKey = await resolveApiKey(options);
     const signer = loadSigner(options.signerKeypair);
     const clients = createPortalClients(targets, apiKey);
-
-    const result = await runPublicationWorkflow({
+    const progress = createPublicationProgressReporter({
+      title: 'Publishing version',
       mode: 'new-version',
-      client: clients.workflowClient,
-      input: buildNewVersionWorkflowInput(options, signer, clients.attestationClient),
     });
 
-    showPublicationSummary('New version publication completed', result);
+    progress.start({
+      message: 'Connecting to publishing portal',
+      metadata: buildNewVersionProgressMetadata(options),
+    });
+
+    try {
+      const result = await runPublicationWorkflow({
+        mode: 'new-version',
+        client: clients.workflowClient,
+        input: buildNewVersionWorkflowInput(
+          options,
+          signer,
+          clients.attestationClient,
+        ),
+        options: {
+          logger: progress.logger,
+        },
+      });
+
+      progress.complete(result);
+      showPublicationSummary('Version publication completed', result);
+    } catch (error) {
+      progress.fail(error);
+      throw error;
+    }
   });
 }
 
@@ -187,14 +215,36 @@ async function runResumeAction(options: ResumeCliOptions) {
     const apiKey = await resolveApiKey(options);
     const signer = loadSigner(options.signerKeypair);
     const clients = createPortalClients(targets, apiKey);
-
-    const result = await runPublicationWorkflow({
+    const progress = createPublicationProgressReporter({
+      title: 'Resuming publication',
       mode: 'resume',
-      client: clients.workflowClient,
-      input: buildResumeWorkflowInput(options, signer, clients.attestationClient),
     });
 
-    showPublicationSummary('Publication resume completed', result);
+    progress.start({
+      message: 'Connecting to publishing portal',
+      metadata: buildResumeProgressMetadata(options),
+    });
+
+    try {
+      const result = await runPublicationWorkflow({
+        mode: 'resume',
+        client: clients.workflowClient,
+        input: buildResumeWorkflowInput(
+          options,
+          signer,
+          clients.attestationClient,
+        ),
+        options: {
+          logger: progress.logger,
+        },
+      });
+
+      progress.complete(result);
+      showPublicationSummary('Publication resume completed', result);
+    } catch (error) {
+      progress.fail(error);
+      throw error;
+    }
   });
 }
 
@@ -258,6 +308,40 @@ function buildPublicationSource(options: NewVersionCliOptions) {
     kind: 'apk-url' as const,
     url: options.apkUrl,
     fileName: inferFileNameFromUrl(options.apkUrl),
+  };
+}
+
+function buildNewVersionProgressMetadata(
+  options: NewVersionCliOptions,
+): Record<string, string> {
+  if (options.apkFile) {
+    return {
+      sourceKind: 'apk-file',
+      fileName: path.basename(options.apkFile),
+    };
+  }
+
+  if (options.apkUrl) {
+    const fileName = inferFileNameFromUrl(options.apkUrl);
+    return {
+      sourceKind: 'apk-url',
+      apkUrl: options.apkUrl,
+      ...(fileName ? { fileName } : {}),
+    };
+  }
+
+  return {};
+}
+
+function buildResumeProgressMetadata(
+  options: ResumeCliOptions,
+): Record<string, string> {
+  const publicationSessionId = resolveResumeSessionId(options);
+  const releaseId = resolveResumeReleaseId(options);
+
+  return {
+    ...(publicationSessionId ? { publicationSessionId } : {}),
+    ...(releaseId ? { releaseId } : {}),
   };
 }
 

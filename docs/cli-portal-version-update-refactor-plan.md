@@ -64,7 +64,7 @@ mint transaction signing and attestation generation in the CLI.
    config. That does not fit an update-only CLI that only receives an APK and a
    `what's new` string.
 
-### Developer portal repo
+### Publishing portal repo
 
 1. The portal already owns the authoritative release record, processing queue,
    HubSpot submission, and NFT persistence path:

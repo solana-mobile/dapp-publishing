@@ -21,6 +21,8 @@ import {
   createPublicationSigner,
   type PublicationAttestationClient,
   type PublicationBundle,
+  type PublicationCleanupReleaseInput,
+  type PublicationCleanupReleaseResult,
   type PublicationCreateUploadTargetInput,
   type PublicationCreateUploadTargetResult,
   type PublicationCreateIngestionSessionInput,
@@ -298,15 +300,9 @@ async function callPortalProcedure<T>(
 
   let response: Response;
   if (method === "query") {
-    url.searchParams.set("batch", "1");
-    url.searchParams.set(
-      "input",
-      JSON.stringify({
-        0: {
-          json: input ?? {},
-        },
-      }),
-    );
+    if (input !== undefined) {
+      url.searchParams.set("input", JSON.stringify(input));
+    }
     response = await fetch(url, {
       method: "GET",
       headers,
@@ -316,7 +312,7 @@ async function callPortalProcedure<T>(
     response = await fetch(url, {
       method: "POST",
       headers,
-      body: JSON.stringify({ json: input ?? {} }),
+      body: input === undefined ? undefined : JSON.stringify(input),
     });
   }
 
@@ -341,19 +337,21 @@ async function callPortalProcedure<T>(
     if (isRecord(normalizedPayload)) {
       const error = readDeep(normalizedPayload, "error.message");
       if (typeof error === "string" && error.length > 0) {
-        throw new Error(error);
+        throw new Error(`${procedure}: ${error}`);
       }
 
       const nested = readDeep(normalizedPayload, "result.data");
       if (isRecord(nested) && nested._tag === "Left") {
         const left = nested as PortalProcedureResult<T>;
         if (left.left.message) {
-          throw new Error(left.left.message);
+          throw new Error(`${procedure}: ${left.left.message}`);
         }
       }
     }
 
-    throw new Error(`Portal request failed with status ${response.status}`);
+    throw new Error(
+      `${procedure}: Portal request failed with status ${response.status}`,
+    );
   }
 
   const result =
@@ -1351,11 +1349,25 @@ export function createPortalWorkflowClient(
     async getIngestionSession(
       input: PublicationGetIngestionSessionInput,
     ): Promise<PublicationIngestionSession> {
+      const resolvedSessionId =
+        input.sessionId ||
+        (("ingestionSessionId" in input &&
+          typeof input.ingestionSessionId === "string" &&
+          input.ingestionSessionId.length > 0)
+          ? input.ingestionSessionId
+          : undefined);
+
+      if (!resolvedSessionId) {
+        throw new Error(
+          "publication.getIngestionSession requires a session id",
+        );
+      }
+
       const backendResult = await callPortalProcedure<Record<string, unknown>>(
         config,
         "publication.getIngestionSession",
         {
-          sessionId: input.sessionId,
+          sessionId: resolvedSessionId,
         },
         "query",
       );
@@ -1405,6 +1417,23 @@ export function createPortalWorkflowClient(
         "query",
       );
 
+      const linkedPublicationSessionId =
+        publicationSessionIdByReleaseId.get(input.releaseId) ||
+        currentPublicationSessionId;
+      const linkedPublicationSession = linkedPublicationSessionId
+        ? translateBackendPublicationSession(
+            await callPortalProcedure<Record<string, unknown>>(
+              config,
+              "publication.getPublicationSession",
+              {
+                publicationSessionId: linkedPublicationSessionId,
+                releaseId: input.releaseId,
+              },
+              "query",
+            ),
+          )
+        : undefined;
+
       const releaseMetadataUri =
         metadataUriByReleaseId.get(input.releaseId) ||
         (isRecord(backendBundle.release) &&
@@ -1434,8 +1463,13 @@ export function createPortalWorkflowClient(
       translated.releaseId = translated.releaseId || input.releaseId;
       translated.publicationSessionId =
         translated.publicationSessionId ||
+        linkedPublicationSession?.id ||
         publicationSessionIdByReleaseId.get(input.releaseId) ||
         currentPublicationSessionId ||
+        "";
+      translated.ingestionSessionId =
+        translated.ingestionSessionId ||
+        linkedPublicationSession?.ingestionSessionId ||
         "";
       currentReleaseId = translated.releaseId || currentReleaseId;
       currentPublicationSessionId =
@@ -1474,6 +1508,17 @@ export function createPortalWorkflowClient(
         publicationSessionIdByReleaseId.set(translated.releaseId, translated.id);
       }
       return translated;
+    },
+
+    async cleanupRelease(
+      input: PublicationCleanupReleaseInput,
+    ): Promise<PublicationCleanupReleaseResult> {
+      return await callPortalProcedure<PublicationCleanupReleaseResult>(
+        config,
+        "publication.cleanupRelease",
+        input,
+        "mutation",
+      );
     },
 
     async prepareReleaseNftTransaction(
@@ -1546,6 +1591,9 @@ export function createPortalWorkflowClient(
       const payload =
         typeof attestation?.payload === "string" && attestation.payload.length > 0
           ? attestation.payload
+          : typeof attestation?.attestationPayload === "string" &&
+              attestation.attestationPayload.length > 0
+            ? attestation.attestationPayload
           : typeof (input as Record<string, unknown>).attestationPayload ===
               "string"
             ? String((input as Record<string, unknown>).attestationPayload)
