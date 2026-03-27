@@ -21,6 +21,7 @@ export type NewVersionCliOptions = {
   skipSelfUpdate?: boolean;
   idempotencyKey?: string;
   dappId?: string;
+  verbose?: boolean;
 };
 
 export type ResumeCliOptions = {
@@ -36,6 +37,7 @@ export type ResumeCliOptions = {
   signerKeypair?: string;
   localDev?: boolean;
   skipSelfUpdate?: boolean;
+  verbose?: boolean;
 };
 
 export type ResolvedPortalTargets = {

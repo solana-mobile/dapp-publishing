@@ -156,10 +156,12 @@ const STAGE_COMPLETED_PHASES: Record<string, ProgressPhaseKey[]> = {
 };
 
 const MAX_RECENT_EVENTS = 2;
+const VERBOSE_PREFIX = 'Verbose';
 
 export function createPublicationProgressReporter(input: {
   title: string;
   mode: PublicationProgressMode;
+  verbose?: boolean;
   stream?: NodeJS.WriteStream;
 }) {
   return new PublicationProgressReporter(input);
@@ -171,8 +173,10 @@ class PublicationProgressReporter {
   private readonly title: string;
   private readonly stream: NodeJS.WriteStream;
   private readonly interactive: boolean;
+  private readonly verbose: boolean;
   private readonly phaseStates: Record<ProgressPhaseKey, ProgressPhaseState>;
   private readonly phaseProgress: Record<ProgressPhaseKey, number>;
+  private readonly verboseValues = new Map<string, string>();
 
   private currentMessage: string;
   private recentEvents: string[] = [];
@@ -185,12 +189,14 @@ class PublicationProgressReporter {
   constructor(input: {
     title: string;
     mode: PublicationProgressMode;
+    verbose?: boolean;
     stream?: NodeJS.WriteStream;
   }) {
     this.title = input.title;
     this.stream = input.stream ?? process.stdout;
     this.interactive =
       Boolean(this.stream.isTTY) && process.env.TERM !== 'dumb';
+    this.verbose = Boolean(input.verbose);
     this.phaseStates = Object.fromEntries(
       PHASES.map(({ key }) => [key, 'pending']),
     ) as Record<ProgressPhaseKey, ProgressPhaseState>;
@@ -300,6 +306,7 @@ class PublicationProgressReporter {
       this.updateContext(metadata);
       this.updatePhaseState(metadata);
       this.applyStageHint(metadata);
+      this.emitVerboseMetadata(metadata);
     }
 
     if (level === 'warn') {
@@ -617,30 +624,6 @@ class PublicationProgressReporter {
         : null,
     ].filter((token): token is string => token !== null);
 
-    const idTokens = [
-      this.context.releaseId
-        ? `release ${this.compactIdentifier(this.context.releaseId)}`
-        : null,
-      this.context.publicationSessionId
-        ? `session ${this.compactIdentifier(this.context.publicationSessionId)}`
-        : null,
-      this.context.ingestionSessionId
-        ? `ingestion ${this.compactIdentifier(this.context.ingestionSessionId)}`
-        : null,
-      this.context.mintAddress
-        ? `mint ${this.compactIdentifier(this.context.mintAddress)}`
-        : null,
-      this.context.transactionSignature
-        ? `tx ${this.compactIdentifier(this.context.transactionSignature)}`
-        : null,
-      this.context.requestUniqueId
-        ? `attest ${this.compactIdentifier(this.context.requestUniqueId)}`
-        : null,
-      this.context.hubspotTicketId
-        ? `ticket ${this.compactIdentifier(this.context.hubspotTicketId)}`
-        : null,
-    ].filter((token): token is string => token !== null);
-
     const lines: string[] = [];
     if (targetTokens.length > 0) {
       lines.push(this.fitToWidth(`Target: ${targetTokens.join(' | ')}`));
@@ -652,9 +635,6 @@ class PublicationProgressReporter {
     const ingestionLine = this.buildIngestionLine();
     if (ingestionLine) {
       lines.push(this.fitToWidth(ingestionLine));
-    }
-    if (idTokens.length > 0) {
-      lines.push(this.fitToWidth(`IDs: ${idTokens.slice(0, 4).join(' | ')}`));
     }
     if (this.recentEvents.length > 0) {
       lines.push(
@@ -753,6 +733,106 @@ class PublicationProgressReporter {
 
   private getPhaseIndex(phaseKey: ProgressPhaseKey): number {
     return PHASES.findIndex(({ key }) => key === phaseKey);
+  }
+
+  private emitVerboseMetadata(metadata: ProgressMetadata) {
+    if (!this.verbose) {
+      return;
+    }
+
+    const lines = this.buildVerboseMetadataLines(metadata);
+    if (lines.length === 0) {
+      return;
+    }
+
+    if (this.interactive && this.renderedLineCount > 0) {
+      readline.moveCursor(this.stream, 0, -(this.renderedLineCount - 1));
+      readline.cursorTo(this.stream, 0);
+      readline.clearScreenDown(this.stream);
+      this.renderedLineCount = 0;
+    }
+
+    for (const line of lines) {
+      this.stream.write(`${line}\n`);
+    }
+  }
+
+  private buildVerboseMetadataLines(metadata: ProgressMetadata): string[] {
+    const lines: string[] = [];
+    const step = this.readString(metadata, 'step');
+
+    this.appendVerboseField(
+      lines,
+      'releaseId',
+      'Release ID',
+      this.readString(metadata, 'releaseId'),
+    );
+    this.appendVerboseField(
+      lines,
+      'publicationSessionId',
+      'Publication session ID',
+      this.readString(metadata, 'publicationSessionId') ??
+        this.readString(metadata, 'sessionId'),
+    );
+    this.appendVerboseField(
+      lines,
+      'ingestionSessionId',
+      'Ingestion session ID',
+      this.readString(metadata, 'ingestionSessionId'),
+    );
+
+    const transactionSignature = this.readString(metadata, 'transactionSignature');
+    if (transactionSignature) {
+      const transactionKey =
+        step === 'verify.submit'
+          ? 'collectionTransactionSignature'
+          : 'releaseTransactionSignature';
+      const transactionLabel =
+        step === 'verify.submit'
+          ? 'Collection transaction signature'
+          : 'Release transaction signature';
+
+      this.appendVerboseField(
+        lines,
+        transactionKey,
+        transactionLabel,
+        transactionSignature,
+      );
+    }
+
+    this.appendVerboseField(
+      lines,
+      'attestationRequestUniqueId',
+      'Attestation request ID',
+      this.readString(metadata, 'requestUniqueId'),
+    );
+    this.appendVerboseField(
+      lines,
+      'ticketId',
+      'Ticket ID',
+      this.readString(metadata, 'hubspotTicketId'),
+    );
+
+    return lines;
+  }
+
+  private appendVerboseField(
+    lines: string[],
+    key: string,
+    label: string,
+    value: string | undefined,
+  ) {
+    if (!value) {
+      return;
+    }
+
+    const previousValue = this.verboseValues.get(key);
+    if (previousValue === value) {
+      return;
+    }
+
+    this.verboseValues.set(key, value);
+    lines.push(`${VERBOSE_PREFIX}: ${label}: ${value}`);
   }
 
   private pushRecentEvent(message: string) {

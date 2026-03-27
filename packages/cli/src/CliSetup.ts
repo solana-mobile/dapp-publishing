@@ -25,6 +25,7 @@ import {
   type ResolvedPortalTargets,
 } from './publication/cliValidation.js';
 import { createPublicationProgressReporter } from './publication/PublicationProgressReporter.js';
+import { extractPublicationSummaryLines } from './publication/publicationSummary.js';
 import { runPublicationWorkflow } from './publication/runPublicationWorkflow.js';
 import type {
   PublicationResumeInput,
@@ -82,6 +83,10 @@ mainCli
     '--idempotency-key <key>',
     'Optional idempotency key for safe retries',
   )
+  .option(
+    '--verbose',
+    'Print detailed publication identifiers as they are emitted',
+  )
   .action(async () => {
     await runRootAction();
   });
@@ -122,6 +127,10 @@ resumeCommand
   .option(
     '--skip-self-update',
     'Bypass the self-update check when working against a local portal',
+  )
+  .option(
+    '--verbose',
+    'Print detailed publication identifiers as they are emitted',
   )
   .action(async (options: ResumeCliOptions) => {
     await runResumeAction(options);
@@ -176,6 +185,7 @@ async function runRootAction() {
     const progress = createPublicationProgressReporter({
       title: 'Publishing version',
       mode: 'new-version',
+      verbose: options.verbose,
     });
 
     progress.start({
@@ -218,6 +228,7 @@ async function runResumeAction(options: ResumeCliOptions) {
     const progress = createPublicationProgressReporter({
       title: 'Resuming publication',
       mode: 'resume',
+      verbose: options.verbose,
     });
 
     progress.start({
@@ -396,42 +407,14 @@ function hasPublicationInputs(options: NewVersionCliOptions): boolean {
       options.portalWebUrl ||
       options.signerKeypair ||
       options.idempotencyKey ||
-      options.dappId,
+      options.dappId ||
+      options.verbose,
   );
 }
 
 function showPublicationSummary(title: string, result: unknown) {
-  const summaryLines = extractSummaryLines(result);
+  const summaryLines = extractPublicationSummaryLines(result);
   showMessage(title, summaryLines.join('\n'), 'standard');
-}
-
-function extractSummaryLines(result: unknown): string[] {
-  if (!isRecord(result)) {
-    return ['Publication workflow completed.'];
-  }
-
-  const keys = [
-    ['releaseId', 'Release ID'],
-    ['publicationSessionId', 'Publication session ID'],
-    ['ingestionSessionId', 'Ingestion session ID'],
-    ['releaseMintAddress', 'Release mint address'],
-    ['collectionMintAddress', 'Collection mint address'],
-    ['releaseTransactionSignature', 'Release transaction signature'],
-    ['collectionTransactionSignature', 'Collection transaction signature'],
-    ['attestationRequestUniqueId', 'Attestation request ID'],
-    ['hubspotTicketId', 'HubSpot ticket ID'],
-  ] as const;
-
-  const lines = keys
-    .map(([key, label]) => {
-      const value = result[key];
-      return typeof value === 'string' && value.length > 0
-        ? `${label}: ${value}`
-        : null;
-    })
-    .filter((line): line is string => line !== null);
-
-  return lines.length > 0 ? lines : ['Publication workflow completed.'];
 }
 
 async function runWithUserFacingErrors(block: () => Promise<void>) {
@@ -443,8 +426,4 @@ async function runWithUserFacingErrors(block: () => Promise<void>) {
     showMessage('Error', message, 'error');
     process.exitCode = 1;
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null;
 }

@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
-import { basename, extname } from 'node:path';
+import { basename } from 'node:path';
 import { Transform } from 'node:stream';
 
 import {
@@ -202,18 +202,11 @@ function publicationStageToStatus(
 function isReadyIngestionSession(
   session: PublicationIngestionSession,
 ): boolean {
-  return (
-    session.status === 'Ready' ||
-    session.status === 'ready' ||
-    Boolean(session.releaseId) ||
-    Boolean(session.publicationSessionId) ||
-    Boolean(session.bundle)
-  );
+  return session.status === 'Ready' || session.status === 'ready';
 }
 
-function sanitizeFileExtension(fileName: string): string {
-  const extension = extname(fileName).replace(/^\./, '').replace(/[^a-zA-Z0-9]/g, '');
-  return extension.length > 0 ? extension.toLowerCase() : 'apk';
+function ensureApkFileName(fileName: string): string {
+  return /\.apk$/i.test(fileName) ? fileName : `${fileName}.apk`;
 }
 
 function inferFileNameFromUrl(url: string): string {
@@ -468,8 +461,10 @@ async function uploadLocalApkToPortal(
   const contentType =
     source.mimeType ?? 'application/vnd.android.package-archive';
   const fileHash = await hashFileSha256(source.filePath);
-  const fileName = source.fileName || basename(source.filePath);
-  const fileExtension = sanitizeFileExtension(fileName);
+  const fileName = ensureApkFileName(
+    source.fileName || basename(source.filePath),
+  );
+  const fileExtension = 'apk';
 
   logWorkflowInfo(logger, 'Uploading APK to portal storage', {
     step: 'source.upload',
@@ -1017,7 +1012,11 @@ export const createPublicationWorkflow = (
   options: PublicationWorkflowOptions = {},
 ) => {
   const pollIntervalMs = options.pollIntervalMs ?? 2500;
-  const maxPollAttempts = options.maxPollAttempts ?? 120;
+  // Large APK ingestion can legitimately take tens of minutes once upload,
+  // managed-storage download, hashing, aapt2, and apksigner are included.
+  // Keep the default wait aligned with the portal queue headroom instead of
+  // failing after only ~5 minutes.
+  const maxPollAttempts = options.maxPollAttempts ?? 1080;
 
   const pollOptions = {
     pollIntervalMs,
@@ -1108,6 +1107,7 @@ export const createPublicationWorkflow = (
   return {
     async startPublication(input: PublicationWorkflowInput) {
       let createdReleaseId: string | undefined;
+      let createdIngestionSessionId: string | undefined;
 
       try {
         logWorkflowInfo(options.logger, 'Preparing publication source', {
@@ -1136,7 +1136,7 @@ export const createPublicationWorkflow = (
         createdReleaseId =
           ingestionSession.releaseId ?? ingestionSession.bundle?.releaseId ?? undefined;
 
-        const createdIngestionSessionId = ingestionSession.id?.trim();
+        createdIngestionSessionId = ingestionSession.id?.trim();
         if (!createdIngestionSessionId) {
           throw new Error(
             'Portal createIngestionSession did not return an ingestion session id',
@@ -1232,6 +1232,21 @@ export const createPublicationWorkflow = (
         );
       } catch (error) {
         const normalizedError = normalizeWorkflowError(error);
+
+        if (!createdReleaseId && createdIngestionSessionId) {
+          try {
+            const failedIngestionSession = await client.getIngestionSession({
+              sessionId: createdIngestionSessionId,
+              ingestionSessionId: createdIngestionSessionId,
+            });
+            createdReleaseId =
+              failedIngestionSession.releaseId ??
+              failedIngestionSession.bundle?.releaseId ??
+              undefined;
+          } catch {
+            // Ignore follow-up lookup failures and rethrow the original error.
+          }
+        }
 
         if (!createdReleaseId) {
           throw normalizedError;

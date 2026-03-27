@@ -250,6 +250,10 @@ function inferFileExtension(fileName: string): string {
   return extension.replace(/[^a-z0-9]/g, "") || "apk";
 }
 
+function ensureApkFileName(fileName: string): string {
+  return /\.apk$/i.test(fileName) ? fileName : `${fileName}.apk`;
+}
+
 function inferMimeType(fileName: string): string {
   const extension = inferFileExtension(fileName);
   if (extension === "apk") {
@@ -361,6 +365,52 @@ async function callPortalProcedure<T>(
     result as PortalProcedureResult<T> | Record<string, unknown> | T,
     `Portal request failed for ${procedure}`,
   );
+}
+
+function isRetryableCreateIngestionSessionError(error: unknown): boolean {
+  const message =
+    error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+
+  return (
+    message.includes(
+      "failed to parse portal response from publication.createingestionsession",
+    ) ||
+    message.includes("gateway timeout") ||
+    message.includes("bad gateway") ||
+    message.includes("service unavailable") ||
+    message.includes("unexpected token <")
+  );
+}
+
+async function callCreateIngestionSessionWithRetry(
+  config: PortalClientConfig,
+  input: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await callPortalProcedure<Record<string, unknown>>(
+        config,
+        "publication.createIngestionSession",
+        input,
+        "mutation",
+      );
+    } catch (error) {
+      lastError = error;
+      if (!isRetryableCreateIngestionSessionError(error) || attempt === 2) {
+        throw error;
+      }
+
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1500 * (attempt + 1)),
+      );
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Failed to create ingestion session");
 }
 
 async function uploadBytes(
@@ -1163,14 +1213,18 @@ export function createPortalWorkflowClient(
       input: PublicationCreateIngestionSessionInput,
     ): Promise<PublicationIngestionSession> {
       const dappId = input.dappId || config.dappId;
+      const idempotencyKey = input.idempotencyKey || `${Date.now()}`;
 
       if (input.source.kind === "apk-file") {
         const source = (() => {
           const filePath = path.resolve(input.source.filePath);
-          const fileName = input.source.fileName || path.basename(filePath);
-          const fileExtension = inferFileExtension(fileName);
+          const fileName = ensureApkFileName(
+            input.source.fileName || path.basename(filePath),
+          );
+          const fileExtension = "apk";
           const contentType =
-            input.source.mimeType || inferMimeType(fileName);
+            input.source.mimeType ||
+            "application/vnd.android.package-archive";
           const fileBytes = fs.readFileSync(filePath);
           const fileHash =
             input.source.sha256 ||
@@ -1204,9 +1258,8 @@ export function createPortalWorkflowClient(
           source.contentType,
         );
 
-        const backendResult = await callPortalProcedure<Record<string, unknown>>(
+        const backendResult = await callCreateIngestionSessionWithRetry(
           config,
-          "publication.createIngestionSession",
           {
             source: {
               kind: "portalUpload",
@@ -1215,10 +1268,9 @@ export function createPortalWorkflowClient(
               releaseFileSize: source.releaseFileSize,
             },
             whatsNew: input.whatsNew,
-            idempotencyKey: input.idempotencyKey || `${Date.now()}`,
+            idempotencyKey,
             ...(dappId ? { dappId } : {}),
           },
-          "mutation",
         );
 
         currentReleaseId =
@@ -1291,16 +1343,14 @@ export function createPortalWorkflowClient(
                       inferFileNameFromUrl(input.source.url),
               };
 
-      const backendResult = await callPortalProcedure<Record<string, unknown>>(
+      const backendResult = await callCreateIngestionSessionWithRetry(
         config,
-        "publication.createIngestionSession",
         {
           source: backendSource,
           whatsNew: input.whatsNew,
-          idempotencyKey: input.idempotencyKey || `${Date.now()}`,
+          idempotencyKey,
           ...(dappId ? { dappId } : {}),
         },
-        "mutation",
       );
 
       currentReleaseId =

@@ -95,3 +95,78 @@ test('ingestion status updates continue advancing overall progress', () => {
     logSpy.mockRestore();
   }
 });
+
+test('verbose mode prints detailed identifiers as they arrive', () => {
+  const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  const stream = createTestStream();
+  try {
+    const reporter = createPublicationProgressReporter({
+      title: 'Publishing version',
+      mode: 'new-version',
+      verbose: true,
+      stream,
+    });
+
+    reporter.start({
+      metadata: {
+        sourceKind: 'apk-file',
+        fileName: 'app-release.apk',
+      },
+    });
+
+    reporter.logger.info('Ingestion session created', {
+      step: 'ingestion.create',
+      status: 'complete',
+      releaseId: 'release-123',
+      ingestionSessionId: 'ingestion-456',
+    });
+
+    reporter.logger.info('Publication session loaded', {
+      step: 'session.load',
+      status: 'complete',
+      publicationSessionId: 'session-789',
+    });
+
+    reporter.logger.info('Release NFT transaction submitted', {
+      step: 'mint.submit',
+      status: 'complete',
+      transactionSignature: 'release-tx-sig',
+    });
+
+    reporter.logger.info('Release collection verified', {
+      step: 'verify.submit',
+      status: 'complete',
+      transactionSignature: 'collection-tx-sig',
+    });
+
+    reporter.logger.info('Attestation payload created', {
+      step: 'attestation.create',
+      status: 'complete',
+      requestUniqueId: 'attest-111',
+    });
+
+    reporter.logger.info('Release submitted to store', {
+      step: 'submit.store',
+      status: 'complete',
+      hubspotTicketId: 'ticket-222',
+    });
+
+    const output = stream.output.join('');
+
+    expect(output).toContain('Verbose: Release ID: release-123');
+    expect(output).toContain('Verbose: Ingestion session ID: ingestion-456');
+    expect(output).toContain('Verbose: Publication session ID: session-789');
+    expect(output).toContain(
+      'Verbose: Release transaction signature: release-tx-sig',
+    );
+    expect(output).toContain(
+      'Verbose: Collection transaction signature: collection-tx-sig',
+    );
+    expect(output).toContain(
+      'Verbose: Attestation request ID: attest-111',
+    );
+    expect(output).toContain('Verbose: Ticket ID: ticket-222');
+  } finally {
+    logSpy.mockRestore();
+  }
+});
