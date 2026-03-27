@@ -420,6 +420,18 @@ function resolveReleaseMetadataUri(
   return releaseMetadataUri;
 }
 
+function hasResolvableReleaseMetadataUri(
+  bundle: PublicationBundle,
+  session?: PublicationSession,
+): boolean {
+  return Boolean(
+    session?.metadataUri ??
+      bundle.release.releaseMetadataUri ??
+      bundle.release.nftMetadataUri ??
+      bundle.metadata?.releaseMetadataUri,
+  );
+}
+
 function resolvePublicationSignerAddress(
   bundle: PublicationBundle,
 ): string {
@@ -1172,19 +1184,39 @@ export const createPublicationWorkflow = (
           releaseId,
         });
 
-        const publicationBundle = withPublicationBundleIdentifiers(
-          normalizePublicationBundle(
-            readySession.bundle ??
-              (await client.getPublicationBundle({
+        const readyPublicationSession = readySession.publicationSession
+          ? normalizePublicationSession(readySession.publicationSession)
+          : undefined;
+
+        const readyPublicationBundle = readySession.bundle
+          ? withPublicationBundleIdentifiers(
+              normalizePublicationBundle(readySession.bundle),
+              {
                 releaseId,
-              })),
-          ),
-          {
-            releaseId,
-            publicationSessionId: readySession.publicationSessionId ?? null,
-            ingestionSessionId: readySession.id,
-          },
-        );
+                publicationSessionId: readySession.publicationSessionId ?? null,
+                ingestionSessionId: readySession.id,
+              },
+            )
+          : null;
+
+        const publicationBundle = readyPublicationBundle &&
+          hasResolvableReleaseMetadataUri(
+            readyPublicationBundle,
+            readyPublicationSession,
+          )
+          ? readyPublicationBundle
+          : withPublicationBundleIdentifiers(
+              normalizePublicationBundle(
+                await client.getPublicationBundle({
+                  releaseId,
+                }),
+              ),
+              {
+                releaseId,
+                publicationSessionId: readySession.publicationSessionId ?? null,
+                ingestionSessionId: readySession.id,
+              },
+            );
         buildPublicationBundleValidation(publicationBundle);
 
         logWorkflowInfo(options.logger, 'Publication bundle loaded', {
@@ -1201,8 +1233,9 @@ export const createPublicationWorkflow = (
           releaseId,
         });
 
-        const publicationSession = normalizePublicationSession(
-          readySession.publicationSession ??
+        const publicationSession = readyPublicationSession ??
+          normalizePublicationSession(
+            readySession.publicationSession ??
             (await client.getPublicationSession(
               readySession.publicationSessionId
                 ? {
@@ -1212,7 +1245,7 @@ export const createPublicationWorkflow = (
                     releaseId,
                   },
             )),
-        );
+          );
 
         logWorkflowInfo(options.logger, 'Publication session loaded', {
           step: 'session.load',

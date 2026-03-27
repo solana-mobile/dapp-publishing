@@ -1684,57 +1684,6 @@ export function createPortalWorkflowClient(
   };
 }
 
-export const isDevnet = (rpcUrl: string): boolean => {
-  return rpcUrl.indexOf("devnet") != -1;
-};
-
-export const isTestnet = (rpcUrl: string): boolean => {
-  return rpcUrl.indexOf("testnet") != -1;
-};
-
-export const checkSubmissionNetwork = (rpcUrl: string) => {
-  if (isDevnet(rpcUrl) || isTestnet(rpcUrl)) {
-    throw new Error(
-      "It looks like you are attempting to submit a request with a devnet or testnet RPC endpoint. Please ensure that your NFTs are minted on mainnet beta, and re-run with a mainnet beta RPC endpoint."
-    );
-  }
-};
-
-export const generateNetworkSuffix = (rpcUrl: string): string => {
-  let suffix = "";
-
-  if (isDevnet(rpcUrl)) {
-    suffix = "?cluster=devnet";
-  } else if (isTestnet(rpcUrl)) {
-    suffix = "?cluster=testnet";
-  } else {
-    suffix = "?cluster=mainnet";
-  }
-
-  return suffix;
-};
-
-export const dryRunSuccessMessage = () => {
-  showMessage("Dry run", "Dry run was successful", "standard")
-}
-
-export const alphaAppSubmissionMessage = () => {
-  showMessage(
-    "Alpha release", 
-    "Alpha releases are not reviewed on dApp store and are meant for internal testing only.\n" +
-    "Run the `npx dapp-store publish submit ...` command again without the `--alpha` param to publish the app",
-    "warning"
-  )
-}
-
-export const showNetworkWarningIfApplicable = (rpcUrl: string) => {
-  if (isDevnet(rpcUrl)) {
-    showMessage("Devnet Mode", "Running on Devnet", "warning")
-  } else if (isTestnet(rpcUrl)) {
-    showMessage("Testnet Mode", "Running on Testnet", "warning")
-  }
-}
-
 export const showMessage = (
   titleMessage = "",
   contentMessage = "",

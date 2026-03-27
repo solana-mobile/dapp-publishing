@@ -8,14 +8,6 @@ export type S3Config = {
 }
 export class EnvVariables {
 
-  public get hasAndroidTools(): boolean {
-    return process.env.ANDROID_TOOLS_DIR !== undefined;
-  }
-
-  public get androidToolsDir(): string {
-    return process.env.ANDROID_TOOLS_DIR as string;
-  }
-
   public get hasS3EnvArgs(): boolean {
     return process.env.STORAGE_TYPE == "s3" &&
       process.env.S3_ACCESS_KEY != undefined &&
