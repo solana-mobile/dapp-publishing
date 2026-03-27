@@ -79,10 +79,13 @@ test('ingestion status updates continue advancing overall progress', () => {
       fileName: 'app-release.apk',
     });
 
-    reporter.logger.info('Portal ingestion is processing the APK', {
+    reporter.logger.info('Extracting APK metadata', {
       step: 'ingestion.wait',
       status: 'running',
       ingestionStatus: 'processing',
+      ingestionStage: 'ExtractingApk',
+      ingestionDetail: 'Extracting APK metadata',
+      ingestionProgress: 45,
       stepProgress: 0.7,
     });
 
@@ -90,7 +93,42 @@ test('ingestion status updates continue advancing overall progress', () => {
 
     expect(reporter.getProgressPercent()).toBeGreaterThan(0.55);
     expect(lines[1]).toContain('57%');
-    expect(lines).toContain('Ingestion: processing');
+    expect(lines).toContain('Ingestion: Extracting APK metadata (45%)');
+  } finally {
+    logSpy.mockRestore();
+  }
+});
+
+test('ingestion detail and percentage are rendered while polling', () => {
+  const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+  const stream = createTestStream();
+  try {
+    const reporter = createPublicationProgressReporter({
+      title: 'Publishing version',
+      mode: 'new-version',
+      stream,
+    }) as any;
+
+    reporter.start({
+      metadata: {
+        sourceKind: 'apk-file',
+        fileName: 'app-release.apk',
+      },
+    });
+
+    reporter.logger.info('Extracting APK metadata', {
+      step: 'ingestion.wait',
+      status: 'running',
+      ingestionStatus: 'processing',
+      ingestionProgress: 45,
+      ingestionStage: 'ExtractingApk',
+      ingestionDetail: 'Extracting APK metadata',
+      stepProgress: 0.45,
+    });
+
+    const lines = reporter.buildLines();
+
+    expect(lines).toContain('Ingestion: Extracting APK metadata (45%)');
   } finally {
     logSpy.mockRestore();
   }

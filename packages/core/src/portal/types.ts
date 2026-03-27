@@ -169,6 +169,9 @@ export type PublicationIngestionSession = {
   versionName?: string | null;
   versionCode?: number | null;
   processingError?: string | null;
+  processingProgress?: number | null;
+  processingStage?: string | null;
+  processingDetail?: string | null;
   releaseId?: string | null;
   publicationSessionId?: string | null;
   bundle?: PublicationBundle;

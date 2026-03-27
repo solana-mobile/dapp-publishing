@@ -1103,6 +1103,22 @@ function translateBackendIngestionSession(
         : translatedBundle?.releaseId ??
           translatedPublicationSession?.releaseId ??
           null,
+    processingError:
+      typeof backendSession.processingError === "string"
+        ? backendSession.processingError
+        : null,
+    processingProgress:
+      typeof backendSession.processingProgress === "number"
+        ? backendSession.processingProgress
+        : null,
+    processingStage:
+      typeof backendSession.processingStage === "string"
+        ? backendSession.processingStage
+        : null,
+    processingDetail:
+      typeof backendSession.processingDetail === "string"
+        ? backendSession.processingDetail
+        : null,
     error:
       typeof backendSession.processingError === "string"
         ? backendSession.processingError

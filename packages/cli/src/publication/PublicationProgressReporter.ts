@@ -40,6 +40,9 @@ type ProgressContext = Partial<{
   bytesUploaded: number;
   bytesTotal: number;
   ingestionStatus: string;
+  ingestionProgress: number;
+  ingestionStage: string;
+  ingestionDetail: string;
   activeStep: string;
 }>;
 
@@ -523,6 +526,24 @@ class PublicationProgressReporter {
       this.context.ingestionStatus = ingestionStatus;
     }
 
+    const ingestionProgress = this.readNumber(metadata, 'ingestionProgress');
+    if (ingestionProgress !== undefined) {
+      this.context.ingestionProgress = Math.max(
+        0,
+        Math.min(100, ingestionProgress),
+      );
+    }
+
+    const ingestionStage = this.readString(metadata, 'ingestionStage');
+    if (ingestionStage) {
+      this.context.ingestionStage = ingestionStage;
+    }
+
+    const ingestionDetail = this.readString(metadata, 'ingestionDetail');
+    if (ingestionDetail) {
+      this.context.ingestionDetail = ingestionDetail;
+    }
+
     const activeStep = this.readString(metadata, 'step');
     if (activeStep) {
       this.context.activeStep = activeStep;
@@ -679,7 +700,11 @@ class PublicationProgressReporter {
   }
 
   private buildIngestionLine(): string | null {
-    if (!this.context.ingestionStatus) {
+    if (
+      !this.context.ingestionStatus &&
+      !this.context.ingestionStage &&
+      this.context.ingestionProgress === undefined
+    ) {
       return null;
     }
 
@@ -688,7 +713,29 @@ class PublicationProgressReporter {
       return null;
     }
 
-    return `Ingestion: ${this.context.ingestionStatus}`;
+    const detail =
+      this.context.ingestionDetail ??
+      this.context.ingestionStage ??
+      this.context.ingestionStatus;
+
+    const progress =
+      this.context.ingestionProgress === undefined
+        ? null
+        : `${Math.round(this.context.ingestionProgress)}%`;
+
+    if (detail && progress) {
+      return `Ingestion: ${detail} (${progress})`;
+    }
+
+    if (detail) {
+      return `Ingestion: ${detail}`;
+    }
+
+    if (progress) {
+      return `Ingestion: ${progress}`;
+    }
+
+    return null;
   }
 
   private getProgressPercent(): number {

@@ -230,9 +230,16 @@ async function hashFileSha256(filePath: string): Promise<string> {
 }
 
 function buildIngestionStatusProgress(
-  status: PublicationIngestionSession['status'],
+  session: PublicationIngestionSession,
 ): number {
-  switch (status) {
+  if (
+    typeof session.processingProgress === 'number' &&
+    Number.isFinite(session.processingProgress)
+  ) {
+    return Math.max(0, Math.min(1, session.processingProgress / 100));
+  }
+
+  switch (session.status) {
     case 'created':
       return 0.15;
     case 'queued':
@@ -251,9 +258,23 @@ function buildIngestionStatusProgress(
 }
 
 function buildIngestionStatusMessage(
-  status: PublicationIngestionSession['status'],
+  session: PublicationIngestionSession,
 ): string | null {
-  switch (status) {
+  if (
+    typeof session.processingDetail === 'string' &&
+    session.processingDetail.trim().length > 0
+  ) {
+    return session.processingDetail.trim();
+  }
+
+  if (
+    typeof session.processingStage === 'string' &&
+    session.processingStage.trim().length > 0
+  ) {
+    return session.processingStage.trim();
+  }
+
+  switch (session.status) {
     case 'created':
       return 'Portal ingestion request created';
     case 'queued':
@@ -644,10 +665,17 @@ async function waitForIngestionSessionReady(
     step: 'ingestion.wait',
     status: 'running',
     ingestionSessionId,
-    stepProgress: 0.15,
+    stepProgress: 0,
   });
 
-  let previousStatus: PublicationIngestionSession['status'] | undefined;
+  let previousSnapshot:
+    | {
+        status: PublicationIngestionSession['status'];
+        progress: number | null;
+        stage: string | null;
+        detail: string | null;
+      }
+    | undefined;
 
   for (let attempt = 1; attempt <= options.maxPollAttempts; attempt += 1) {
     const session = await client.getIngestionSession({
@@ -662,9 +690,31 @@ async function waitForIngestionSessionReady(
       );
     }
 
-    if (session.status !== previousStatus) {
-      previousStatus = session.status;
-      const statusMessage = buildIngestionStatusMessage(session.status);
+    const nextSnapshot = {
+      status: session.status,
+      progress:
+        typeof session.processingProgress === 'number'
+          ? session.processingProgress
+          : null,
+      stage:
+        typeof session.processingStage === 'string'
+          ? session.processingStage
+          : null,
+      detail:
+        typeof session.processingDetail === 'string'
+          ? session.processingDetail
+          : null,
+    };
+
+    if (
+      !previousSnapshot ||
+      previousSnapshot.status !== nextSnapshot.status ||
+      previousSnapshot.progress !== nextSnapshot.progress ||
+      previousSnapshot.stage !== nextSnapshot.stage ||
+      previousSnapshot.detail !== nextSnapshot.detail
+    ) {
+      previousSnapshot = nextSnapshot;
+      const statusMessage = buildIngestionStatusMessage(session);
       if (statusMessage) {
         logWorkflowInfo(logger, statusMessage, {
           step: 'ingestion.wait',
@@ -674,8 +724,14 @@ async function waitForIngestionSessionReady(
           publicationSessionId: session.publicationSessionId ?? undefined,
           androidPackage: session.androidPackage ?? undefined,
           versionName: session.versionName ?? undefined,
-          ingestionStatus: session.status,
-          stepProgress: buildIngestionStatusProgress(session.status),
+          ingestionStatus:
+            session.processingDetail ??
+            session.processingStage ??
+            session.status,
+          ingestionProgress: nextSnapshot.progress ?? undefined,
+          ingestionStage: nextSnapshot.stage ?? undefined,
+          ingestionDetail: nextSnapshot.detail ?? undefined,
+          stepProgress: buildIngestionStatusProgress(session),
         });
       }
     }
@@ -689,6 +745,18 @@ async function waitForIngestionSessionReady(
         publicationSessionId: session.publicationSessionId ?? undefined,
         androidPackage: session.androidPackage ?? undefined,
         versionName: session.versionName ?? undefined,
+        ingestionStatus:
+          session.processingDetail ??
+          session.processingStage ??
+          session.status,
+        ingestionProgress:
+          typeof session.processingProgress === 'number'
+            ? session.processingProgress
+            : 100,
+        ingestionStage: session.processingStage ?? 'Ready',
+        ingestionDetail:
+          session.processingDetail ?? 'Publication ingestion is ready',
+        stepProgress: 1,
       });
       return session;
     }
