@@ -11,8 +11,6 @@ export type NewVersionCliOptions = {
   apkUrl?: string;
   whatsNew?: string;
   portalUrl?: string;
-  apiBaseUrl?: string;
-  portalWebUrl?: string;
   apiKeyEnv?: string;
   apiKeyStdin?: boolean;
   signerKeypair?: string;
@@ -29,8 +27,6 @@ export type ResumeCliOptions = {
   resumeRelease?: string;
   resumeSession?: string;
   portalUrl?: string;
-  apiBaseUrl?: string;
-  portalWebUrl?: string;
   apiKeyEnv?: string;
   apiKeyStdin?: boolean;
   signerKeypair?: string;
@@ -49,16 +45,6 @@ function normalizeUrl(value: string, label: string): string {
   } catch {
     throw new Error(`Invalid ${label}: ${value}`);
   }
-}
-
-function derivePortalUrl(apiBaseUrl: string): string {
-  const normalized = new URL(apiBaseUrl);
-  if (normalized.pathname === '/api') {
-    normalized.pathname = '/';
-  } else if (normalized.pathname.endsWith('/api')) {
-    normalized.pathname = normalized.pathname.slice(0, -4);
-  }
-  return normalized.toString().replace(/\/$/, '');
 }
 
 function deriveApiBaseUrl(portalUrl: string): string {
@@ -85,27 +71,20 @@ function isLocalhostUrl(url: string): boolean {
 
 export function resolvePortalTargets(input: {
   portalUrl?: string;
-  apiBaseUrl?: string;
-  portalWebUrl?: string;
   localDev?: boolean;
 }): ResolvedPortalTargets {
-  const legacyApiBaseUrl =
-    input.apiBaseUrl ?? process.env.DAPP_STORE_PORTAL_API_BASE_URL;
   const portalUrl =
     input.portalUrl ??
-    input.portalWebUrl ??
     process.env.DAPP_STORE_PORTAL_URL ??
-    process.env.DAPP_STORE_PORTAL_WEB_URL ??
     (input.localDev ? DEFAULT_LOCAL_PORTAL_URL : undefined) ??
-    (legacyApiBaseUrl ? derivePortalUrl(legacyApiBaseUrl) : undefined) ??
     DEFAULT_PRODUCTION_PORTAL_URL;
 
   const normalizedPortalUrl = normalizeUrl(
-    portalUrl ?? derivePortalUrl(legacyApiBaseUrl!),
+    portalUrl,
     'portal URL',
   );
   const normalizedApiBaseUrl = normalizeUrl(
-    legacyApiBaseUrl ?? deriveApiBaseUrl(normalizedPortalUrl),
+    deriveApiBaseUrl(normalizedPortalUrl),
     'portal API base URL',
   );
 

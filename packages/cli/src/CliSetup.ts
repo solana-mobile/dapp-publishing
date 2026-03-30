@@ -47,18 +47,6 @@ mainCli
   .option('--apk-url <url>', 'HTTPS URL for an externally hosted APK')
   .option('--whats-new <text>', 'What changed in this version')
   .option('--portal-url <url>', 'Publishing portal base URL')
-  .addOption(
-    new Option(
-      '--api-base-url <url>',
-      'Publishing portal API base URL',
-    ).hideHelp(),
-  )
-  .addOption(
-    new Option(
-      '--portal-web-url <url>',
-      'Publishing portal web base URL',
-    ).hideHelp(),
-  )
   .option(
     '--api-key-env <name>',
     'Environment variable that contains the portal API key',
@@ -96,18 +84,6 @@ resumeCommand
   .option('--session-id <id>', 'Publication session identifier')
   .option('--resume-session <id>', 'Alias for --session-id')
   .option('--portal-url <url>', 'Publishing portal base URL')
-  .addOption(
-    new Option(
-      '--api-base-url <url>',
-      'Publishing portal API base URL',
-    ).hideHelp(),
-  )
-  .addOption(
-    new Option(
-      '--portal-web-url <url>',
-      'Publishing portal web base URL',
-    ).hideHelp(),
-  )
   .option(
     '--api-key-env <name>',
     'Environment variable that contains the portal API key',
@@ -395,8 +371,6 @@ function hasPublicationInputs(options: NewVersionCliOptions): boolean {
       options.apkUrl ||
       options.whatsNew ||
       options.portalUrl ||
-      options.apiBaseUrl ||
-      options.portalWebUrl ||
       options.signerKeypair ||
       options.idempotencyKey ||
       options.dappId ||
