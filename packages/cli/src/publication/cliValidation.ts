@@ -5,6 +5,8 @@ export const DEFAULT_LOCAL_PORTAL_URL = 'http://localhost:3333';
 export const DEFAULT_PRODUCTION_PORTAL_URL =
   'https://publish.solanamobile.com';
 export const DEFAULT_API_KEY_ENV = 'DAPP_STORE_API_KEY';
+export const UPDATED_PUBLISHING_CLI_DOCS_URL =
+  'https://docs.solanamobile.com/dapp-store/publishing-cli/publishing-updates';
 
 export type NewVersionCliOptions = {
   apkFile?: string;
@@ -205,13 +207,17 @@ export async function resolveApiKey(input: {
   }
 
   throw new Error(
-    `Portal API key is required. Set ${envVarName} or pass --api-key-stdin.`,
+    withUpdatedCliDocs(
+      `Portal API key is required. Set ${envVarName} or pass --api-key-stdin.`,
+    ),
   );
 }
 
 async function readSecretFromStdin(): Promise<string> {
   if (process.stdin.isTTY) {
-    throw new Error('No API key was piped into stdin.');
+    throw new Error(
+      withUpdatedCliDocs('No API key was piped into stdin.'),
+    );
   }
 
   const chunks: Buffer[] = [];
@@ -221,8 +227,19 @@ async function readSecretFromStdin(): Promise<string> {
 
   const value = Buffer.concat(chunks).toString('utf8').trim();
   if (!value) {
-    throw new Error('No API key was provided on stdin.');
+    throw new Error(
+      withUpdatedCliDocs('No API key was provided on stdin.'),
+    );
   }
 
   return value;
+}
+
+function withUpdatedCliDocs(message: string): string {
+  return [
+    message,
+    '',
+    'The publishing CLI has changed. See the updated usage guide:',
+    UPDATED_PUBLISHING_CLI_DOCS_URL,
+  ].join('\n');
 }

@@ -15,6 +15,7 @@ import {
   DEFAULT_API_KEY_ENV,
   DEFAULT_LOCAL_PORTAL_URL,
   DEFAULT_PRODUCTION_PORTAL_URL,
+  UPDATED_PUBLISHING_CLI_DOCS_URL,
   resolveApiKey,
   resolvePortalTargets,
   validateNewVersionArgs,
@@ -321,6 +322,9 @@ describe('CLI surface', () => {
   test('resolveApiKey rejects when no API key is available', async () => {
     await expect(resolveApiKey({})).rejects.toThrow(
       'Portal API key is required.',
+    );
+    await expect(resolveApiKey({})).rejects.toThrow(
+      UPDATED_PUBLISHING_CLI_DOCS_URL,
     );
   });
 });
