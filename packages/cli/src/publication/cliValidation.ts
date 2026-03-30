@@ -7,7 +7,6 @@ export const DEFAULT_PRODUCTION_PORTAL_URL =
 export const DEFAULT_API_KEY_ENV = 'DAPP_STORE_API_KEY';
 
 export type NewVersionCliOptions = {
-  newVersion?: boolean;
   apkFile?: string;
   apkUrl?: string;
   whatsNew?: string;
@@ -130,10 +129,6 @@ export function resolvePortalTargets(input: {
 }
 
 export function validateNewVersionArgs(input: NewVersionCliOptions): void {
-  if (!input.newVersion) {
-    throw new Error('The `--new-version` flag is required.');
-  }
-
   const apkSourceCount =
     (input.apkFile ? 1 : 0) + (input.apkUrl ? 1 : 0);
   if (apkSourceCount !== 1) {

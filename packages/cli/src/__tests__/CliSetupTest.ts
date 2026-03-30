@@ -47,7 +47,7 @@ describe('CLI surface', () => {
       mainCli.parse(['node', 'dapp-store', '--help']);
     }).toThrow(outputHelpReference);
 
-    expect(otherOutput).toContain('--new-version');
+    expect(otherOutput).not.toContain('--new-version');
     expect(otherOutput).toContain('resume');
     expect(otherOutput).toContain('--apk-file');
     expect(otherOutput).toContain('--apk-url');
@@ -58,7 +58,6 @@ describe('CLI surface', () => {
   test('new-version validation rejects ambiguous APK sources', () => {
     expect(() =>
       validateNewVersionArgs({
-        newVersion: true,
         apkFile: '/tmp/app.apk',
         apkUrl: 'https://example.com/app.apk',
         whatsNew: 'Fixes',
@@ -70,7 +69,6 @@ describe('CLI surface', () => {
   test('new-version validation rejects missing APK source', () => {
     expect(() =>
       validateNewVersionArgs({
-        newVersion: true,
         whatsNew: 'Fixes',
         signerKeypair: '/tmp/signer.json',
       }),
@@ -80,7 +78,6 @@ describe('CLI surface', () => {
   test('new-version validation accepts a single HTTPS APK URL', () => {
     expect(() =>
       validateNewVersionArgs({
-        newVersion: true,
         apkUrl: 'https://example.com/app.apk',
         whatsNew: 'Fixes',
         signerKeypair: '/tmp/signer.json',
@@ -91,7 +88,6 @@ describe('CLI surface', () => {
   test('new-version validation does not require a dapp id', () => {
     expect(() =>
       validateNewVersionArgs({
-        newVersion: true,
         apkUrl: 'https://example.com/app.apk',
         whatsNew: 'Fixes',
         signerKeypair: '/tmp/signer.json',

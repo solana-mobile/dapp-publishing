@@ -43,10 +43,6 @@ mainCli
   .showHelpAfterError();
 
 mainCli
-  .option(
-    '--new-version',
-    'Publish a new APK-backed version for an existing portal app',
-  )
   .option('--apk-file <path>', 'Path to the APK file to publish')
   .option('--apk-url <url>', 'HTTPS URL for an externally hosted APK')
   .option('--whats-new <text>', 'What changed in this version')
@@ -141,8 +137,8 @@ mainCli.addHelpText(
   [
     '',
     'Usage:',
-    '  dapp-store --new-version --apk-file ./app.apk --whats-new "Bug fixes"',
-    '  dapp-store --new-version --apk-url https://example.com/app.apk --whats-new "Bug fixes"',
+    '  dapp-store --apk-file ./app.apk --whats-new "Bug fixes"',
+    '  dapp-store --apk-url https://example.com/app.apk --whats-new "Bug fixes"',
     '  dapp-store resume --release-id <release-id> [--session-id <session-id>]',
     '',
     'Portal:',
@@ -166,11 +162,7 @@ async function runRootAction() {
   await runWithUserFacingErrors(async () => {
     const options = mainCli.opts() as NewVersionCliOptions;
 
-    if (!options.newVersion) {
-      if (hasPublicationInputs(options)) {
-        throw new Error('Use `--new-version` to start a version publication.');
-      }
-
+    if (!hasPublicationInputs(options)) {
       mainCli.outputHelp();
       return;
     }

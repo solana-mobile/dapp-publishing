@@ -225,9 +225,9 @@ mint transaction signing and attestation generation in the CLI.
 ### Phase 1. Lock the target contract and remove ambiguity
 
 1.1 Define the only supported new-submission CLI entrypoint as:
-`cli-tool --new-version --apk-file=... --whats-new=\"...\"`
+`cli-tool --apk-file=... --whats-new=\"...\"`
 or
-`cli-tool --new-version --apk-url=... --whats-new=\"...\"`.
+`cli-tool --apk-url=... --whats-new=\"...\"`.
 
 1.1.1 Add an explicit operational resume/reconcile entrypoint for partially
 completed publication flows, for example:
