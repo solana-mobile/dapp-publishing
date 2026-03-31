@@ -220,6 +220,10 @@ export async function resolveApiKey(input: {
   );
 }
 
+export function formatUpdatedCliUsageError(message: string): string {
+  return withUpdatedCliDocs(normalizeCliErrorMessage(message));
+}
+
 async function readSecretFromStdin(): Promise<string> {
   if (process.stdin.isTTY) {
     throw new Error(withUpdatedCliDocs("No API key was piped into stdin."));
@@ -245,4 +249,14 @@ function withUpdatedCliDocs(message: string): string {
     "The publishing CLI has changed. See the updated usage guide:",
     UPDATED_PUBLISHING_CLI_DOCS_URL,
   ].join("\n");
+}
+
+function normalizeCliErrorMessage(message: string): string {
+  const normalized = message.replace(/^error:\s*/i, "").trim();
+  if (normalized.length === 0) {
+    return "Invalid CLI arguments.";
+  }
+
+  const sentence = normalized.endsWith(".") ? normalized : `${normalized}.`;
+  return sentence.charAt(0).toUpperCase() + sentence.slice(1);
 }

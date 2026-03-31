@@ -10,6 +10,7 @@ import {
   DEFAULT_LOCAL_PORTAL_URL,
   DEFAULT_PRODUCTION_PORTAL_URL,
   UPDATED_PUBLISHING_CLI_DOCS_URL,
+  formatUpdatedCliUsageError,
   resolveApiKey,
   resolvePortalTargets,
   validateNewVersionArgs,
@@ -319,6 +320,15 @@ describe("CLI surface", () => {
       "Portal API key is required."
     );
     await expect(resolveApiKey({})).rejects.toThrow(
+      UPDATED_PUBLISHING_CLI_DOCS_URL
+    );
+  });
+
+  test("formatUpdatedCliUsageError converts unknown-option errors into docs guidance", () => {
+    expect(formatUpdatedCliUsageError("error: unknown option '-k'")).toContain(
+      "Unknown option '-k'."
+    );
+    expect(formatUpdatedCliUsageError("error: unknown option '-k'")).toContain(
       UPDATED_PUBLISHING_CLI_DOCS_URL
     );
   });
