@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
+    "@metaplex-foundation/mpl-token-metadata": "2.13.0",
     "@swc/jest": "^0.2.26",
     "@types/jest": "^29.5.1",
     "@types/update-notifier": "^6.0.1",

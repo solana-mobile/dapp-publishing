@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import { afterEach, expect, jest, test } from "@jest/globals";
+import { createCreateInstruction } from "@metaplex-foundation/mpl-token-metadata";
 import {
   ComputeBudgetProgram,
   Keypair,
@@ -47,15 +48,49 @@ function createReleaseMintTransaction(options?: {
     })
   );
   transaction.add(
-    new TransactionInstruction({
-      programId: TOKEN_METADATA_PROGRAM_ID,
-      keys: [
-        { pubkey: mint.publicKey, isSigner: true, isWritable: true },
-        { pubkey: signer.publicKey, isSigner: true, isWritable: true },
-        { pubkey: appMintAddress, isSigner: false, isWritable: false },
-      ],
-      data: Buffer.from([1, 2, 3]),
-    })
+    (() => {
+      const instruction = createCreateInstruction(
+        {
+          metadata: Keypair.generate().publicKey,
+          masterEdition: Keypair.generate().publicKey,
+          mint: mint.publicKey,
+          authority: signer.publicKey,
+          payer: signer.publicKey,
+          updateAuthority: signer.publicKey,
+          sysvarInstructions: Keypair.generate().publicKey,
+          splTokenProgram: Keypair.generate().publicKey,
+        },
+        {
+          createArgs: {
+            __kind: "V1",
+            assetData: {
+              name: "Example release",
+              symbol: "",
+              uri: "https://example.com/release.json",
+              sellerFeeBasisPoints: 0,
+              creators: null,
+              primarySaleHappened: false,
+              isMutable: false,
+              tokenStandard: 0,
+              collection: {
+                verified: false,
+                key: appMintAddress,
+              },
+              uses: null,
+              collectionDetails: null,
+              ruleSet: null,
+            },
+            decimals: null,
+            printSupply: null,
+          },
+        }
+      );
+
+      instruction.keys[2]!.isSigner = true;
+      instruction.keys[5]!.isSigner = true;
+
+      return instruction;
+    })()
   );
 
   if (options?.addUnexpectedProgram) {
@@ -167,6 +202,13 @@ test("signSerializedTransaction signs a validated release mint transaction", asy
   const { signer, mint, appMintAddress, blockhash, serialized } =
     createReleaseMintTransaction();
 
+  const accountAddresses = Transaction.from(
+    Buffer.from(serialized, "base64")
+  )
+    .compileMessage()
+    .accountKeys.map((key) => key.toBase58());
+  expect(accountAddresses).not.toContain(appMintAddress.toBase58());
+
   const signedTransaction = await signSerializedTransaction(
     createPublicationSignerFromKeypair(signer),
     serialized,
@@ -229,6 +271,26 @@ test("signSerializedTransaction rejects release mint transactions with invalid p
       }
     )
   ).rejects.toThrow("invalid existing signatures");
+});
+
+test("signSerializedTransaction rejects release mint transactions with a mismatched collection encoded in metadata", async () => {
+  const { signer, mint, blockhash, serialized } = createReleaseMintTransaction();
+  const unexpectedAppMintAddress = Keypair.generate().publicKey;
+
+  await expect(
+    signSerializedTransaction(
+      createPublicationSignerFromKeypair(signer),
+      serialized,
+      {
+        kind: "release-mint",
+        expectedBlockhash: blockhash,
+        expectedFeePayerAddress: signer.publicKey.toBase58(),
+        expectedSignerAddress: signer.publicKey.toBase58(),
+        expectedMintAddress: mint.publicKey.toBase58(),
+        expectedAppMintAddress: unexpectedAppMintAddress.toBase58(),
+      }
+    )
+  ).rejects.toThrow("collection mismatch");
 });
 
 test("signSerializedTransaction signs a validated collection verification transaction", async () => {

@@ -1,5 +1,10 @@
 import { createPublicKey, verify } from "node:crypto";
 
+import {
+  CreateStruct,
+  createInstructionDiscriminator,
+  isCreateArgsV1,
+} from "@metaplex-foundation/mpl-token-metadata";
 import { ComputeBudgetProgram, PublicKey, Transaction } from "@solana/web3.js";
 
 import type { PublicationSigner } from "./types.js";
@@ -126,6 +131,39 @@ function assertExistingSignaturesValid(transaction: Transaction): void {
   }
 }
 
+function getTokenMetadataCreateCollectionAddress(
+  transaction: Transaction
+): string | null {
+  for (const instruction of transaction.instructions) {
+    if (!instruction.programId.equals(TOKEN_METADATA_PROGRAM_ID)) {
+      continue;
+    }
+
+    if (
+      instruction.data.length === 0 ||
+      instruction.data[0] !== createInstructionDiscriminator
+    ) {
+      continue;
+    }
+
+    try {
+      const [decodedInstruction] = CreateStruct.deserialize(instruction.data);
+
+      if (!isCreateArgsV1(decodedInstruction.createArgs)) {
+        continue;
+      }
+
+      return decodedInstruction.createArgs.assetData.collection?.key.toBase58() ?? null;
+    } catch (error) {
+      throw new Error(
+        "Portal transaction contains an invalid token metadata create instruction."
+      );
+    }
+  }
+
+  return null;
+}
+
 function validatePublicationTransaction(
   signer: PublicationSigner,
   transaction: Transaction,
@@ -198,8 +236,15 @@ function validatePublicationTransaction(
     );
     assertAccountsPresent(accountAddresses, [
       ["release mint", validation.expectedMintAddress],
-      ["app collection mint", validation.expectedAppMintAddress],
     ]);
+
+    const actualCollectionMintAddress =
+      getTokenMetadataCreateCollectionAddress(transaction);
+    if (actualCollectionMintAddress !== validation.expectedAppMintAddress) {
+      throw new Error(
+        `Portal transaction token metadata collection mismatch. Expected ${validation.expectedAppMintAddress}; received ${actualCollectionMintAddress ?? "[none]"}.`
+      );
+    }
 
     const mintSignature = transaction.signatures.find(({ publicKey }) =>
       publicKey.equals(new PublicKey(validation.expectedMintAddress))
