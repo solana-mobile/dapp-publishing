@@ -1,12 +1,11 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import fs from "node:fs";
+import path from "node:path";
 
-export const DEFAULT_LOCAL_PORTAL_URL = 'http://localhost:3333';
-export const DEFAULT_PRODUCTION_PORTAL_URL =
-  'https://publish.solanamobile.com';
-export const DEFAULT_API_KEY_ENV = 'DAPP_STORE_API_KEY';
+export const DEFAULT_LOCAL_PORTAL_URL = "http://localhost:3333";
+export const DEFAULT_PRODUCTION_PORTAL_URL = "https://publish.solanamobile.com";
+export const DEFAULT_API_KEY_ENV = "DAPP_STORE_API_KEY";
 export const UPDATED_PUBLISHING_CLI_DOCS_URL =
-  'https://docs.solanamobile.com/dapp-store/publishing-cli/publishing-updates';
+  "https://docs.solanamobile.com/dapp-store/publishing-cli/publishing-updates";
 
 export type NewVersionCliOptions = {
   apkFile?: string;
@@ -15,7 +14,7 @@ export type NewVersionCliOptions = {
   portalUrl?: string;
   apiKeyEnv?: string;
   apiKeyStdin?: boolean;
-  signerKeypair?: string;
+  keypair?: string;
   localDev?: boolean;
   skipSelfUpdate?: boolean;
   idempotencyKey?: string;
@@ -31,7 +30,7 @@ export type ResumeCliOptions = {
   portalUrl?: string;
   apiKeyEnv?: string;
   apiKeyStdin?: boolean;
-  signerKeypair?: string;
+  keypair?: string;
   localDev?: boolean;
   skipSelfUpdate?: boolean;
   verbose?: boolean;
@@ -43,7 +42,7 @@ export type ResolvedPortalTargets = {
 
 function normalizeUrl(value: string, label: string): string {
   try {
-    return new URL(value).toString().replace(/\/$/, '');
+    return new URL(value).toString().replace(/\/$/, "");
   } catch {
     throw new Error(`Invalid ${label}: ${value}`);
   }
@@ -51,20 +50,19 @@ function normalizeUrl(value: string, label: string): string {
 
 function deriveApiBaseUrl(portalUrl: string): string {
   const normalized = new URL(portalUrl);
-  const basePath = normalized.pathname.replace(/\/$/, '');
-  normalized.pathname =
-    basePath.length === 0 ? '/api' : `${basePath}/api`;
-  return normalized.toString().replace(/\/$/, '');
+  const basePath = normalized.pathname.replace(/\/$/, "");
+  normalized.pathname = basePath.length === 0 ? "/api" : `${basePath}/api`;
+  return normalized.toString().replace(/\/$/, "");
 }
 
 function isLocalhostUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
     return (
-      parsed.hostname === 'localhost' ||
-      parsed.hostname === '127.0.0.1' ||
-      parsed.hostname === '::1' ||
-      parsed.hostname === '[::1]'
+      parsed.hostname === "localhost" ||
+      parsed.hostname === "127.0.0.1" ||
+      parsed.hostname === "::1" ||
+      parsed.hostname === "[::1]"
     );
   } catch {
     return false;
@@ -81,25 +79,40 @@ export function resolvePortalTargets(input: {
     (input.localDev ? DEFAULT_LOCAL_PORTAL_URL : undefined) ??
     DEFAULT_PRODUCTION_PORTAL_URL;
 
-  const normalizedPortalUrl = normalizeUrl(
-    portalUrl,
-    'portal URL',
-  );
+  const normalizedPortalUrl = normalizeUrl(portalUrl, "portal URL");
   const normalizedApiBaseUrl = normalizeUrl(
     deriveApiBaseUrl(normalizedPortalUrl),
-    'portal API base URL',
+    "portal API base URL"
   );
 
   if (input.localDev) {
     const localTargets = [
-      ['portal URL', normalizedPortalUrl],
-      ['portal API base URL', normalizedApiBaseUrl],
+      ["portal URL", normalizedPortalUrl],
+      ["portal API base URL", normalizedApiBaseUrl],
     ] as const;
 
-    const nonLocalTarget = localTargets.find(([, value]) => !isLocalhostUrl(value));
+    const nonLocalTarget = localTargets.find(
+      ([, value]) => !isLocalhostUrl(value)
+    );
     if (nonLocalTarget) {
       throw new Error(
-        `--local-dev only allows localhost portal endpoints. Received ${nonLocalTarget[0]}: ${nonLocalTarget[1]}`,
+        `--local-dev only allows localhost portal endpoints. Received ${nonLocalTarget[0]}: ${nonLocalTarget[1]}`
+      );
+    }
+  }
+
+  if (!input.localDev) {
+    const portalTargets = [
+      ["portal URL", normalizedPortalUrl],
+      ["portal API base URL", normalizedApiBaseUrl],
+    ] as const;
+    const insecureTarget = portalTargets.find(([, value]) => {
+      return new URL(value).protocol !== "https:";
+    });
+
+    if (insecureTarget) {
+      throw new Error(
+        `Portal endpoints must use HTTPS unless --local-dev is set. Received ${insecureTarget[0]}: ${insecureTarget[1]}`
       );
     }
   }
@@ -110,18 +123,17 @@ export function resolvePortalTargets(input: {
 }
 
 export function validateNewVersionArgs(input: NewVersionCliOptions): void {
-  const apkSourceCount =
-    (input.apkFile ? 1 : 0) + (input.apkUrl ? 1 : 0);
+  const apkSourceCount = (input.apkFile ? 1 : 0) + (input.apkUrl ? 1 : 0);
   if (apkSourceCount !== 1) {
-    throw new Error('Specify exactly one of `--apk-file` or `--apk-url`.');
+    throw new Error("Specify exactly one of `--apk-file` or `--apk-url`.");
   }
 
   if (!input.whatsNew || input.whatsNew.trim().length === 0) {
-    throw new Error('`--whats-new` is required.');
+    throw new Error("`--whats-new` is required.");
   }
 
-  if (!input.signerKeypair || input.signerKeypair.trim().length === 0) {
-    throw new Error('`--signer-keypair` is required.');
+  if (!input.keypair || input.keypair.trim().length === 0) {
+    throw new Error("`--keypair` is required.");
   }
 
   if (input.apkFile) {
@@ -136,11 +148,11 @@ export function validateNewVersionArgs(input: NewVersionCliOptions): void {
     try {
       parsed = new URL(input.apkUrl);
     } catch {
-      throw new Error('`--apk-url` must be a valid HTTPS URL.');
+      throw new Error("`--apk-url` must be a valid HTTPS URL.");
     }
 
-    if (parsed.protocol !== 'https:') {
-      throw new Error('`--apk-url` must use HTTPS.');
+    if (parsed.protocol !== "https:") {
+      throw new Error("`--apk-url` must use HTTPS.");
     }
   }
 }
@@ -149,23 +161,22 @@ export function validateResumeArgs(input: ResumeCliOptions): void {
   const releaseId = resolveResumeTarget(
     input.releaseId,
     input.resumeRelease,
-    '--release-id',
-    '--resume-release',
+    "--release-id",
+    "--resume-release"
   );
   const sessionId = resolveResumeTarget(
     input.sessionId,
     input.resumeSession,
-    '--session-id',
-    '--resume-session',
+    "--session-id",
+    "--resume-session"
   );
-  const resumeTargetCount =
-    (releaseId ? 1 : 0) + (sessionId ? 1 : 0);
+  const resumeTargetCount = (releaseId ? 1 : 0) + (sessionId ? 1 : 0);
   if (resumeTargetCount !== 1) {
-    throw new Error('Specify exactly one of `--release-id` or `--session-id`.');
+    throw new Error("Specify exactly one of `--release-id` or `--session-id`.");
   }
 
-  if (!input.signerKeypair || input.signerKeypair.trim().length === 0) {
-    throw new Error('`--signer-keypair` is required.');
+  if (!input.keypair || input.keypair.trim().length === 0) {
+    throw new Error("`--keypair` is required.");
   }
 }
 
@@ -173,18 +184,14 @@ function resolveResumeTarget(
   primary?: string,
   alias?: string,
   primaryLabel?: string,
-  aliasLabel?: string,
+  aliasLabel?: string
 ): string | undefined {
   const trimmedPrimary = primary?.trim();
   const trimmedAlias = alias?.trim();
 
-  if (
-    trimmedPrimary &&
-    trimmedAlias &&
-    trimmedPrimary !== trimmedAlias
-  ) {
+  if (trimmedPrimary && trimmedAlias && trimmedPrimary !== trimmedAlias) {
     throw new Error(
-      `Conflicting values were provided for ${primaryLabel} and ${aliasLabel}.`,
+      `Conflicting values were provided for ${primaryLabel} and ${aliasLabel}.`
     );
   }
 
@@ -208,16 +215,14 @@ export async function resolveApiKey(input: {
 
   throw new Error(
     withUpdatedCliDocs(
-      `Portal API key is required. Set ${envVarName} or pass --api-key-stdin.`,
-    ),
+      `Portal API key is required. Set ${envVarName} or pass --api-key-stdin.`
+    )
   );
 }
 
 async function readSecretFromStdin(): Promise<string> {
   if (process.stdin.isTTY) {
-    throw new Error(
-      withUpdatedCliDocs('No API key was piped into stdin.'),
-    );
+    throw new Error(withUpdatedCliDocs("No API key was piped into stdin."));
   }
 
   const chunks: Buffer[] = [];
@@ -225,11 +230,9 @@ async function readSecretFromStdin(): Promise<string> {
     chunks.push(Buffer.from(chunk));
   }
 
-  const value = Buffer.concat(chunks).toString('utf8').trim();
+  const value = Buffer.concat(chunks).toString("utf8").trim();
   if (!value) {
-    throw new Error(
-      withUpdatedCliDocs('No API key was provided on stdin.'),
-    );
+    throw new Error(withUpdatedCliDocs("No API key was provided on stdin."));
   }
 
   return value;
@@ -238,8 +241,8 @@ async function readSecretFromStdin(): Promise<string> {
 function withUpdatedCliDocs(message: string): string {
   return [
     message,
-    '',
-    'The publishing CLI has changed. See the updated usage guide:',
+    "",
+    "The publishing CLI has changed. See the updated usage guide:",
     UPDATED_PUBLISHING_CLI_DOCS_URL,
-  ].join('\n');
+  ].join("\n");
 }

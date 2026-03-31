@@ -56,7 +56,7 @@ mainCli
     '--api-key-stdin',
     'Read the portal API key from stdin instead of an env var',
   )
-  .option('--signer-keypair <path>', 'Path to the Solana signer keypair')
+  .option('--keypair <path>', 'Path to the Solana signer keypair')
   .addOption(new Option('--rpc-url <url>', 'Solana RPC URL').hideHelp())
   .option('--local-dev', 'Allow localhost portal endpoints and skip gating')
   .option(
@@ -93,7 +93,7 @@ resumeCommand
     '--api-key-stdin',
     'Read the portal API key from stdin instead of an env var',
   )
-  .option('--signer-keypair <path>', 'Path to the Solana signer keypair')
+  .option('--keypair <path>', 'Path to the Solana signer keypair')
   .addOption(new Option('--rpc-url <url>', 'Solana RPC URL').hideHelp())
   .option('--local-dev', 'Allow localhost portal endpoints and skip gating')
   .option(
@@ -148,7 +148,7 @@ async function runRootAction() {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = loadSigner(options.signerKeypair);
+    const signer = loadSigner(options.keypair);
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Publishing version',
@@ -191,7 +191,7 @@ async function runResumeAction(options: ResumeCliOptions) {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = loadSigner(options.signerKeypair);
+    const signer = loadSigner(options.keypair);
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Resuming publication',
@@ -354,7 +354,7 @@ function resolveResumeSessionId(options: ResumeCliOptions): string | undefined {
 
 function loadSigner(keypairPath?: string) {
   if (!keypairPath) {
-    throw new Error('`--signer-keypair` is required.');
+    throw new Error('`--keypair` is required.');
   }
 
   const keypair = parseKeypair(keypairPath);
@@ -371,7 +371,7 @@ function hasPublicationInputs(options: NewVersionCliOptions): boolean {
       options.apkUrl ||
       options.whatsNew ||
       options.portalUrl ||
-      options.signerKeypair ||
+      options.keypair ||
       options.idempotencyKey ||
       options.dappId ||
       options.verbose,
