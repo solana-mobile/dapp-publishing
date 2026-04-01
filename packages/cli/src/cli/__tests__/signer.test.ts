@@ -3,11 +3,16 @@ import os from "node:os";
 import path from "node:path";
 
 import { afterEach, expect, jest, test } from "@jest/globals";
-import { createCreateInstruction } from "@metaplex-foundation/mpl-token-metadata";
+import {
+  createCreateInstruction,
+  createVerifyInstruction,
+  VerificationArgs,
+} from "@metaplex-foundation/mpl-token-metadata";
 import {
   ComputeBudgetProgram,
   Keypair,
   PublicKey,
+  SYSVAR_INSTRUCTIONS_PUBKEY,
   SystemProgram,
   Transaction,
   TransactionInstruction,
@@ -20,6 +25,8 @@ const tempDirs: string[] = [];
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
+const TOKEN_METADATA_SEED = Buffer.from("metadata");
+const TOKEN_METADATA_EDITION_SEED = Buffer.from("edition");
 
 afterEach(() => {
   while (tempDirs.length > 0) {
@@ -127,6 +134,29 @@ function createReleaseMintTransaction(options?: {
   };
 }
 
+function getMetadataPda(mintAddress: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [
+      TOKEN_METADATA_SEED,
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      mintAddress.toBuffer(),
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  )[0];
+}
+
+function getMasterEditionPda(mintAddress: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [
+      TOKEN_METADATA_SEED,
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      mintAddress.toBuffer(),
+      TOKEN_METADATA_EDITION_SEED,
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  )[0];
+}
+
 function createVerifyCollectionTransaction(options?: {
   signer?: Keypair;
   nftMintAddress?: PublicKey;
@@ -147,15 +177,20 @@ function createVerifyCollectionTransaction(options?: {
     })
   );
   transaction.add(
-    new TransactionInstruction({
-      programId: TOKEN_METADATA_PROGRAM_ID,
-      keys: [
-        { pubkey: signer.publicKey, isSigner: true, isWritable: false },
-        { pubkey: nftMintAddress, isSigner: false, isWritable: true },
-        { pubkey: collectionMintAddress, isSigner: false, isWritable: false },
-      ],
-      data: Buffer.from([4, 5, 6]),
-    })
+    createVerifyInstruction(
+      {
+        authority: signer.publicKey,
+        metadata: getMetadataPda(nftMintAddress),
+        collectionMint: collectionMintAddress,
+        collectionMetadata: getMetadataPda(collectionMintAddress),
+        collectionMasterEdition: getMasterEditionPda(collectionMintAddress),
+        systemProgram: SystemProgram.programId,
+        sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
+      },
+      {
+        verificationArgs: VerificationArgs.CollectionV1,
+      }
+    )
   );
 
   return {

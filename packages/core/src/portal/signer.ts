@@ -12,6 +12,8 @@ import type { PublicationSigner } from "./types.js";
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
 );
+const TOKEN_METADATA_SEED = Buffer.from("metadata");
+const TOKEN_METADATA_EDITION_SEED = Buffer.from("edition");
 const ALLOWED_PUBLICATION_PROGRAM_IDS = new Set([
   ComputeBudgetProgram.programId.toBase58(),
   TOKEN_METADATA_PROGRAM_ID.toBase58(),
@@ -164,6 +166,29 @@ function getTokenMetadataCreateCollectionAddress(
   return null;
 }
 
+function getMetadataPdaAddress(mintAddress: string): string {
+  return PublicKey.findProgramAddressSync(
+    [
+      TOKEN_METADATA_SEED,
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      new PublicKey(mintAddress).toBuffer(),
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  )[0].toBase58();
+}
+
+function getMasterEditionPdaAddress(mintAddress: string): string {
+  return PublicKey.findProgramAddressSync(
+    [
+      TOKEN_METADATA_SEED,
+      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+      new PublicKey(mintAddress).toBuffer(),
+      TOKEN_METADATA_EDITION_SEED,
+    ],
+    TOKEN_METADATA_PROGRAM_ID
+  )[0].toBase58();
+}
+
 function validatePublicationTransaction(
   signer: PublicationSigner,
   transaction: Transaction,
@@ -267,8 +292,19 @@ function validatePublicationTransaction(
     "Collection verification transaction"
   );
   assertAccountsPresent(accountAddresses, [
-    ["release mint", validation.expectedNftMintAddress],
+    [
+      "release metadata",
+      getMetadataPdaAddress(validation.expectedNftMintAddress),
+    ],
     ["app collection mint", validation.expectedCollectionMintAddress],
+    [
+      "app collection metadata",
+      getMetadataPdaAddress(validation.expectedCollectionMintAddress),
+    ],
+    [
+      "app collection master edition",
+      getMasterEditionPdaAddress(validation.expectedCollectionMintAddress),
+    ],
     ["collection authority", validation.expectedCollectionAuthority],
   ]);
 }

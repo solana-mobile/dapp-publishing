@@ -62,17 +62,12 @@ function buildInsufficientBalanceMessage(input: {
   balanceLamports: number;
   publicKey: string;
   requiredLamports: number;
-  rpcUrl: string;
 }): string {
-  return [
-    `Signer ${input.publicKey} has ${formatSolAmount(
-      input.balanceLamports
-    )} SOL, but publishing needs at least ${formatSolAmount(
-      input.requiredLamports
-    )} SOL available before it starts.`,
-    "Top up the signer wallet and retry so the release does not fail after the APK upload.",
-    `Balance checked via ${input.rpcUrl}.`,
-  ].join(" ");
+  return `Signer ${input.publicKey} has ${formatSolAmount(
+    input.balanceLamports
+  )} SOL, but publishing needs at least ${formatSolAmount(
+    input.requiredLamports
+  )} SOL available before it starts.`;
 }
 
 function buildRpcWarningMessage(rpcUrl: string, error: unknown): string {
@@ -110,7 +105,6 @@ export async function ensurePublicationSignerBalance(
           balanceLamports,
           publicKey: input.publicKey,
           requiredLamports: MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS,
-          rpcUrl,
         })
       );
     }
@@ -127,4 +121,3 @@ export async function ensurePublicationSignerBalance(
     return buildRpcWarningMessage(rpcUrl, error);
   }
 }
-
