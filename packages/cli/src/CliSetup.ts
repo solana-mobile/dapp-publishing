@@ -27,10 +27,12 @@ import {
 import { createPublicationProgressReporter } from './publication/PublicationProgressReporter.js';
 import { extractPublicationSummaryLines } from './publication/publicationSummary.js';
 import { runPublicationWorkflow } from './publication/runPublicationWorkflow.js';
+import { ensurePublicationSignerBalance } from './publication/fundingPreflight.js';
 import type {
   PublicationResumeInput,
   PublicationWorkflowInput,
 } from './publication/runPublicationWorkflow.js';
+import type { Keypair } from '@solana/web3.js';
 
 dotenv.config();
 
@@ -148,7 +150,16 @@ async function runRootAction() {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = loadSigner(options.keypair);
+    const signerKeypair = loadSignerKeypair(options.keypair);
+    const balanceWarning = await ensurePublicationSignerBalance({
+      publicKey: signerKeypair.publicKey.toBase58(),
+      rpcUrl: options.rpcUrl,
+      localDev: options.localDev,
+    });
+    if (balanceWarning) {
+      showMessage('Warning', balanceWarning, 'warning');
+    }
+    const signer = createPublicationSignerFromKeypair(signerKeypair);
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Publishing version',
@@ -191,7 +202,9 @@ async function runResumeAction(options: ResumeCliOptions) {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = loadSigner(options.keypair);
+    const signer = createPublicationSignerFromKeypair(
+      loadSignerKeypair(options.keypair)
+    );
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Resuming publication',
@@ -352,7 +365,7 @@ function resolveResumeSessionId(options: ResumeCliOptions): string | undefined {
   return options.sessionId ?? options.resumeSession;
 }
 
-function loadSigner(keypairPath?: string) {
+function loadSignerKeypair(keypairPath?: string): Keypair {
   if (!keypairPath) {
     throw new Error('`--keypair` is required.');
   }
@@ -362,7 +375,7 @@ function loadSigner(keypairPath?: string) {
     throw new Error('Failed to load the signer keypair.');
   }
 
-  return createPublicationSignerFromKeypair(keypair);
+  return keypair;
 }
 
 function hasPublicationInputs(options: NewVersionCliOptions): boolean {
@@ -372,6 +385,7 @@ function hasPublicationInputs(options: NewVersionCliOptions): boolean {
       options.whatsNew ||
       options.portalUrl ||
       options.keypair ||
+      options.rpcUrl ||
       options.idempotencyKey ||
       options.dappId ||
       options.verbose,

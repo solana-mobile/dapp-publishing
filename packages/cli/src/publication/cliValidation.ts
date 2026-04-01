@@ -15,6 +15,7 @@ export type NewVersionCliOptions = {
   apiKeyEnv?: string;
   apiKeyStdin?: boolean;
   keypair?: string;
+  rpcUrl?: string;
   localDev?: boolean;
   skipSelfUpdate?: boolean;
   idempotencyKey?: string;
@@ -31,6 +32,7 @@ export type ResumeCliOptions = {
   apiKeyEnv?: string;
   apiKeyStdin?: boolean;
   keypair?: string;
+  rpcUrl?: string;
   localDev?: boolean;
   skipSelfUpdate?: boolean;
   verbose?: boolean;

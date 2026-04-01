@@ -198,22 +198,32 @@ async function resolveMediaItem(
   client: ReleaseMetadataPortalClient,
   input: {
     defaultMimeType?: string;
+    expectedMimeType?: string;
     fallbackFileName: string;
     purpose: PublicationMediaPurpose;
     uri: string;
   }
 ) {
-  const isAlreadyPublicR2 = isR2PublicUrl(input.uri);
+  const resolvedUri = ensureHttpsUrl(input.uri);
+  const isAlreadyPublicR2 = isR2PublicUrl(resolvedUri);
 
-  const remoteFile = await client.fetchRemoteFile({
-    url: input.uri,
-    fileName: input.fallbackFileName,
-    expectedMimeType: input.defaultMimeType,
-  });
+  let remoteFile: RemoteFilePayload;
+  try {
+    remoteFile = await client.fetchRemoteFile({
+      url: resolvedUri,
+      fileName: input.fallbackFileName,
+      expectedMimeType: input.expectedMimeType,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `Failed to fetch ${input.purpose} media from ${resolvedUri}: ${message}`
+    );
+  }
   const fileBytes = Buffer.from(remoteFile.data, "base64");
 
   if (fileBytes.byteLength === 0) {
-    throw new Error(`Remote media file is empty: ${input.uri}`);
+    throw new Error(`Remote media file is empty: ${resolvedUri}`);
   }
 
   const remoteFileName = remoteFile.fileName || input.fallbackFileName;
@@ -232,7 +242,7 @@ async function resolveMediaItem(
     return {
       mime: resolvedMimeType,
       purpose: input.purpose,
-      uri: input.uri,
+      uri: resolvedUri,
       width: dimensions.width,
       height: dimensions.height,
       sha256: fileHash,
@@ -375,7 +385,7 @@ export async function buildReleaseMetadataDocument(
   if (bannerUri) {
     media.push(
       await resolveMediaItem(client, {
-        defaultMimeType: "image/png",
+        defaultMimeType: inferMimeType(inferFileNameFromUrl(bannerUri)),
         fallbackFileName: "release-banner.png",
         purpose: "banner",
         uri: bannerUri,
@@ -386,7 +396,9 @@ export async function buildReleaseMetadataDocument(
   if (featureGraphicUri) {
     media.push(
       await resolveMediaItem(client, {
-        defaultMimeType: "image/png",
+        defaultMimeType: inferMimeType(
+          inferFileNameFromUrl(featureGraphicUri)
+        ),
         fallbackFileName: "release-feature-graphic.png",
         purpose: "featureGraphic",
         uri: featureGraphicUri,
