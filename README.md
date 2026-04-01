@@ -12,7 +12,9 @@ dapp-store --apk-file ./app.apk --whats-new "Bug fixes"
 dapp-store --apk-url https://example.com/app.apk --whats-new "Bug fixes"
 ```
 
-Secrets and local development:
+Api key:
+Can be obtained from https://publish.solanamobile.com/dashboard/settings/api-keys
+
 
 
 ```bash
