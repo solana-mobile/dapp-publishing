@@ -49,6 +49,8 @@
     "boxen": "^7.0.1",
     "commander": "^9.4.1",
     "dotenv": "^16.0.3",
+    "get-video-dimensions": "^1.0.0",
+    "image-size": "^1.0.2",
     "semver": "^7.3.8",
     "tweetnacl": "1.0.3",
     "update-notifier": "^6.0.2"

@@ -247,3 +247,32 @@ test("createIngestionSession uploads local APK files before creating the ingesti
   expect(result.releaseId).toBe("release-2");
   expect(result.publicationSessionId).toBe("session-2");
 });
+
+test("createIngestionSession explains local file permission errors", async () => {
+  const readFileSpy = jest.spyOn(fs, "readFileSync").mockImplementation(() => {
+    const error = Object.assign(new Error("operation not permitted"), {
+      code: "EPERM",
+    });
+    throw error;
+  });
+
+  const client = createPortalWorkflowClient({
+    apiBaseUrl: "https://portal.example.com/api",
+    apiKey: "portal-key",
+  });
+
+  await expect(
+    client.createIngestionSession({
+      source: {
+        kind: "apk-file",
+        filePath: "/Users/skumail/Downloads/app.apk",
+      },
+      whatsNew: "Local upload",
+      idempotencyKey: "idem-3",
+    })
+  ).rejects.toThrow(
+    "Move the APK out of Downloads into your workspace or another accessible folder"
+  );
+
+  readFileSpy.mockRestore();
+});

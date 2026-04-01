@@ -14,6 +14,7 @@ import {
   ensureApkFileName,
   hashFileSha256,
   inferFileNameFromUrl,
+  normalizeLocalFileAccessError,
 } from "./files.js";
 
 const DEFAULT_APK_CONTENT_TYPE = "application/vnd.android.package-archive";
@@ -30,7 +31,9 @@ async function uploadLocalApkToPortal(
     );
   }
 
-  const fileStat = await stat(source.filePath);
+  const fileStat = await stat(source.filePath).catch((error) => {
+    throw normalizeLocalFileAccessError(source.filePath, error);
+  });
   const contentType = source.mimeType ?? DEFAULT_APK_CONTENT_TYPE;
   const fileHash = await hashFileSha256(source.filePath);
   const fileName = ensureApkFileName(

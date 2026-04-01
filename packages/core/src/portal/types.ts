@@ -223,6 +223,7 @@ export type PublicationBundle = {
     dappPreviewUrls?: string[];
     bannerUrl?: string | null;
     featureGraphicUrl?: string | null;
+    editorsChoiceGraphicUrl?: string | null;
     appWebsite?: string | null;
     contactEmail?: string | null;
     supportEmail?: string | null;

@@ -31,7 +31,7 @@ function numberOrDefault(value: unknown, fallback: number): number {
 
 function buildInstallFileDetails(
   release: Record<string, unknown>,
-  installFile: Record<string, unknown>,
+  installFile: Record<string, unknown>
 ) {
   const url = asString(installFile.uri || release.releaseFileUrl || '');
   const fileName =
@@ -46,8 +46,7 @@ function buildInstallFileDetails(
         ? installFile.mimeType
         : inferMimeType(fileName),
     size: numberOrDefault(installFile.size, 0),
-    sha256:
-      typeof installFile.sha256 === 'string' ? installFile.sha256 : null,
+    sha256: typeof installFile.sha256 === 'string' ? installFile.sha256 : null,
     canonicalUrl:
       typeof installFile.canonicalUrl === 'string'
         ? installFile.canonicalUrl
@@ -123,7 +122,7 @@ function normalizePublicationStatus(session: {
 }
 
 export function inferPublicationSourceKind(
-  sourceKind?: string,
+  sourceKind?: string
 ): PortalSourceKind {
   if (sourceKind === 'externalUrl') {
     return 'external';
@@ -134,7 +133,7 @@ export function inferPublicationSourceKind(
 
 export function buildReleaseMetadataDocument(
   bundle: PublicationBundle,
-  sourceKind: PortalSourceKind,
+  sourceKind: PortalSourceKind
 ): Record<string, unknown> {
   const releaseName =
     bundle.release.localizedName ||
@@ -158,7 +157,7 @@ export function buildReleaseMetadataDocument(
 
   if (!image) {
     throw new Error(
-      'Publication bundle did not include a public app image URL.',
+      'Publication bundle did not include a public app image URL.'
     );
   }
 
@@ -255,7 +254,7 @@ export function buildReleaseMetadataDocument(
 export function mapBackendBundleToPublicationBundle(
   backendBundle: Record<string, unknown>,
   releaseMetadataUri: string,
-  sourceKind: PortalSourceKind,
+  sourceKind: PortalSourceKind
 ): PublicationBundle {
   const release = isRecord(backendBundle.release) ? backendBundle.release : {};
   const dapp = isRecord(backendBundle.dapp) ? backendBundle.dapp : {};
@@ -275,11 +274,13 @@ export function mapBackendBundleToPublicationBundle(
     (typeof dapp.dappName === 'string' && dapp.dappName) ||
     'Release update';
   const shortDescription =
-    (typeof release.shortDescription === 'string' && release.shortDescription) ||
+    (typeof release.shortDescription === 'string' &&
+      release.shortDescription) ||
     (typeof dapp.subtitle === 'string' && dapp.subtitle) ||
     asString(dapp.description || '').slice(0, 50);
   const localizedShortDescription =
-    (typeof release.shortDescription === 'string' && release.shortDescription) ||
+    (typeof release.shortDescription === 'string' &&
+      release.shortDescription) ||
     asString(dapp.description || '').slice(0, 50);
   const longDescription =
     (typeof release.longDescription === 'string' && release.longDescription) ||
@@ -297,12 +298,13 @@ export function mapBackendBundleToPublicationBundle(
       subtitle: optionalString(dapp.subtitle),
       description: asString(dapp.description || ''),
       androidPackage: asString(
-        dapp.androidPackage || release.androidPackage || '',
+        dapp.androidPackage || release.androidPackage || ''
       ),
       dappIconUrl: optionalString(dapp.dappIconUrl),
       dappPreviewUrls: stringArray(dapp.dappPreviewUrls),
       bannerUrl: optionalString(dapp.bannerUrl),
       featureGraphicUrl: optionalString(dapp.featureGraphicUrl),
+      editorsChoiceGraphicUrl: optionalString(dapp.editorsChoiceGraphicUrl),
       appWebsite: optionalString(dapp.appWebsite),
       contactEmail: optionalString(dapp.contactEmail),
       supportEmail: asString(dapp.supportEmail || publisher.supportEmail || ''),
@@ -313,6 +315,7 @@ export function mapBackendBundleToPublicationBundle(
       walletAddress: asString(dapp.walletAddress || ''),
       nftMintAddress: asString(dapp.nftMintAddress || ''),
       lastApprovedReleaseId: optionalString(dapp.lastApprovedReleaseId),
+      website: optionalString(dapp.website || dapp.appWebsite),
     },
     publisher: {
       id: asString(publisher.id || ''),
@@ -324,7 +327,7 @@ export function mapBackendBundleToPublicationBundle(
       website: asString(publisher.website || ''),
       email: asString(publisher.email || ''),
       supportEmail: asString(
-        publisher.supportEmail || dapp.supportEmail || publisher.email || '',
+        publisher.supportEmail || dapp.supportEmail || publisher.email || ''
       ),
     },
     installFile: {
@@ -381,16 +384,16 @@ export function mapBackendBundleToPublicationBundle(
         signerAuthority.dappWalletAddress ||
           signerAuthority.requiredSigner ||
           dapp.walletAddress ||
-          '',
+          ''
       ),
       collectionAuthority: asString(
         signerAuthority.collectionAuthority ||
           signerAuthority.dappWalletAddress ||
           dapp.walletAddress ||
-          '',
+          ''
       ),
       appMintAddress: asString(
-        signerAuthority.appMintAddress || dapp.nftMintAddress || '',
+        signerAuthority.appMintAddress || dapp.nftMintAddress || ''
       ),
       sameSignerRequired:
         typeof signerAuthority.sameSignerRequired === 'boolean'
@@ -407,7 +410,7 @@ export function mapBackendBundleToPublicationBundle(
               signerAuthority.dappWalletAddress ||
                 signerAuthority.collectionAuthority ||
                 dapp.walletAddress ||
-                '',
+                ''
             ),
       mintSigner:
         typeof signerAuthority.mintSigner === 'string'
@@ -416,33 +419,120 @@ export function mapBackendBundleToPublicationBundle(
               signerAuthority.dappWalletAddress ||
                 signerAuthority.collectionAuthority ||
                 dapp.walletAddress ||
-                '',
+                ''
             ),
       feePayer: optionalString(signerAuthority.feePayer),
     },
     release: {
+      id: asString(release.id || backendBundle.releaseId || ''),
+      dappId: asString(release.dappId || dapp.id || ''),
+      releaseFileUrl: optionalString(
+        typeof release.releaseFileUrl === 'string'
+          ? release.releaseFileUrl
+          : installFileDetails.url
+      ),
+      releaseFileName: asString(
+        typeof release.releaseFileName === 'string'
+          ? release.releaseFileName
+          : installFileDetails.fileName
+      ),
+      releaseFileSize: numberOrDefault(
+        release.releaseFileSize || installFileDetails.size,
+        installFileDetails.size
+      ),
+      releaseFileHash:
+        typeof release.releaseFileHash === 'string'
+          ? release.releaseFileHash
+          : installFileDetails.sha256,
       releaseName,
       versionName:
         (typeof release.versionName === 'string' && release.versionName) ||
         asString(release.versionCode || '1'),
       versionCode: numberOrDefault(release.versionCode, 1),
-      androidPackage: asString(release.androidPackage || dapp.androidPackage || ''),
+      androidPackage: asString(
+        release.androidPackage || dapp.androidPackage || ''
+      ),
+      minSdkVersion:
+        typeof release.minSdkVersion === 'number'
+          ? release.minSdkVersion
+          : null,
+      targetSdkVersion:
+        typeof release.targetSdkVersion === 'number'
+          ? release.targetSdkVersion
+          : null,
+      permissions: stringArray(release.permissions),
+      locales: stringArray(release.locales),
+      certificateFingerprint:
+        typeof release.certificateFingerprint === 'string'
+          ? release.certificateFingerprint
+          : null,
+      shortDescription:
+        typeof release.shortDescription === 'string'
+          ? release.shortDescription
+          : null,
+      longDescription:
+        typeof release.longDescription === 'string'
+          ? release.longDescription
+          : null,
       localizedName:
         (typeof release.localizedName === 'string' && release.localizedName) ||
         releaseName,
       newInVersion,
+      sagaFeatures:
+        typeof release.sagaFeatures === 'string' ? release.sagaFeatures : null,
+      status: typeof release.status === 'string' ? release.status : undefined,
+      processingError: optionalString(release.processingError),
+      processedAt: optionalString(release.processedAt),
       releaseMintAddress: optionalString(release.nftMintAddress),
       releaseMetadataUri:
         releaseMetadataUri ||
         (typeof release.nftMetadataUri === 'string'
           ? release.nftMetadataUri
           : null),
+      nftMintAddress: optionalString(release.nftMintAddress),
+      nftTransactionSignature: optionalString(release.nftTransactionSignature),
+      nftMetadataUri: optionalString(release.nftMetadataUri),
+      nftCluster: optionalString(release.nftCluster),
+      isCollectionVerified:
+        typeof release.isCollectionVerified === 'boolean'
+          ? release.isCollectionVerified
+          : undefined,
+      uploadProvider:
+        release.uploadProvider === 'Arweave' ||
+        release.uploadProvider === 'S3' ||
+        release.uploadProvider === 'R2' ||
+        release.uploadProvider === 'IPFS'
+          ? release.uploadProvider
+          : null,
+      uploadProviderId: optionalString(release.uploadProviderId),
+      publishedAt: optionalString(release.publishedAt),
+      rejectedAt: optionalString(release.rejectedAt),
+      rejectionReason: optionalString(release.rejectionReason),
+      submissionStatus:
+        typeof release.submissionStatus === 'string'
+          ? release.submissionStatus
+          : undefined,
+      hubspotTicketId: optionalString(release.hubspotTicketId),
+      submittedAt: optionalString(release.submittedAt),
+      reviewStartedAt: optionalString(release.reviewStartedAt),
+      reviewCompletedAt: optionalString(release.reviewCompletedAt),
+      source:
+        release.source === 'Portal' || release.source === 'Hubspot'
+          ? release.source
+          : undefined,
+      created: optionalString(release.created) || undefined,
+      updated: optionalString(release.updated) || undefined,
+      isLive: typeof release.isLive === 'boolean' ? release.isLive : undefined,
+      liveVersionComparison:
+        typeof release.liveVersionComparison === 'string'
+          ? release.liveVersionComparison
+          : undefined,
     },
   };
 }
 
 export function translateBackendPublicationSession(
-  backendSession: Record<string, unknown>,
+  backendSession: Record<string, unknown>
 ): PublicationSession {
   const stage =
     typeof backendSession.stage === 'string'
@@ -460,13 +550,13 @@ export function translateBackendPublicationSession(
     checkpoint: normalizePublicationCheckpoint({
       stage,
       mintTransactionSignature: optionalString(
-        backendSession.mintTransactionSignature,
+        backendSession.mintTransactionSignature
       ),
       verificationTransactionSignature: optionalString(
-        backendSession.verificationTransactionSignature,
+        backendSession.verificationTransactionSignature
       ),
       attestationRequestUniqueId: optionalString(
-        backendSession.attestationRequestUniqueId,
+        backendSession.attestationRequestUniqueId
       ),
       hubspotTicketId: optionalString(backendSession.hubspotTicketId),
       expectedMintAddress: optionalString(backendSession.expectedMintAddress),
@@ -476,13 +566,13 @@ export function translateBackendPublicationSession(
     releaseMintAddress: optionalString(backendSession.expectedMintAddress),
     collectionMintAddress: null,
     mintTransactionSignature: optionalString(
-      backendSession.mintTransactionSignature,
+      backendSession.mintTransactionSignature
     ),
     verifyTransactionSignature: optionalString(
-      backendSession.verificationTransactionSignature,
+      backendSession.verificationTransactionSignature
     ),
     attestationRequestUniqueId: optionalString(
-      backendSession.attestationRequestUniqueId,
+      backendSession.attestationRequestUniqueId
     ),
     attestationPayload: null,
     hubspotTicketId: optionalString(backendSession.hubspotTicketId),
@@ -507,22 +597,24 @@ export function translateBackendPublicationSession(
 }
 
 function translateIngestionSource(
-  backendSession: Record<string, unknown>,
+  backendSession: Record<string, unknown>
 ): PublicationSource {
   const sourceKind =
     typeof backendSession.sourceKind === 'string'
       ? backendSession.sourceKind
       : 'portalUpload';
   const sourceUrl =
-    typeof backendSession.sourceUrl === 'string' ? backendSession.sourceUrl : '';
+    typeof backendSession.sourceUrl === 'string'
+      ? backendSession.sourceUrl
+      : '';
 
   return {
     kind:
       sourceKind === 'externalUrl'
         ? ('apk-url' as const)
         : sourceKind === 'existingRelease'
-          ? ('existingRelease' as const)
-          : ('apk-file' as const),
+        ? ('existingRelease' as const)
+        : ('apk-file' as const),
     filePath:
       sourceKind === 'existingRelease'
         ? asString(backendSession.releaseId || '')
@@ -535,7 +627,7 @@ function translateIngestionSource(
     mimeType: inferMimeType(
       typeof backendSession.releaseFileName === 'string'
         ? backendSession.releaseFileName
-        : inferFileNameFromUrl(sourceUrl),
+        : inferFileNameFromUrl(sourceUrl)
     ),
     size:
       typeof backendSession.releaseFileSize === 'number'
@@ -577,7 +669,7 @@ function translateIngestionSource(
 export function translateBackendIngestionSession(
   backendSession: Record<string, unknown>,
   bundle?: Record<string, unknown>,
-  publicationSession?: Record<string, unknown>,
+  publicationSession?: Record<string, unknown>
 ): PublicationIngestionSession & {
   bundle?: PublicationBundle;
   publicationSession?: PublicationSession;
@@ -596,7 +688,7 @@ export function translateBackendIngestionSession(
           firstString(publicationSession, ['metadataUri']) ||
             firstString(bundle, ['release.nftMetadataUri']) ||
             '',
-          inferPublicationSourceKind(sourceKind),
+          inferPublicationSourceKind(sourceKind)
         ),
         ingestionSessionId: asString(backendSession.id || ''),
         publicationSessionId:
@@ -620,10 +712,10 @@ export function translateBackendIngestionSession(
       backendSession.status === 'Failed'
         ? 'failed'
         : backendSession.status === 'Ready'
-          ? 'ready'
-          : backendSession.status === 'Processing'
-            ? 'processing'
-            : 'created',
+        ? 'ready'
+        : backendSession.status === 'Processing'
+        ? 'processing'
+        : 'created',
     publicationSessionId:
       typeof backendSession.publicationSessionId === 'string'
         ? backendSession.publicationSessionId

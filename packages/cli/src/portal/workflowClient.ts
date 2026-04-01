@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import { createHash } from 'node:crypto';
-import path from 'node:path';
+import fs from "node:fs";
+import { createHash } from "node:crypto";
+import path from "node:path";
 
 import type {
   PublicationBundle,
@@ -23,28 +23,31 @@ import type {
   PublicationSubmitToStoreInput,
   PublicationSubmitToStoreResult,
   PublicationWorkflowClient,
-} from '@solana-mobile/dapp-store-publishing-tools';
+} from "@solana-mobile/dapp-store-publishing-tools";
 
 import {
   ensureApkFileName,
   fromBase64,
   inferFileNameFromUrl,
   toBase64,
-} from './files.js';
+} from "./files.js";
 import {
   callCreateIngestionSessionWithRetry,
   callPortalProcedure,
   uploadBytes,
-} from './http.js';
-import { asRecord, isRecord } from './records.js';
+} from "./http.js";
+import { asRecord, isRecord } from "./records.js";
 import {
-  buildReleaseMetadataDocument,
   inferPublicationSourceKind,
   mapBackendBundleToPublicationBundle,
   translateBackendIngestionSession,
   translateBackendPublicationSession,
-} from './translators.js';
-import type { PortalClientConfig, PortalUploadTarget } from './types.js';
+} from "./translators.js";
+import {
+  buildReleaseMetadataDocument,
+  type ReleaseMetadataPortalClient,
+} from "./releaseMetadata.js";
+import type { PortalClientConfig, PortalUploadTarget } from "./types.js";
 
 type PortalBackendResult = Record<string, unknown>;
 
@@ -65,7 +68,7 @@ function createWorkflowClientState(): WorkflowClientState {
 function rememberLinkedPublicationSession(
   state: WorkflowClientState,
   releaseId?: string | null,
-  publicationSessionId?: string | null,
+  publicationSessionId?: string | null
 ) {
   if (releaseId && publicationSessionId) {
     state.publicationSessionIdByReleaseId.set(releaseId, publicationSessionId);
@@ -74,30 +77,30 @@ function rememberLinkedPublicationSession(
 
 function trackBackendIdentifiers(
   state: WorkflowClientState,
-  backendResult: PortalBackendResult,
+  backendResult: PortalBackendResult
 ) {
-  if (typeof backendResult.releaseId === 'string') {
+  if (typeof backendResult.releaseId === "string") {
     state.currentReleaseId = backendResult.releaseId;
   }
-  if (typeof backendResult.publicationSessionId === 'string') {
+  if (typeof backendResult.publicationSessionId === "string") {
     state.currentPublicationSessionId = backendResult.publicationSessionId;
   }
 
   rememberLinkedPublicationSession(
     state,
     state.currentReleaseId,
-    state.currentPublicationSessionId,
+    state.currentPublicationSessionId
   );
 }
 
 function trackTranslatedIngestionSession(
   state: WorkflowClientState,
-  session: PublicationIngestionSession,
+  session: PublicationIngestionSession
 ) {
   rememberLinkedPublicationSession(
     state,
     session.releaseId,
-    session.publicationSessionId,
+    session.publicationSessionId
   );
 
   if (session.publicationSessionId) {
@@ -111,29 +114,48 @@ function trackTranslatedIngestionSession(
   }
 }
 
+function readLocalSourceFileOrThrow(filePath: string): Buffer {
+  try {
+    return fs.readFileSync(filePath);
+  } catch (error) {
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code?: unknown }).code || "")
+        : "";
+
+    if (code === "EPERM" || code === "EACCES") {
+      throw new Error(
+        `Cannot read local APK at ${filePath}. macOS denied access to this location (${code}). Move the APK out of Downloads into your workspace or another accessible folder, or grant this app Full Disk Access, then retry.`
+      );
+    }
+
+    throw error;
+  }
+}
+
 export function createPortalWorkflowClient(
-  config: PortalClientConfig,
+  config: PortalClientConfig
 ): PublicationWorkflowClient {
   const state = createWorkflowClientState();
 
   const createUploadTarget = async (
-    input: PublicationCreateUploadTargetInput,
+    input: PublicationCreateUploadTargetInput
   ): Promise<PortalUploadTarget> => {
     return await callPortalProcedure<PortalUploadTarget>(
       config,
-      'publication.createUploadTarget',
+      "publication.createUploadTarget",
       input,
-      'mutation',
+      "mutation"
     );
   };
 
   const translateIngestionBackendResult = (
-    backendResult: PortalBackendResult,
+    backendResult: PortalBackendResult
   ) => {
     const translated = translateBackendIngestionSession(
       backendResult,
       asRecord(backendResult.bundle),
-      asRecord(backendResult.publicationSession),
+      asRecord(backendResult.publicationSession)
     );
 
     trackTranslatedIngestionSession(state, translated);
@@ -148,35 +170,51 @@ export function createPortalWorkflowClient(
     }
 
     if (
-      typeof bundle.release.releaseMetadataUri === 'string' &&
+      typeof bundle.release.releaseMetadataUri === "string" &&
       bundle.release.releaseMetadataUri.length > 0
     ) {
       state.metadataUriByReleaseId.set(
         releaseId,
-        bundle.release.releaseMetadataUri,
+        bundle.release.releaseMetadataUri
       );
       return bundle.release.releaseMetadataUri;
     }
 
-    const metadataDocument = buildReleaseMetadataDocument(
+    const releaseMetadataClient: ReleaseMetadataPortalClient = {
+      createUploadTarget,
+      async fetchRemoteFile(input) {
+        return await callPortalProcedure<{
+          data: string;
+          fileName: string;
+          mimeType: string;
+        }>(config, "fetchRemoteFile", input, "query");
+      },
+    };
+
+    const metadataDocument = await buildReleaseMetadataDocument(
+      releaseMetadataClient,
       bundle,
       inferPublicationSourceKind(
-        bundle.metadata.installFile.origin === 'external'
-          ? 'externalUrl'
-          : 'portalUpload',
-      ),
+        bundle.metadata.installFile.origin === "external"
+          ? "externalUrl"
+          : "portalUpload"
+      )
     );
     delete (metadataDocument as Record<string, unknown>).__origin;
 
-    const metadataBytes = Buffer.from(JSON.stringify(metadataDocument), 'utf8');
-    const fileHash = createHash('sha256').update(metadataBytes).digest('hex');
+    const metadataBytes = Buffer.from(JSON.stringify(metadataDocument), "utf8");
+    const fileHash = createHash("sha256").update(metadataBytes).digest("hex");
     const uploadTarget = await createUploadTarget({
       fileHash,
-      fileExtension: 'json',
-      contentType: 'application/json',
+      fileExtension: "json",
+      contentType: "application/json",
     });
 
-    await uploadBytes(uploadTarget.uploadUrl, metadataBytes, 'application/json');
+    await uploadBytes(
+      uploadTarget.uploadUrl,
+      metadataBytes,
+      "application/json"
+    );
 
     state.metadataUriByReleaseId.set(releaseId, uploadTarget.publicUrl);
     return uploadTarget.publicUrl;
@@ -184,37 +222,37 @@ export function createPortalWorkflowClient(
 
   return {
     async createUploadTarget(
-      input: PublicationCreateUploadTargetInput,
+      input: PublicationCreateUploadTargetInput
     ): Promise<PublicationCreateUploadTargetResult> {
       return await createUploadTarget(input);
     },
 
     async createIngestionSession(
-      input: PublicationCreateIngestionSessionInput,
+      input: PublicationCreateIngestionSessionInput
     ): Promise<PublicationIngestionSession> {
       const dappId = input.dappId || config.dappId;
       const idempotencyKey = input.idempotencyKey || `${Date.now()}`;
 
-      if (input.source.kind === 'apk-file') {
+      if (input.source.kind === "apk-file") {
         const source = (() => {
           const filePath = path.resolve(input.source.filePath);
           const fileName = ensureApkFileName(
-            input.source.fileName || path.basename(filePath),
+            input.source.fileName || path.basename(filePath)
           );
-          const fileBytes = fs.readFileSync(filePath);
+          const fileBytes = readLocalSourceFileOrThrow(filePath);
           const fileHash =
             input.source.sha256 ||
-            createHash('sha256').update(fileBytes).digest('hex');
+            createHash("sha256").update(fileBytes).digest("hex");
 
           return {
             filePath,
             fileName,
             fileBytes,
             fileHash,
-            fileExtension: 'apk',
+            fileExtension: "apk",
             contentType:
               input.source.mimeType ||
-              'application/vnd.android.package-archive',
+              "application/vnd.android.package-archive",
             releaseFileSize: input.source.size ?? fileBytes.byteLength,
           };
         })();
@@ -228,51 +266,54 @@ export function createPortalWorkflowClient(
         await uploadBytes(
           uploadTarget.uploadUrl,
           fromBase64(toBase64(source.fileBytes)),
-          source.contentType,
+          source.contentType
         );
 
-        const backendResult = await callCreateIngestionSessionWithRetry(config, {
-          source: {
-            kind: 'portalUpload',
-            releaseFileUrl: uploadTarget.publicUrl,
-            releaseFileName: source.fileName,
-            releaseFileSize: source.releaseFileSize,
-          },
-          whatsNew: input.whatsNew,
-          idempotencyKey,
-          ...(dappId ? { dappId } : {}),
-        });
+        const backendResult = await callCreateIngestionSessionWithRetry(
+          config,
+          {
+            source: {
+              kind: "portalUpload",
+              releaseFileUrl: uploadTarget.publicUrl,
+              releaseFileName: source.fileName,
+              releaseFileSize: source.releaseFileSize,
+            },
+            whatsNew: input.whatsNew,
+            idempotencyKey,
+            ...(dappId ? { dappId } : {}),
+          }
+        );
 
         trackBackendIdentifiers(state, backendResult);
         return translateIngestionBackendResult(backendResult);
       }
 
       const backendSource =
-        input.source.kind === 'portalUpload'
+        input.source.kind === "portalUpload"
           ? {
-              kind: 'portalUpload',
+              kind: "portalUpload",
               releaseFileUrl: input.source.releaseFileUrl,
               releaseFileName: input.source.releaseFileName,
               releaseFileSize: input.source.releaseFileSize,
             }
-          : input.source.kind === 'existingRelease'
-            ? {
-                kind: 'existingRelease',
-                sourceReleaseId: input.source.sourceReleaseId,
-              }
-            : {
-                kind: 'externalUrl',
-                apkUrl:
-                  input.source.kind === 'externalUrl'
-                    ? input.source.apkUrl
-                    : input.source.url,
-                releaseFileName:
-                  input.source.kind === 'externalUrl'
-                    ? input.source.releaseFileName ||
-                      inferFileNameFromUrl(input.source.apkUrl)
-                    : input.source.fileName ||
-                      inferFileNameFromUrl(input.source.url),
-              };
+          : input.source.kind === "existingRelease"
+          ? {
+              kind: "existingRelease",
+              sourceReleaseId: input.source.sourceReleaseId,
+            }
+          : {
+              kind: "externalUrl",
+              apkUrl:
+                input.source.kind === "externalUrl"
+                  ? input.source.apkUrl
+                  : input.source.url,
+              releaseFileName:
+                input.source.kind === "externalUrl"
+                  ? input.source.releaseFileName ||
+                    inferFileNameFromUrl(input.source.apkUrl)
+                  : input.source.fileName ||
+                    inferFileNameFromUrl(input.source.url),
+            };
 
       const backendResult = await callCreateIngestionSessionWithRetry(config, {
         source: backendSource,
@@ -286,27 +327,29 @@ export function createPortalWorkflowClient(
     },
 
     async getIngestionSession(
-      input: PublicationGetIngestionSessionInput,
+      input: PublicationGetIngestionSessionInput
     ): Promise<PublicationIngestionSession> {
       const resolvedSessionId =
         input.sessionId ||
-        (('ingestionSessionId' in input &&
-          typeof input.ingestionSessionId === 'string' &&
-          input.ingestionSessionId.length > 0)
+        ("ingestionSessionId" in input &&
+        typeof input.ingestionSessionId === "string" &&
+        input.ingestionSessionId.length > 0
           ? input.ingestionSessionId
           : undefined);
 
       if (!resolvedSessionId) {
-        throw new Error('publication.getIngestionSession requires a session id');
+        throw new Error(
+          "publication.getIngestionSession requires a session id"
+        );
       }
 
       const backendResult = await callPortalProcedure<PortalBackendResult>(
         config,
-        'publication.getIngestionSession',
+        "publication.getIngestionSession",
         {
           sessionId: resolvedSessionId,
         },
-        'query',
+        "query"
       );
 
       trackBackendIdentifiers(state, backendResult);
@@ -314,13 +357,13 @@ export function createPortalWorkflowClient(
     },
 
     async getPublicationBundle(
-      input: PublicationGetBundleInput,
+      input: PublicationGetBundleInput
     ): Promise<PublicationBundle> {
       const backendBundle = await callPortalProcedure<PortalBackendResult>(
         config,
-        'publication.getPublicationBundle',
+        "publication.getPublicationBundle",
         { releaseId: input.releaseId },
-        'query',
+        "query"
       );
 
       const linkedPublicationSessionId =
@@ -330,24 +373,24 @@ export function createPortalWorkflowClient(
         ? translateBackendPublicationSession(
             await callPortalProcedure<PortalBackendResult>(
               config,
-              'publication.getPublicationSession',
+              "publication.getPublicationSession",
               {
                 publicationSessionId: linkedPublicationSessionId,
                 releaseId: input.releaseId,
               },
-              'query',
-            ),
+              "query"
+            )
           )
         : undefined;
 
       const releaseMetadataUri =
         state.metadataUriByReleaseId.get(input.releaseId) ||
         (isRecord(backendBundle.release) &&
-        typeof backendBundle.release.nftMetadataUri === 'string' &&
+        typeof backendBundle.release.nftMetadataUri === "string" &&
         backendBundle.release.nftMetadataUri.length > 0
           ? backendBundle.release.nftMetadataUri
           : await uploadReleaseMetadata(
-              mapBackendBundleToPublicationBundle(backendBundle, '', 'portal'),
+              mapBackendBundleToPublicationBundle(backendBundle, "", "portal")
             ));
 
       state.metadataUriByReleaseId.set(input.releaseId, releaseMetadataUri);
@@ -358,9 +401,9 @@ export function createPortalWorkflowClient(
         inferPublicationSourceKind(
           state.currentReleaseId &&
             state.publicationSessionIdByReleaseId.has(state.currentReleaseId)
-            ? 'portalUpload'
-            : 'externalUrl',
-        ),
+            ? "portalUpload"
+            : "externalUrl"
+        )
       );
 
       translated.releaseId = translated.releaseId || input.releaseId;
@@ -369,11 +412,11 @@ export function createPortalWorkflowClient(
         linkedPublicationSession?.id ||
         state.publicationSessionIdByReleaseId.get(input.releaseId) ||
         state.currentPublicationSessionId ||
-        '';
+        "";
       translated.ingestionSessionId =
         translated.ingestionSessionId ||
         linkedPublicationSession?.ingestionSessionId ||
-        '';
+        "";
 
       state.currentReleaseId = translated.releaseId || state.currentReleaseId;
       state.currentPublicationSessionId =
@@ -382,18 +425,16 @@ export function createPortalWorkflowClient(
       rememberLinkedPublicationSession(
         state,
         translated.releaseId,
-        translated.publicationSessionId,
+        translated.publicationSessionId
       );
 
       return translated;
     },
 
-    async getPublicationSession(
-      input: PublicationGetSessionInput,
-    ) {
+    async getPublicationSession(input: PublicationGetSessionInput) {
       const backendResult = await callPortalProcedure<PortalBackendResult>(
         config,
-        'publication.getPublicationSession',
+        "publication.getPublicationSession",
         {
           publicationSessionId:
             input.publicationSessionId ||
@@ -402,7 +443,7 @@ export function createPortalWorkflowClient(
               : undefined),
           releaseId: input.releaseId,
         },
-        'query',
+        "query"
       );
 
       const translated = translateBackendPublicationSession(backendResult);
@@ -411,30 +452,30 @@ export function createPortalWorkflowClient(
       rememberLinkedPublicationSession(
         state,
         translated.releaseId,
-        translated.id,
+        translated.id
       );
       return translated;
     },
 
     async cleanupRelease(
-      input: PublicationCleanupReleaseInput,
+      input: PublicationCleanupReleaseInput
     ): Promise<PublicationCleanupReleaseResult> {
       return await callPortalProcedure<PublicationCleanupReleaseResult>(
         config,
-        'publication.cleanupRelease',
+        "publication.cleanupRelease",
         input,
-        'mutation',
+        "mutation"
       );
     },
 
     async prepareReleaseNftTransaction(
-      input: PublicationPrepareReleaseNftTransactionInput,
+      input: PublicationPrepareReleaseNftTransactionInput
     ): Promise<PublicationPreparedReleaseTransaction> {
       return await callPortalProcedure<PublicationPreparedReleaseTransaction>(
         config,
-        'publication.prepareReleaseNftTransaction',
+        "publication.prepareReleaseNftTransaction",
         input,
-        'mutation',
+        "mutation"
       );
     },
 
@@ -444,35 +485,35 @@ export function createPortalWorkflowClient(
     }): Promise<PublicationSubmitSignedTransactionResult> {
       return await callPortalProcedure<PublicationSubmitSignedTransactionResult>(
         config,
-        'publication.submitSignedTransaction',
+        "publication.submitSignedTransaction",
         {
           signedTransaction: input.signedTransaction,
           publicationSessionId:
             input.publicationSessionId || state.currentPublicationSessionId,
         },
-        'mutation',
+        "mutation"
       );
     },
 
     async saveReleaseNftData(
-      input: PublicationSaveReleaseNftDataInput,
+      input: PublicationSaveReleaseNftDataInput
     ): Promise<PublicationSaveReleaseNftDataResult> {
       return await callPortalProcedure<PublicationSaveReleaseNftDataResult>(
         config,
-        'publication.saveReleaseNftData',
+        "publication.saveReleaseNftData",
         input,
-        'mutation',
+        "mutation"
       );
     },
 
     async prepareVerifyCollectionTransaction(
-      input: PublicationPrepareVerifyCollectionTransactionInput,
+      input: PublicationPrepareVerifyCollectionTransactionInput
     ): Promise<PublicationPreparedVerifyCollectionTransaction> {
       return await callPortalProcedure<PublicationPreparedVerifyCollectionTransaction>(
         config,
-        'publication.prepareVerifyCollectionTransaction',
+        "publication.prepareVerifyCollectionTransaction",
         input,
-        'mutation',
+        "mutation"
       );
     },
 
@@ -481,40 +522,41 @@ export function createPortalWorkflowClient(
     }): Promise<{ success: boolean; releaseId: string }> {
       return await callPortalProcedure<{ success: boolean; releaseId: string }>(
         config,
-        'publication.markReleaseCollectionAsVerified',
+        "publication.markReleaseCollectionAsVerified",
         input,
-        'mutation',
+        "mutation"
       );
     },
 
     async submitToStore(
-      input: PublicationSubmitToStoreInput,
+      input: PublicationSubmitToStoreInput
     ): Promise<PublicationSubmitToStoreResult> {
       const attestation = isRecord(input.attestation)
         ? input.attestation
         : undefined;
 
       const payload =
-        typeof attestation?.payload === 'string' && attestation.payload.length > 0
+        typeof attestation?.payload === "string" &&
+        attestation.payload.length > 0
           ? attestation.payload
-          : typeof attestation?.attestationPayload === 'string' &&
-              attestation.attestationPayload.length > 0
-            ? attestation.attestationPayload
-            : typeof (input as Record<string, unknown>).attestationPayload ===
-                'string'
-              ? String((input as Record<string, unknown>).attestationPayload)
-              : '';
+          : typeof attestation?.attestationPayload === "string" &&
+            attestation.attestationPayload.length > 0
+          ? attestation.attestationPayload
+          : typeof (input as Record<string, unknown>).attestationPayload ===
+            "string"
+          ? String((input as Record<string, unknown>).attestationPayload)
+          : "";
       const requestUniqueId =
-        typeof attestation?.requestUniqueId === 'string'
+        typeof attestation?.requestUniqueId === "string"
           ? attestation.requestUniqueId
           : typeof (input as Record<string, unknown>).requestUniqueId ===
-              'string'
-            ? String((input as Record<string, unknown>).requestUniqueId)
-            : '';
+            "string"
+          ? String((input as Record<string, unknown>).requestUniqueId)
+          : "";
 
       return await callPortalProcedure<PublicationSubmitToStoreResult>(
         config,
-        'publication.submitToStore',
+        "publication.submitToStore",
         {
           releaseId: input.releaseId,
           whatsNew: input.whatsNew,
@@ -526,7 +568,7 @@ export function createPortalWorkflowClient(
             requestUniqueId,
           },
         },
-        'mutation',
+        "mutation"
       );
     },
   };
