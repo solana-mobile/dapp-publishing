@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-import "../lib/index.js";
+import { main } from "../lib/index.js";
+
+await main();

@@ -10,12 +10,6 @@ import { ComputeBudgetProgram } from "@solana/web3.js";
 export class Constants {
   static PUBLISHING_SCHEMA_VER = "0.4.0";
 }
-export const truncateAddress = (address: string) => {
-  return `${address.slice(0, 4)}...${address.slice(
-    address.length - 4,
-    address.length
-  )}`;
-};
 
 type JsonMetadataMetaplexFile = Omit<JsonMetadata, "image"> & {
   image: string | MetaplexFile;
