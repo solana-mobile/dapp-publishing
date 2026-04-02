@@ -5,7 +5,7 @@ export const DEFAULT_LOCAL_PORTAL_URL = "http://localhost:3333";
 export const DEFAULT_PRODUCTION_PORTAL_URL = "https://publish.solanamobile.com";
 export const DEFAULT_API_KEY_ENV = "DAPP_STORE_API_KEY";
 export const UPDATED_PUBLISHING_CLI_DOCS_URL =
-  "https://docs.solanamobile.com/dapp-store/publishing-cli/publishing-updates";
+  "https://docs.solanamobile.com/dapp-store/publishing-cli";
 
 export type NewVersionCliOptions = {
   apkFile?: string;
