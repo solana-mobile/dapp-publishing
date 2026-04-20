@@ -72,8 +72,7 @@
                   "pattern": "^https://"
                 },
                 "copyright_url": {
-                  "type": "string",
-                  "pattern": "^https://"
+                  "type": "string"
                 },
                 "privacy_policy_url": {
                   "type": "string",
