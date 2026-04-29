@@ -41,7 +41,7 @@ importers:
     specifiers:
       '@jest/globals': ^29.5.0
       '@metaplex-foundation/mpl-token-metadata': 2.13.0
-      '@solana-mobile/dapp-store-publishing-tools': workspace:0.16.1
+      '@solana-mobile/dapp-store-publishing-tools': workspace:1.0.0
       '@solana/web3.js': 1.92.1
       '@swc/jest': ^0.2.26
       '@types/jest': ^29.5.1
