@@ -248,6 +248,138 @@ test("createIngestionSession uploads local APK files before creating the ingesti
   expect(result.publicationSessionId).toBe("session-2");
 });
 
+test("createIngestionSession finalizes a staged APK upload before referencing its public URL", async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dapp-store-apk-"));
+  const apkPath = path.join(tempDir, "release-build");
+  tempDirs.push(tempDir);
+  fs.writeFileSync(apkPath, Buffer.from("apk-binary"));
+
+  fetchMock
+    .mockResolvedValueOnce(
+      createProcedureResponse({
+        uploadUrl: "https://uploads.example.com/_staging/owner/upload-id",
+        key: "a/hash.apk",
+        providerId: "a/hash.apk",
+        publicUrl: "https://cdn.example.com/a/hash.apk",
+        stagingKey: "_staging/owner/upload-id",
+      })
+    )
+    .mockResolvedValueOnce(new Response("", { status: 200 }))
+    .mockResolvedValueOnce(
+      createProcedureResponse({
+        key: "a/hash.apk",
+        providerId: "a/hash.apk",
+        publicUrl: "https://cdn.example.com/a/finalized.apk",
+        reused: false,
+      })
+    )
+    .mockResolvedValueOnce(
+      createProcedureResponse({
+        id: "ingestion-4",
+        dappId: "dapp-1",
+        idempotencyKey: "idem-4",
+        status: "Created",
+        sourceKind: "portalUpload",
+        sourceUrl: "https://cdn.example.com/a/finalized.apk",
+        releaseFileName: "release-build.apk",
+        releaseFileSize: 10,
+        releaseId: "release-4",
+        publicationSessionId: "session-4",
+      })
+    );
+
+  const client = createPortalWorkflowClient({
+    apiBaseUrl: "https://portal.example.com/api",
+    apiKey: "portal-key",
+  });
+
+  await client.createIngestionSession({
+    source: {
+      kind: "apk-file",
+      filePath: apkPath,
+    },
+    whatsNew: "Local upload",
+    idempotencyKey: "idem-4",
+  });
+
+  const [finalizeUrl, finalizeInit] = fetchMock.mock.calls[2]!;
+  expect(String(finalizeUrl)).toContain("/trpc/publication.finalizeUpload");
+  const finalizeBody = JSON.parse(String(finalizeInit?.body));
+  expect(finalizeBody).toMatchObject({
+    fileExtension: "apk",
+    contentType: "application/vnd.android.package-archive",
+    stagingKey: "_staging/owner/upload-id",
+  });
+  expect(finalizeBody.fileHash).toMatch(/^[a-f0-9]{64}$/);
+
+  const [ingestionUrl, ingestionInit] = fetchMock.mock.calls[3]!;
+  expect(String(ingestionUrl)).toContain(
+    "/trpc/publication.createIngestionSession"
+  );
+  expect(JSON.parse(String(ingestionInit?.body))).toMatchObject({
+    source: {
+      kind: "portalUpload",
+      releaseFileUrl: "https://cdn.example.com/a/finalized.apk",
+    },
+  });
+});
+
+test("createIngestionSession skips finalize when the portal did not stage the upload", async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dapp-store-apk-"));
+  const apkPath = path.join(tempDir, "release-build");
+  tempDirs.push(tempDir);
+  fs.writeFileSync(apkPath, Buffer.from("apk-binary"));
+
+  fetchMock
+    .mockResolvedValueOnce(
+      createProcedureResponse({
+        uploadUrl: "https://uploads.example.com/app.apk",
+        key: "upload-key",
+        providerId: "provider-1",
+        publicUrl: "https://cdn.example.com/app.apk",
+      })
+    )
+    .mockResolvedValueOnce(new Response("", { status: 200 }))
+    .mockResolvedValueOnce(
+      createProcedureResponse({
+        id: "ingestion-5",
+        dappId: "dapp-1",
+        idempotencyKey: "idem-5",
+        status: "Created",
+        sourceKind: "portalUpload",
+        sourceUrl: "https://cdn.example.com/app.apk",
+        releaseFileName: "release-build.apk",
+        releaseFileSize: 10,
+        releaseId: "release-5",
+        publicationSessionId: "session-5",
+      })
+    );
+
+  const client = createPortalWorkflowClient({
+    apiBaseUrl: "https://portal.example.com/api",
+    apiKey: "portal-key",
+  });
+
+  await client.createIngestionSession({
+    source: {
+      kind: "apk-file",
+      filePath: apkPath,
+    },
+    whatsNew: "Local upload",
+    idempotencyKey: "idem-5",
+  });
+
+  const requestedProcedures = fetchMock.mock.calls.map(([url]) => String(url));
+  expect(
+    requestedProcedures.some((url) => url.includes("publication.finalizeUpload"))
+  ).toBe(false);
+  expect(
+    JSON.parse(String(fetchMock.mock.calls[2]![1]?.body))
+  ).toMatchObject({
+    source: { releaseFileUrl: "https://cdn.example.com/app.apk" },
+  });
+});
+
 test("createIngestionSession explains local file permission errors", async () => {
   const readFileSpy = jest.spyOn(fs, "readFileSync").mockImplementation(() => {
     const error = Object.assign(new Error("operation not permitted"), {

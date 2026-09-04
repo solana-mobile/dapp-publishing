@@ -47,6 +47,23 @@ export type PublicationCreateUploadTargetResult = {
   key: string;
   providerId: string;
   publicUrl: string;
+  /**
+   * Set when `uploadUrl` writes to a staging key rather than to `key`. Such an
+   * upload only becomes readable at `publicUrl` once it has been finalized.
+   */
+  stagingKey?: string;
+};
+
+export type PublicationFinalizeUploadInput =
+  PublicationCreateUploadTargetInput & {
+    stagingKey: string;
+  };
+
+export type PublicationFinalizeUploadResult = {
+  key: string;
+  providerId: string;
+  publicUrl: string;
+  reused: boolean;
 };
 
 export type PublicationInstallFile = {

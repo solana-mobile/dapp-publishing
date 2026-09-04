@@ -6,6 +6,8 @@ import type {
   PublicationCreateIngestionSessionInput,
   PublicationCreateUploadTargetInput,
   PublicationCreateUploadTargetResult,
+  PublicationFinalizeUploadInput,
+  PublicationFinalizeUploadResult,
   PublicationGetBundleInput,
   PublicationGetIngestionSessionInput,
   PublicationGetSessionInput,
@@ -28,6 +30,9 @@ export type PublicationWorkflowClient = {
   createUploadTarget?(
     input: PublicationCreateUploadTargetInput
   ): Promise<PublicationCreateUploadTargetResult>;
+  finalizeUpload?(
+    input: PublicationFinalizeUploadInput
+  ): Promise<PublicationFinalizeUploadResult>;
   createIngestionSession(
     input: PublicationCreateIngestionSessionInput
   ): Promise<PublicationIngestionSession>;

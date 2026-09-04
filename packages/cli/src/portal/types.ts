@@ -22,6 +22,7 @@ export type PortalUploadTarget = {
   key: string;
   providerId: string;
   publicUrl: string;
+  stagingKey?: string;
 };
 
 export type PortalSourceKind = 'portal' | 'external';
