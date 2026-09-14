@@ -42,7 +42,13 @@ mainCli
   .name('dapp-store')
   .version(Constants.CLI_VERSION)
   .description('Portal-backed CLI for Solana Mobile dApp version publishing')
-  .showHelpAfterError();
+  .showHelpAfterError()
+  // `resume` redeclares options the root command also owns: --keypair,
+  // --verbose, --portal-url and the rest. Without this, the root command
+  // parses the whole argv and swallows every one of them, leaving the
+  // subcommand only the flags the root does not know about — so
+  // `dapp-store resume --keypair <path>` fails with "`--keypair` is required".
+  .enablePositionalOptions();
 
 mainCli
   .option('--apk-file <path>', 'Path to the APK file to publish')
@@ -77,7 +83,7 @@ mainCli
     await runRootAction();
   });
 
-const resumeCommand = mainCli.command('resume');
+export const resumeCommand = mainCli.command('resume');
 
 resumeCommand
   .description('Resume a partially completed publication session')
@@ -106,9 +112,7 @@ resumeCommand
     '--verbose',
     'Print detailed publication identifiers as they are emitted',
   )
-  .action(async (options: ResumeCliOptions) => {
-    await runResumeAction(options);
-  });
+  .action(runResumeCommand);
 
 mainCli.addHelpText(
   'after',
@@ -135,6 +139,44 @@ mainCli.addHelpText(
     '  Local-dev mode rejects non-local portal URLs.',
   ].join('\n'),
 );
+
+/**
+ * Fill in resume options that landed on the root command instead.
+ *
+ * `resume` redeclares options the root command also owns, and positional option
+ * parsing assigns each one to whichever command it was typed after. Someone who
+ * read those flags off the root help writes `dapp-store --keypair <path> resume
+ * --release-id <id>`, which parses cleanly but leaves the subcommand without a
+ * keypair — and reporting a flag as missing when it is right there in the
+ * command line is worse than accepting it from either position.
+ */
+export function withRootOptionFallbacks(
+  options: ResumeCliOptions,
+): ResumeCliOptions {
+  const rootOptions = mainCli.opts() as Partial<ResumeCliOptions>;
+
+  return {
+    ...options,
+    // An explicitly supplied value wins even when it matches the default.
+    apiKeyEnv:
+      resumeCommand.getOptionValueSource("apiKeyEnv") === "cli"
+        ? options.apiKeyEnv
+        : rootOptions.apiKeyEnv ?? options.apiKeyEnv,
+    apiKeyStdin: options.apiKeyStdin ?? rootOptions.apiKeyStdin,
+    keypair: options.keypair ?? rootOptions.keypair,
+    localDev: options.localDev ?? rootOptions.localDev,
+    portalUrl: options.portalUrl ?? rootOptions.portalUrl,
+    rpcUrl: options.rpcUrl ?? rootOptions.rpcUrl,
+    skipSelfUpdate: options.skipSelfUpdate ?? rootOptions.skipSelfUpdate,
+    verbose: options.verbose ?? rootOptions.verbose,
+  };
+}
+
+export async function runResumeCommand(
+  options: ResumeCliOptions,
+): Promise<void> {
+  await runResumeAction(withRootOptionFallbacks(options));
+}
 
 async function runRootAction() {
   await runWithUserFacingErrors(async () => {

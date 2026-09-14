@@ -4,7 +4,13 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
 
-import { mainCli } from "../CliSetup";
+import {
+  mainCli,
+  resumeCommand,
+  runResumeCommand,
+  withRootOptionFallbacks,
+} from "../CliSetup";
+import type { ResumeCliOptions } from "../publication/cliValidation";
 import {
   DEFAULT_API_KEY_ENV,
   DEFAULT_LOCAL_PORTAL_URL,
@@ -41,6 +47,22 @@ describe("CLI surface", () => {
     );
     for (const key of trackedEnvKeys) {
       delete process.env[key];
+    }
+
+    // The CLI parses argv once per process, so Commander keeps whatever the
+    // last parse stored on each command. Tests parse repeatedly, so restore the
+    // defaults or one case leaks its flags into the next.
+    for (const command of [mainCli, resumeCommand]) {
+      for (const option of command.options) {
+        command.setOptionValue(option.attributeName(), undefined);
+        if (option.defaultValue !== undefined) {
+          command.setOptionValueWithSource(
+            option.attributeName(),
+            option.defaultValue,
+            "default"
+          );
+        }
+      }
     }
 
     mainCli.exitOverride();
@@ -225,6 +247,101 @@ describe("CLI surface", () => {
         keypair: "/tmp/signer.json",
       })
     ).not.toThrow();
+  });
+
+  async function captureResumeOptions(
+    argv: string[]
+  ): Promise<ResumeCliOptions> {
+    const captured: ResumeCliOptions[] = [];
+    resumeCommand.action(async (options: ResumeCliOptions) => {
+      captured.push(options);
+    });
+
+    try {
+      await mainCli.parseAsync(["node", "dapp-store", ...argv]);
+    } finally {
+      resumeCommand.action(runResumeCommand);
+    }
+
+    expect(captured).toHaveLength(1);
+    return captured[0]!;
+  }
+
+  test("resume receives options it shares with the root command", async () => {
+    const options = await captureResumeOptions([
+      "resume",
+      "--release-id",
+      "release-1",
+      "--keypair",
+      "/tmp/signer.json",
+      "--portal-url",
+      "https://portal.example.com",
+      "--verbose",
+    ]);
+
+    expect(options).toMatchObject({
+      apiKeyEnv: DEFAULT_API_KEY_ENV,
+      releaseId: "release-1",
+      keypair: "/tmp/signer.json",
+      portalUrl: "https://portal.example.com",
+      verbose: true,
+    });
+    expect(() => validateResumeArgs(options)).not.toThrow();
+  });
+
+  test("resume falls back to options typed before the subcommand", async () => {
+    const options = withRootOptionFallbacks(
+      await captureResumeOptions([
+        "--api-key-env",
+        "ALT_DAPP_STORE_API_KEY",
+        "--keypair",
+        "/tmp/signer.json",
+        "--verbose",
+        "resume",
+        "--release-id",
+        "release-1",
+      ])
+    );
+
+    expect(options).toMatchObject({
+      apiKeyEnv: "ALT_DAPP_STORE_API_KEY",
+      releaseId: "release-1",
+      keypair: "/tmp/signer.json",
+      verbose: true,
+    });
+    expect(() => validateResumeArgs(options)).not.toThrow();
+  });
+
+  test.each([DEFAULT_API_KEY_ENV, "CUSTOM_DAPP_STORE_API_KEY"])(
+    "resume preserves an explicit API key env override of %s",
+    async (apiKeyEnv) => {
+      const options = withRootOptionFallbacks(
+        await captureResumeOptions([
+          "--api-key-env",
+          "ALT_DAPP_STORE_API_KEY",
+          "resume",
+          "--release-id",
+          "release-1",
+          "--keypair",
+          "/tmp/signer.json",
+          "--api-key-env",
+          apiKeyEnv,
+        ])
+      );
+
+      expect(options.apiKeyEnv).toBe(apiKeyEnv);
+    }
+  );
+
+  test("resume still reports a keypair that was never supplied", async () => {
+    const options = withRootOptionFallbacks(
+      await captureResumeOptions(["resume", "--release-id", "release-1"])
+    );
+
+    expect(options.keypair).toBeUndefined();
+    expect(() => validateResumeArgs(options)).toThrow(
+      "`--keypair` is required."
+    );
   });
 
   test("portal targets default to production when unset", () => {
