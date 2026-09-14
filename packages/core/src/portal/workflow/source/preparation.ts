@@ -16,6 +16,7 @@ import {
   inferFileNameFromUrl,
   normalizeLocalFileAccessError,
 } from "./files.js";
+import { finalizeUploadedFile } from "./uploads.js";
 
 const DEFAULT_APK_CONTENT_TYPE = "application/vnd.android.package-archive";
 
@@ -118,16 +119,22 @@ async function uploadLocalApkToPortal(
   uploadedBytes = totalBytes;
   emitUploadProgress(true);
 
+  const releaseFileUrl = await finalizeUploadedFile(
+    client.finalizeUpload?.bind(client),
+    uploadTarget,
+    { fileHash, fileExtension: "apk", contentType }
+  );
+
   logWorkflowInfo(logger, "APK uploaded to portal storage", {
     step: "source.upload",
     status: "complete",
     fileName,
-    publicUrl: uploadTarget.publicUrl,
+    publicUrl: releaseFileUrl,
   });
 
   return {
     kind: "portalUpload",
-    releaseFileUrl: uploadTarget.publicUrl,
+    releaseFileUrl,
     releaseFileName: fileName,
     releaseFileSize: fileStat.size,
     releaseFileHash: fileHash,

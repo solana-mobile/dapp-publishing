@@ -7,7 +7,10 @@ import type {
   PublicationBundle,
   PublicationCreateUploadTargetInput,
   PublicationCreateUploadTargetResult,
+  PublicationFinalizeUploadInput,
+  PublicationFinalizeUploadResult,
 } from "@solana-mobile/dapp-store-publishing-tools";
+import { finalizeUploadedFile } from "@solana-mobile/dapp-store-publishing-tools";
 import getVideoDimensions from "get-video-dimensions";
 import { imageSize } from "image-size";
 
@@ -36,6 +39,9 @@ export type ReleaseMetadataPortalClient = {
   createUploadTarget(
     input: PublicationCreateUploadTargetInput
   ): Promise<PublicationCreateUploadTargetResult>;
+  finalizeUpload?(
+    input: PublicationFinalizeUploadInput
+  ): Promise<PublicationFinalizeUploadResult>;
   fetchRemoteFile(input: {
     url: string;
     fileName?: string;
@@ -263,10 +269,20 @@ async function resolveMediaItem(
 
   await uploadBytes(uploadTarget.uploadUrl, fileBytes, resolvedMimeType);
 
+  const uri = await finalizeUploadedFile(
+    client.finalizeUpload?.bind(client),
+    uploadTarget,
+    {
+      fileHash,
+      fileExtension: inferUploadFileExtension(remoteFileName, resolvedMimeType),
+      contentType: resolvedMimeType,
+    }
+  );
+
   return {
     mime: resolvedMimeType,
     purpose: input.purpose,
-    uri: uploadTarget.publicUrl,
+    uri,
     width: dimensions.width,
     height: dimensions.height,
     sha256: fileHash,

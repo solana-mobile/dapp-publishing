@@ -9,6 +9,8 @@ import type {
   PublicationCreateIngestionSessionInput,
   PublicationCreateUploadTargetInput,
   PublicationCreateUploadTargetResult,
+  PublicationFinalizeUploadInput,
+  PublicationFinalizeUploadResult,
   PublicationGetBundleInput,
   PublicationGetIngestionSessionInput,
   PublicationGetSessionInput,
@@ -24,13 +26,9 @@ import type {
   PublicationSubmitToStoreResult,
   PublicationWorkflowClient,
 } from "@solana-mobile/dapp-store-publishing-tools";
+import { finalizeUploadedFile } from "@solana-mobile/dapp-store-publishing-tools";
 
-import {
-  ensureApkFileName,
-  fromBase64,
-  inferFileNameFromUrl,
-  toBase64,
-} from "./files.js";
+import { ensureApkFileName, inferFileNameFromUrl } from "./files.js";
 import {
   callCreateIngestionSessionWithRetry,
   callPortalProcedure,
@@ -149,6 +147,17 @@ export function createPortalWorkflowClient(
     );
   };
 
+  const finalizeUpload = async (
+    input: PublicationFinalizeUploadInput
+  ): Promise<PublicationFinalizeUploadResult> => {
+    return await callPortalProcedure<PublicationFinalizeUploadResult>(
+      config,
+      "publication.finalizeUpload",
+      input,
+      "mutation"
+    );
+  };
+
   const translateIngestionBackendResult = (
     backendResult: PortalBackendResult
   ) => {
@@ -182,6 +191,7 @@ export function createPortalWorkflowClient(
 
     const releaseMetadataClient: ReleaseMetadataPortalClient = {
       createUploadTarget,
+      finalizeUpload,
       async fetchRemoteFile(input) {
         return await callPortalProcedure<{
           data: string;
@@ -216,8 +226,14 @@ export function createPortalWorkflowClient(
       "application/json"
     );
 
-    state.metadataUriByReleaseId.set(releaseId, uploadTarget.publicUrl);
-    return uploadTarget.publicUrl;
+    const metadataUri = await finalizeUploadedFile(
+      finalizeUpload,
+      uploadTarget,
+      { fileHash, fileExtension: "json", contentType: "application/json" }
+    );
+
+    state.metadataUriByReleaseId.set(releaseId, metadataUri);
+    return metadataUri;
   };
 
   return {
@@ -225,6 +241,12 @@ export function createPortalWorkflowClient(
       input: PublicationCreateUploadTargetInput
     ): Promise<PublicationCreateUploadTargetResult> {
       return await createUploadTarget(input);
+    },
+
+    async finalizeUpload(
+      input: PublicationFinalizeUploadInput
+    ): Promise<PublicationFinalizeUploadResult> {
+      return await finalizeUpload(input);
     },
 
     async createIngestionSession(
@@ -265,8 +287,18 @@ export function createPortalWorkflowClient(
 
         await uploadBytes(
           uploadTarget.uploadUrl,
-          fromBase64(toBase64(source.fileBytes)),
+          source.fileBytes,
           source.contentType
+        );
+
+        const releaseFileUrl = await finalizeUploadedFile(
+          finalizeUpload,
+          uploadTarget,
+          {
+            fileHash: source.fileHash,
+            fileExtension: source.fileExtension,
+            contentType: source.contentType,
+          }
         );
 
         const backendResult = await callCreateIngestionSessionWithRetry(
@@ -274,7 +306,7 @@ export function createPortalWorkflowClient(
           {
             source: {
               kind: "portalUpload",
-              releaseFileUrl: uploadTarget.publicUrl,
+              releaseFileUrl,
               releaseFileName: source.fileName,
               releaseFileSize: source.releaseFileSize,
             },
