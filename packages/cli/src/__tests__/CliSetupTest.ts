@@ -50,11 +50,18 @@ describe("CLI surface", () => {
     }
 
     // The CLI parses argv once per process, so Commander keeps whatever the
-    // last parse stored on each command. Tests parse repeatedly, so clear those
-    // values or one case leaks its flags into the next.
+    // last parse stored on each command. Tests parse repeatedly, so restore the
+    // defaults or one case leaks its flags into the next.
     for (const command of [mainCli, resumeCommand]) {
       for (const option of command.options) {
         command.setOptionValue(option.attributeName(), undefined);
+        if (option.defaultValue !== undefined) {
+          command.setOptionValueWithSource(
+            option.attributeName(),
+            option.defaultValue,
+            "default"
+          );
+        }
       }
     }
 
@@ -273,6 +280,7 @@ describe("CLI surface", () => {
     ]);
 
     expect(options).toMatchObject({
+      apiKeyEnv: DEFAULT_API_KEY_ENV,
       releaseId: "release-1",
       keypair: "/tmp/signer.json",
       portalUrl: "https://portal.example.com",
@@ -284,6 +292,8 @@ describe("CLI surface", () => {
   test("resume falls back to options typed before the subcommand", async () => {
     const options = withRootOptionFallbacks(
       await captureResumeOptions([
+        "--api-key-env",
+        "ALT_DAPP_STORE_API_KEY",
         "--keypair",
         "/tmp/signer.json",
         "--verbose",
@@ -294,12 +304,34 @@ describe("CLI surface", () => {
     );
 
     expect(options).toMatchObject({
+      apiKeyEnv: "ALT_DAPP_STORE_API_KEY",
       releaseId: "release-1",
       keypair: "/tmp/signer.json",
       verbose: true,
     });
     expect(() => validateResumeArgs(options)).not.toThrow();
   });
+
+  test.each([DEFAULT_API_KEY_ENV, "CUSTOM_DAPP_STORE_API_KEY"])(
+    "resume preserves an explicit API key env override of %s",
+    async (apiKeyEnv) => {
+      const options = withRootOptionFallbacks(
+        await captureResumeOptions([
+          "--api-key-env",
+          "ALT_DAPP_STORE_API_KEY",
+          "resume",
+          "--release-id",
+          "release-1",
+          "--keypair",
+          "/tmp/signer.json",
+          "--api-key-env",
+          apiKeyEnv,
+        ])
+      );
+
+      expect(options.apiKeyEnv).toBe(apiKeyEnv);
+    }
+  );
 
   test("resume still reports a keypair that was never supplied", async () => {
     const options = withRootOptionFallbacks(

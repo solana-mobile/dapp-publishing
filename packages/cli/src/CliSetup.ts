@@ -157,11 +157,9 @@ export function withRootOptionFallbacks(
 
   return {
     ...options,
-    // `--api-key-env` defaults on both commands, so an untouched subcommand
-    // value is indistinguishable from an unset one; defer to the root only when
-    // the subcommand still holds the default.
+    // An explicitly supplied value wins even when it matches the default.
     apiKeyEnv:
-      options.apiKeyEnv !== DEFAULT_API_KEY_ENV
+      resumeCommand.getOptionValueSource("apiKeyEnv") === "cli"
         ? options.apiKeyEnv
         : rootOptions.apiKeyEnv ?? options.apiKeyEnv,
     apiKeyStdin: options.apiKeyStdin ?? rootOptions.apiKeyStdin,
