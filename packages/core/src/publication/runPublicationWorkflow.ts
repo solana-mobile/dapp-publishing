@@ -1,12 +1,11 @@
 import {
   createPublicationWorkflow,
-  type PublicationAttestationClient,
   type PublicationResumeInput,
   type PublicationWorkflowClient,
   type PublicationWorkflowInput,
   type PublicationWorkflowOptions,
-  type PublicationWorkflowResult,
-} from '@solana-mobile/dapp-store-publishing-tools';
+} from '../portal/workflow.js';
+import type { PublicationWorkflowResult } from '../portal/types.js';
 
 export type PublicationMode = 'new-version' | 'resume';
 
@@ -35,12 +34,3 @@ export async function runPublicationWorkflow(
 
   return await workflow.resumePublication(request.input);
 }
-
-export type {
-  PublicationAttestationClient,
-  PublicationResumeInput,
-  PublicationWorkflowClient,
-  PublicationWorkflowInput,
-  PublicationWorkflowOptions,
-  PublicationWorkflowResult,
-};

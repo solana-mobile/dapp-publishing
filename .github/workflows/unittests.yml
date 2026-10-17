@@ -18,7 +18,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 24
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -46,6 +46,10 @@ jobs:
       - name: Build tooling
         run: pnpm run build
         
+      - name: Run core unit tests
+        working-directory: ./packages/core
+        run: pnpm run test
+
       - name: Run unit tests
         working-directory: ./packages/cli
         run: pnpm run test

@@ -9,7 +9,6 @@ import {
   Constants,
   createPortalAttestationClient,
   createPortalWorkflowClient,
-  createPublicationSignerFromKeypair,
   parseKeypair,
   showMessage,
 } from './CliUtils.js';
@@ -26,13 +25,13 @@ import {
 } from './publication/cliValidation.js';
 import { createPublicationProgressReporter } from './publication/PublicationProgressReporter.js';
 import { extractPublicationSummaryLines } from './publication/publicationSummary.js';
-import { runPublicationWorkflow } from './publication/runPublicationWorkflow.js';
-import { ensurePublicationSignerBalance } from './publication/fundingPreflight.js';
-import type {
-  PublicationResumeInput,
-  PublicationWorkflowInput,
-} from './publication/runPublicationWorkflow.js';
-import type { Keypair } from '@solana/web3.js';
+import {
+  ensurePublicationSignerBalance,
+  runPublicationWorkflow,
+  type PublicationResumeInput,
+  type PublicationSigner,
+  type PublicationWorkflowInput,
+} from '@solana-mobile/dapp-store-publishing-tools';
 
 dotenv.config();
 
@@ -192,16 +191,15 @@ async function runRootAction() {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signerKeypair = loadSignerKeypair(options.keypair);
+    const signer = loadSigner(options.keypair);
     const balanceWarning = await ensurePublicationSignerBalance({
-      publicKey: signerKeypair.publicKey.toBase58(),
+      publicKey: signer.publicKey,
       rpcUrl: options.rpcUrl,
       localDev: options.localDev,
     });
     if (balanceWarning) {
       showMessage('Warning', balanceWarning, 'warning');
     }
-    const signer = createPublicationSignerFromKeypair(signerKeypair);
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Publishing version',
@@ -244,9 +242,7 @@ async function runResumeAction(options: ResumeCliOptions) {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = createPublicationSignerFromKeypair(
-      loadSignerKeypair(options.keypair)
-    );
+    const signer = loadSigner(options.keypair);
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Resuming publication',
@@ -300,7 +296,7 @@ function createPortalClients(
 
 function buildNewVersionWorkflowInput(
   options: NewVersionCliOptions,
-  signer: ReturnType<typeof createPublicationSignerFromKeypair>,
+  signer: PublicationSigner,
   attestationClient: PublicationWorkflowInput['attestationClient'],
 ): PublicationWorkflowInput {
   return {
@@ -314,7 +310,7 @@ function buildNewVersionWorkflowInput(
 
 function buildResumeWorkflowInput(
   options: ResumeCliOptions,
-  signer: ReturnType<typeof createPublicationSignerFromKeypair>,
+  signer: PublicationSigner,
   attestationClient: PublicationResumeInput['attestationClient'],
 ): PublicationResumeInput {
   return {
@@ -407,17 +403,17 @@ function resolveResumeSessionId(options: ResumeCliOptions): string | undefined {
   return options.sessionId ?? options.resumeSession;
 }
 
-function loadSignerKeypair(keypairPath?: string): Keypair {
+function loadSigner(keypairPath?: string): PublicationSigner {
   if (!keypairPath) {
     throw new Error('`--keypair` is required.');
   }
 
-  const keypair = parseKeypair(keypairPath);
-  if (!keypair) {
+  const signer = parseKeypair(keypairPath);
+  if (!signer) {
     throw new Error('Failed to load the signer keypair.');
   }
 
-  return keypair;
+  return signer;
 }
 
 function hasPublicationInputs(options: NewVersionCliOptions): boolean {

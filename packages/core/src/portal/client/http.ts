@@ -38,13 +38,13 @@ export async function callPortalProcedure<T>(
     if (input !== undefined) {
       url.searchParams.set('input', JSON.stringify(input));
     }
-    response = await fetch(url, {
+    response = await (config.fetch ?? fetch)(url, {
       method: 'GET',
       headers,
     });
   } else {
     headers['content-type'] = 'application/json';
-    response = await fetch(url, {
+    response = await (config.fetch ?? fetch)(url, {
       method: 'POST',
       headers,
       body: input === undefined ? undefined : JSON.stringify(input),
@@ -152,8 +152,9 @@ export async function uploadBytes(
   uploadUrl: string,
   body: Uint8Array,
   contentType: string,
+  fetchImpl: typeof fetch = fetch,
 ): Promise<void> {
-  const response = await fetch(uploadUrl, {
+  const response = await fetchImpl(uploadUrl, {
     method: 'PUT',
     headers: {
       'content-type': contentType,

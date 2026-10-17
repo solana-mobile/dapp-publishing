@@ -4,8 +4,7 @@ import {
   createAttestationPayload as createPortalAttestationPayload,
   type PublicationAttestationResult,
 } from '../portal/attestation.js';
-
-export type SignWithPublisherKeypair = (buf: Buffer) => Buffer;
+import type { SignWithPublisherKeypair } from './types.js';
 
 type Attestation = PublicationAttestationResult;
 
