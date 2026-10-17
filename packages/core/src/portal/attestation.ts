@@ -1,7 +1,8 @@
+import { createSignableMessage, type MessagePartialSigner } from '@solana/kit';
+
 import type {
   PublicationAttestationBlockData,
   PublicationAttestationClient,
-  PublicationSigner,
 } from './types.js';
 
 export type PublicationAttestation = {
@@ -29,7 +30,7 @@ export const createRequestUniqueId = () => {
 
 export const createAttestationPayload = async (
   blockData: PublicationAttestationBlockData,
-  signer: Pick<PublicationSigner, 'signMessage'>,
+  signer: MessagePartialSigner,
 ): Promise<PublicationAttestationResult> => {
   const requestUniqueId = createRequestUniqueId();
   const attestation: PublicationAttestation = {
@@ -41,23 +42,20 @@ export const createAttestationPayload = async (
   const attestationBuffer = new TextEncoder().encode(
     JSON.stringify(attestation),
   );
-  const signedMessageFromSigner = await signer.signMessage(attestationBuffer);
-  const signedMessageBuffer =
-    signedMessageFromSigner.length === 64
-      ? (() => {
-          const payload = new Uint8Array(64 + attestationBuffer.length);
-          payload.set(signedMessageFromSigner, 0);
-          payload.set(attestationBuffer, 64);
-          return payload;
-        })()
-      : signedMessageFromSigner;
-  const signature = signedMessageBuffer.slice(0, 64);
+  const [signatures] = await signer.signMessages([
+    createSignableMessage(attestationBuffer),
+  ]);
+  const signature = signatures?.[signer.address];
 
-  if (signature.length !== 64) {
+  if (signature?.length !== 64) {
     throw new Error(
-      `Invalid signature length: expected 64, got ${signature.length}`,
+      `Invalid signature length: expected 64, got ${signature?.length ?? 0}`,
     );
   }
+
+  const signedMessageBuffer = new Uint8Array(64 + attestationBuffer.length);
+  signedMessageBuffer.set(signature, 0);
+  signedMessageBuffer.set(attestationBuffer, 64);
 
   return {
     payload: Buffer.from(signedMessageBuffer).toString('base64'),
@@ -69,7 +67,7 @@ export const createAttestationPayload = async (
 
 export const createAttestationPayloadFromClient = async (
   client: PublicationAttestationClient,
-  signer: Pick<PublicationSigner, 'signMessage'>,
+  signer: MessagePartialSigner,
 ): Promise<PublicationAttestationResult> => {
   const blockData = await client.getBlockData();
   return createAttestationPayload(blockData, signer);

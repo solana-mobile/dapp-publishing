@@ -2,366 +2,176 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, expect, test } from "@jest/globals";
+import { afterEach, expect, jest, test } from "@jest/globals";
 import {
-  createCreateInstruction,
-  createVerifyInstruction,
-  VerificationArgs,
-} from "@metaplex-foundation/mpl-token-metadata";
-import {
-  ComputeBudgetProgram,
-  Keypair,
-  PublicKey,
-  SYSVAR_INSTRUCTIONS_PUBKEY,
-  SystemProgram,
-  Transaction,
-  TransactionInstruction,
-} from "@solana/web3.js";
+  createKeyPairSignerFromPrivateKeyBytes,
+  getAddressEncoder,
+  getCompiledTransactionMessageDecoder,
+  getTransactionDecoder,
+  type Address,
+} from "@solana/kit";
+
 import { PublishingError } from "../../errors.js";
+import { createAttestationPayload } from "../attestation.js";
+import { loadKeypairSignerFromFile } from "../keypair.js";
 import {
-  createPublicationSignerFromKeypair,
-  loadKeypairSignerFromFile,
-} from "../keypair.js";
-import { signSerializedTransaction } from "../signer.js";
+  decodeCreateV1CollectionAddress,
+  signSerializedTransaction,
+} from "../signer.js";
+// Captured from the 1.x implementation, before the @solana/kit migration.
+import fixtures from "./fixtures/signing.json";
 
 const tempDirs: string[] = [];
-const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
-  "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-);
-const TOKEN_METADATA_SEED = Buffer.from("metadata");
-const TOKEN_METADATA_EDITION_SEED = Buffer.from("edition");
 
 afterEach(() => {
+  jest.restoreAllMocks();
   while (tempDirs.length > 0) {
     fs.rmSync(tempDirs.pop()!, { recursive: true, force: true });
   }
 });
 
-function createReleaseMintTransaction(options?: {
-  signer?: Keypair;
-  mint?: Keypair;
-  appMintAddress?: PublicKey;
-  addUnexpectedProgram?: boolean;
-  tamperAfterMintSignature?: boolean;
-}) {
-  const signer = options?.signer ?? Keypair.generate();
-  const mint = options?.mint ?? Keypair.generate();
-  const appMintAddress =
-    options?.appMintAddress ?? Keypair.generate().publicKey;
-
-  const transaction = new Transaction();
-  transaction.feePayer = signer.publicKey;
-  transaction.recentBlockhash = Keypair.generate().publicKey.toBase58();
-  transaction.add(
-    ComputeBudgetProgram.setComputeUnitLimit({
-      units: 500_000,
-    })
-  );
-  transaction.add(
-    (() => {
-      const instruction = createCreateInstruction(
-        {
-          metadata: Keypair.generate().publicKey,
-          masterEdition: Keypair.generate().publicKey,
-          mint: mint.publicKey,
-          authority: signer.publicKey,
-          payer: signer.publicKey,
-          updateAuthority: signer.publicKey,
-          sysvarInstructions: Keypair.generate().publicKey,
-          splTokenProgram: Keypair.generate().publicKey,
-        },
-        {
-          createArgs: {
-            __kind: "V1",
-            assetData: {
-              name: "Example release",
-              symbol: "",
-              uri: "https://example.com/release.json",
-              sellerFeeBasisPoints: 0,
-              creators: null,
-              primarySaleHappened: false,
-              isMutable: false,
-              tokenStandard: 0,
-              collection: {
-                verified: false,
-                key: appMintAddress,
-              },
-              uses: null,
-              collectionDetails: null,
-              ruleSet: null,
-            },
-            decimals: null,
-            printSupply: null,
-          },
-        }
-      );
-
-      instruction.keys[2]!.isSigner = true;
-      instruction.keys[5]!.isSigner = true;
-
-      return instruction;
-    })()
+const createSigner = () =>
+  createKeyPairSignerFromPrivateKeyBytes(
+    new Uint8Array(32).fill(fixtures.signerSeedByte)
   );
 
-  if (options?.addUnexpectedProgram) {
-    transaction.add(
-      SystemProgram.transfer({
-        fromPubkey: signer.publicKey,
-        toPubkey: Keypair.generate().publicKey,
-        lamports: 1,
-      })
-    );
-  }
+const releaseMintValidation = {
+  kind: "release-mint" as const,
+  expectedBlockhash: fixtures.blockhash,
+  expectedFeePayerAddress: fixtures.signerAddress,
+  expectedSignerAddress: fixtures.signerAddress,
+  expectedMintAddress: fixtures.mintAddress,
+  expectedAppMintAddress: fixtures.appMintAddress,
+};
 
-  transaction.partialSign(mint);
+const decode = (base64: string) =>
+  getTransactionDecoder().decode(Buffer.from(base64, "base64"));
 
-  if (options?.tamperAfterMintSignature) {
-    transaction.instructions[1] = new TransactionInstruction({
-      programId: TOKEN_METADATA_PROGRAM_ID,
-      keys: transaction.instructions[1]!.keys,
-      data: Buffer.from([9, 9, 9]),
-    });
-  }
-
-  return {
-    signer,
-    mint,
-    appMintAddress,
-    blockhash: transaction.recentBlockhash!,
-    serialized: transaction
-      .serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      })
-      .toString("base64"),
-  };
-}
-
-function getMetadataPda(mintAddress: PublicKey): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [
-      TOKEN_METADATA_SEED,
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mintAddress.toBuffer(),
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  )[0];
-}
-
-function getMasterEditionPda(mintAddress: PublicKey): PublicKey {
-  return PublicKey.findProgramAddressSync(
-    [
-      TOKEN_METADATA_SEED,
-      TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-      mintAddress.toBuffer(),
-      TOKEN_METADATA_EDITION_SEED,
-    ],
-    TOKEN_METADATA_PROGRAM_ID
-  )[0];
-}
-
-function createVerifyCollectionTransaction(options?: {
-  signer?: Keypair;
-  nftMintAddress?: PublicKey;
-  collectionMintAddress?: PublicKey;
-}) {
-  const signer = options?.signer ?? Keypair.generate();
-  const nftMintAddress =
-    options?.nftMintAddress ?? Keypair.generate().publicKey;
-  const collectionMintAddress =
-    options?.collectionMintAddress ?? Keypair.generate().publicKey;
-
-  const transaction = new Transaction();
-  transaction.feePayer = signer.publicKey;
-  transaction.recentBlockhash = Keypair.generate().publicKey.toBase58();
-  transaction.add(
-    ComputeBudgetProgram.setComputeUnitPrice({
-      microLamports: 1_000,
-    })
-  );
-  transaction.add(
-    createVerifyInstruction(
-      {
-        authority: signer.publicKey,
-        metadata: getMetadataPda(nftMintAddress),
-        collectionMint: collectionMintAddress,
-        collectionMetadata: getMetadataPda(collectionMintAddress),
-        collectionMasterEdition: getMasterEditionPda(collectionMintAddress),
-        systemProgram: SystemProgram.programId,
-        sysvarInstructions: SYSVAR_INSTRUCTIONS_PUBKEY,
-      },
-      {
-        verificationArgs: VerificationArgs.CollectionV1,
-      }
-    )
-  );
-
-  return {
-    signer,
-    nftMintAddress,
-    collectionMintAddress,
-    blockhash: transaction.recentBlockhash!,
-    serialized: transaction
-      .serialize({
-        requireAllSignatures: false,
-        verifySignatures: false,
-      })
-      .toString("base64"),
-  };
-}
-
-test("loadKeypairSignerFromFile loads a Solana keypair from a JSON array file", () => {
-  const keypair = Keypair.generate();
+function writeKeypairFile(bytes: number[]): string {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dapp-store-signer-"));
-  const keypairPath = path.join(tempDir, "signer.json");
   tempDirs.push(tempDir);
+  const keypairPath = path.join(tempDir, "signer.json");
+  fs.writeFileSync(keypairPath, JSON.stringify(bytes));
+  return keypairPath;
+}
 
-  fs.writeFileSync(keypairPath, JSON.stringify(Array.from(keypair.secretKey)));
+test("loadKeypairSignerFromFile loads a Solana keypair from a JSON array file", async () => {
+  const keypairPath = writeKeypairFile([
+    ...new Uint8Array(32).fill(fixtures.signerSeedByte),
+    ...getAddressEncoder().encode(fixtures.signerAddress as Address),
+  ]);
 
-  expect(loadKeypairSignerFromFile(keypairPath).publicKey).toBe(
-    keypair.publicKey.toBase58()
+  expect((await loadKeypairSignerFromFile(keypairPath)).address).toBe(
+    fixtures.signerAddress
   );
 });
 
-test("loadKeypairSignerFromFile throws a typed error for missing or invalid files", () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "dapp-store-signer-"));
-  const invalidPath = path.join(tempDir, "invalid.json");
-  tempDirs.push(tempDir);
-  fs.writeFileSync(invalidPath, JSON.stringify([1, 2, 3]));
+test("loadKeypairSignerFromFile throws a typed error for missing or invalid files", async () => {
+  const invalidPath = writeKeypairFile([1, 2, 3]);
 
   for (const keypairPath of ["/tmp/does-not-exist.json", invalidPath]) {
-    let thrown: unknown;
-    try {
-      loadKeypairSignerFromFile(keypairPath);
-    } catch (error) {
-      thrown = error;
-    }
+    const thrown = await loadKeypairSignerFromFile(keypairPath).catch(
+      (error: unknown) => error
+    );
     expect(thrown).toBeInstanceOf(PublishingError);
     expect((thrown as PublishingError).code).toBe("INVALID_KEYPAIR");
   }
 });
 
-test("signSerializedTransaction signs a validated release mint transaction", async () => {
-  const { signer, mint, appMintAddress, blockhash, serialized } =
-    createReleaseMintTransaction();
+test("signSerializedTransaction signs a release mint transaction byte-identically to the 1.x implementation", async () => {
+  const signed = await signSerializedTransaction(
+    await createSigner(),
+    fixtures.releaseMintPartiallySigned,
+    releaseMintValidation
+  );
 
-  const accountAddresses = Transaction.from(
-    Buffer.from(serialized, "base64")
-  )
-    .compileMessage()
-    .accountKeys.map((key) => key.toBase58());
-  expect(accountAddresses).not.toContain(appMintAddress.toBase58());
+  expect(signed).toBe(fixtures.releaseMintSigned);
+  const input = decode(fixtures.releaseMintPartiallySigned);
+  const output = decode(signed);
+  expect(output.messageBytes).toEqual(input.messageBytes);
+  expect(output.signatures[fixtures.mintAddress as Address]).toEqual(
+    input.signatures[fixtures.mintAddress as Address]
+  );
+});
 
-  const signedTransaction = await signSerializedTransaction(
-    createPublicationSignerFromKeypair(signer),
-    serialized,
+test("signSerializedTransaction signs a collection verification transaction byte-identically to the 1.x implementation", async () => {
+  const signed = await signSerializedTransaction(
+    await createSigner(),
+    fixtures.verifyCollectionUnsigned,
     {
-      kind: "release-mint",
-      expectedBlockhash: blockhash,
-      expectedFeePayerAddress: signer.publicKey.toBase58(),
-      expectedSignerAddress: signer.publicKey.toBase58(),
-      expectedMintAddress: mint.publicKey.toBase58(),
-      expectedAppMintAddress: appMintAddress.toBase58(),
+      kind: "verify-collection",
+      expectedBlockhash: fixtures.blockhash,
+      expectedFeePayerAddress: fixtures.signerAddress,
+      expectedSignerAddress: fixtures.signerAddress,
+      expectedNftMintAddress: fixtures.mintAddress,
+      expectedCollectionMintAddress: fixtures.appMintAddress,
+      expectedCollectionAuthority: fixtures.signerAddress,
     }
   );
 
-  expect(
-    Transaction.from(
-      Buffer.from(signedTransaction, "base64")
-    ).verifySignatures()
-  ).toBe(true);
+  expect(signed).toBe(fixtures.verifyCollectionSigned);
 });
 
 test("signSerializedTransaction rejects release mint transactions with unexpected programs", async () => {
-  const { signer, mint, appMintAddress, blockhash, serialized } =
-    createReleaseMintTransaction({
-      addUnexpectedProgram: true,
-    });
-
   await expect(
     signSerializedTransaction(
-      createPublicationSignerFromKeypair(signer),
-      serialized,
-      {
-        kind: "release-mint",
-        expectedBlockhash: blockhash,
-        expectedFeePayerAddress: signer.publicKey.toBase58(),
-        expectedSignerAddress: signer.publicKey.toBase58(),
-        expectedMintAddress: mint.publicKey.toBase58(),
-        expectedAppMintAddress: appMintAddress.toBase58(),
-      }
+      await createSigner(),
+      fixtures.releaseMintWithUnexpectedProgram,
+      releaseMintValidation
     )
   ).rejects.toThrow("unexpected program ids");
 });
 
 test("signSerializedTransaction rejects release mint transactions with invalid pre-existing signatures", async () => {
-  const { signer, mint, appMintAddress, blockhash, serialized } =
-    createReleaseMintTransaction({
-      tamperAfterMintSignature: true,
-    });
+  const bytes = Buffer.from(fixtures.releaseMintPartiallySigned, "base64");
+  const uriOffset = bytes.indexOf("release.json");
+  bytes[uriOffset] = "R".charCodeAt(0);
 
   await expect(
     signSerializedTransaction(
-      createPublicationSignerFromKeypair(signer),
-      serialized,
-      {
-        kind: "release-mint",
-        expectedBlockhash: blockhash,
-        expectedFeePayerAddress: signer.publicKey.toBase58(),
-        expectedSignerAddress: signer.publicKey.toBase58(),
-        expectedMintAddress: mint.publicKey.toBase58(),
-        expectedAppMintAddress: appMintAddress.toBase58(),
-      }
+      await createSigner(),
+      bytes.toString("base64"),
+      releaseMintValidation
     )
   ).rejects.toThrow("invalid existing signatures");
 });
 
 test("signSerializedTransaction rejects release mint transactions with a mismatched collection encoded in metadata", async () => {
-  const { signer, mint, blockhash, serialized } = createReleaseMintTransaction();
-  const unexpectedAppMintAddress = Keypair.generate().publicKey;
-
   await expect(
     signSerializedTransaction(
-      createPublicationSignerFromKeypair(signer),
-      serialized,
-      {
-        kind: "release-mint",
-        expectedBlockhash: blockhash,
-        expectedFeePayerAddress: signer.publicKey.toBase58(),
-        expectedSignerAddress: signer.publicKey.toBase58(),
-        expectedMintAddress: mint.publicKey.toBase58(),
-        expectedAppMintAddress: unexpectedAppMintAddress.toBase58(),
-      }
+      await createSigner(),
+      fixtures.releaseMintPartiallySigned,
+      { ...releaseMintValidation, expectedAppMintAddress: fixtures.mintAddress }
     )
   ).rejects.toThrow("collection mismatch");
 });
 
-test("signSerializedTransaction signs a validated collection verification transaction", async () => {
-  const {
-    signer,
-    nftMintAddress,
-    collectionMintAddress,
-    blockhash,
-    serialized,
-  } = createVerifyCollectionTransaction();
+test("decodeCreateV1CollectionAddress reads the collection key from a real-shaped CreateV1 instruction", () => {
+  const message = getCompiledTransactionMessageDecoder().decode(
+    decode(fixtures.releaseMintPartiallySigned).messageBytes
+  );
+  if (message.version !== "legacy") throw new Error("expected legacy");
+  const createData = message.instructions[1]!.data as Uint8Array;
 
-  const signedTransaction = await signSerializedTransaction(
-    createPublicationSignerFromKeypair(signer),
-    serialized,
+  expect(decodeCreateV1CollectionAddress(createData)).toBe(
+    fixtures.appMintAddress
+  );
+  expect(() =>
+    decodeCreateV1CollectionAddress(createData.subarray(0, 60))
+  ).toThrow(RangeError);
+});
+
+test("createAttestationPayload produces the same payload as the 1.x implementation", async () => {
+  jest.spyOn(Math, "random").mockReturnValue(0.5);
+
+  const result = await createAttestationPayload(
     {
-      kind: "verify-collection",
-      expectedBlockhash: blockhash,
-      expectedFeePayerAddress: signer.publicKey.toBase58(),
-      expectedSignerAddress: signer.publicKey.toBase58(),
-      expectedNftMintAddress: nftMintAddress.toBase58(),
-      expectedCollectionMintAddress: collectionMintAddress.toBase58(),
-      expectedCollectionAuthority: signer.publicKey.toBase58(),
-    }
+      slot: fixtures.attestation.slot,
+      blockhash: fixtures.attestation.blockhash,
+    },
+    await createSigner()
   );
 
-  expect(
-    Transaction.from(
-      Buffer.from(signedTransaction, "base64")
-    ).verifySignatures()
-  ).toBe(true);
+  expect(result.requestUniqueId).toBe(fixtures.attestation.requestUniqueId);
+  expect(result.payload).toBe(fixtures.attestation.payload);
 });

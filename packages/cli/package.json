@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
-    "@metaplex-foundation/mpl-token-metadata": "2.13.0",
     "@swc/jest": "^0.2.26",
     "@types/jest": "^29.5.1",
     "@types/update-notifier": "^6.0.1",
@@ -44,7 +43,6 @@
   },
   "dependencies": {
     "@solana-mobile/dapp-store-publishing-tools": "workspace:1.0.1",
-    "@solana/web3.js": "1.92.1",
     "@types/semver": "^7.3.13",
     "boxen": "^7.0.1",
     "commander": "^9.4.1",

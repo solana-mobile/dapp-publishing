@@ -1,13 +1,14 @@
 import {
-  Connection,
-  LAMPORTS_PER_SOL,
-  PublicKey,
+  address,
+  createSolanaRpc,
+  type Address,
   type Commitment,
-} from "@solana/web3.js";
+} from "@solana/kit";
 
 import { PublishingError } from "../errors.js";
 
 const BALANCE_CHECK_COMMITMENT: Commitment = "confirmed";
+const LAMPORTS_PER_SOL = 1_000_000_000;
 const DEFAULT_MAINNET_RPC_URL = "https://api.mainnet-beta.solana.com";
 
 // Release NFT minting currently needs roughly ~0.015 SOL in rent plus fees.
@@ -21,16 +22,26 @@ export type FundingPreflightInput = {
 };
 
 export type BalanceClient = {
-  getBalance(publicKey: PublicKey): Promise<number>;
+  getBalance(address: Address): Promise<bigint>;
 };
 
 export type BalanceClientFactory = (rpcUrl: string) => BalanceClient;
 
+export type FundingPreflightResult = {
+  /** The signer balance, unless the check was skipped or the RPC failed. */
+  balanceLamports?: bigint;
+  /** Set when the RPC failed and publishing continues without the check. */
+  warning?: string;
+};
+
 function createBalanceClient(rpcUrl: string): BalanceClient {
-  const connection = new Connection(rpcUrl, BALANCE_CHECK_COMMITMENT);
+  const rpc = createSolanaRpc(rpcUrl);
   return {
-    async getBalance(publicKey: PublicKey) {
-      return await connection.getBalance(publicKey, BALANCE_CHECK_COMMITMENT);
+    async getBalance(address: Address) {
+      const { value } = await rpc
+        .getBalance(address, { commitment: BALANCE_CHECK_COMMITMENT })
+        .send();
+      return value;
     },
   };
 }
@@ -56,12 +67,12 @@ export function resolveFundingPreflightRpcUrl(input: {
   return DEFAULT_MAINNET_RPC_URL;
 }
 
-function formatSolAmount(lamports: number): string {
-  return (lamports / LAMPORTS_PER_SOL).toFixed(6);
+function formatSolAmount(lamports: bigint | number): string {
+  return (Number(lamports) / LAMPORTS_PER_SOL).toFixed(6);
 }
 
 function buildInsufficientBalanceMessage(input: {
-  balanceLamports: number;
+  balanceLamports: bigint;
   publicKey: string;
   requiredLamports: number;
 }): string {
@@ -83,15 +94,15 @@ function buildRpcWarningMessage(rpcUrl: string, error: unknown): string {
 export async function ensurePublicationSignerBalance(
   input: FundingPreflightInput,
   clientFactory: BalanceClientFactory = createBalanceClient
-): Promise<string | undefined> {
+): Promise<FundingPreflightResult> {
   const rpcUrl = resolveFundingPreflightRpcUrl(input);
   if (!rpcUrl) {
-    return undefined;
+    return {};
   }
 
-  let publicKey: PublicKey;
+  let signerAddress: Address;
   try {
-    publicKey = new PublicKey(input.publicKey);
+    signerAddress = address(input.publicKey);
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
     throw new PublishingError(
@@ -101,8 +112,10 @@ export async function ensurePublicationSignerBalance(
   }
 
   try {
-    const balanceLamports = await clientFactory(rpcUrl).getBalance(publicKey);
-    if (balanceLamports < MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS) {
+    const balanceLamports = await clientFactory(rpcUrl).getBalance(
+      signerAddress
+    );
+    if (balanceLamports < BigInt(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS)) {
       throw new PublishingError(
         "INSUFFICIENT_BALANCE",
         buildInsufficientBalanceMessage({
@@ -113,12 +126,12 @@ export async function ensurePublicationSignerBalance(
       );
     }
 
-    return undefined;
+    return { balanceLamports };
   } catch (error) {
     if (error instanceof PublishingError) {
       throw error;
     }
 
-    return buildRpcWarningMessage(rpcUrl, error);
+    return { warning: buildRpcWarningMessage(rpcUrl, error) };
   }
 }
