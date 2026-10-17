@@ -25,32 +25,24 @@
   },
   "scripts": {
     "build": "swc src -d lib --copy-files && pnpm run build:types",
-    "build:types": "tsc -p tsconfig.build.json && shx mkdir -p lib/types/generated && shx cp src/generated/*.d.ts lib/types/generated/",
+    "build:types": "tsc -p tsconfig.build.json",
     "clean": "shx mkdir -p lib && shx rm -rf lib",
-    "generate-types": "json2ts -i src/schemas -o src/generated",
-    "prebuild": "pnpm run clean && pnpm run generate-types",
+    "prebuild": "pnpm run clean",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "watch": "swc src --out-dir lib -w"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
     "@swc/jest": "^0.2.26",
-    "@types/debug": "^4.1.7",
     "@types/jest": "^29.5.1",
-    "@types/mime": "^3.0.1",
     "jest": "^29.5.0",
-    "json-schema-to-typescript": "^11.0.2",
     "shx": "^0.3.4"
   },
   "dependencies": {
-    "@metaplex-foundation/js": "0.20.0",
     "@metaplex-foundation/mpl-token-metadata": "2.13.0",
     "@solana/web3.js": "1.68.0",
-    "ajv": "^8.11.0",
-    "debug": "^4.3.4",
     "get-video-dimensions": "^1.0.0",
     "image-size": "^1.0.2",
-    "mime": "^3.0.0",
     "tweetnacl": "1.0.3"
   }
 }
