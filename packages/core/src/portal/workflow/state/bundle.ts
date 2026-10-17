@@ -137,7 +137,7 @@ export function resolvePublicationFeePayer(
   bundle: PublicationBundle,
   signer: PublicationSigner
 ): string {
-  return bundle.signerAuthority.feePayer ?? signer.publicKey;
+  return bundle.signerAuthority.feePayer ?? signer.address;
 }
 
 export function validatePublicationBundle(bundle: PublicationBundle): void {
