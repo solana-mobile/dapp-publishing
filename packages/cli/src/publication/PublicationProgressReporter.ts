@@ -3,7 +3,7 @@ import * as readline from 'node:readline';
 import type {
   PublicationWorkflowLogger,
   PublicationWorkflowResult,
-} from './runPublicationWorkflow.js';
+} from '@solana-mobile/dapp-store-publishing-tools';
 
 type PublicationProgressMode = 'new-version' | 'resume';
 

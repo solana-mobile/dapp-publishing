@@ -15,6 +15,7 @@ export type PortalClientConfig = {
   apiBaseUrl: string;
   apiKey: string;
   dappId?: string;
+  fetch?: typeof fetch;
 };
 
 export type PortalUploadTarget = {

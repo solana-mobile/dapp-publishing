@@ -5,24 +5,26 @@ import {
   type Commitment,
 } from "@solana/web3.js";
 
+import { PublishingError } from "../errors.js";
+
 const BALANCE_CHECK_COMMITMENT: Commitment = "confirmed";
 const DEFAULT_MAINNET_RPC_URL = "https://api.mainnet-beta.solana.com";
 
 // Release NFT minting currently needs roughly ~0.015 SOL in rent plus fees.
-// Keep a small buffer so the CLI fails before uploading the APK.
+// Keep a small buffer so publishing fails before uploading the APK.
 export const MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS = 16_000_000;
 
-type FundingPreflightInput = {
+export type FundingPreflightInput = {
   localDev?: boolean;
   publicKey: string;
   rpcUrl?: string;
 };
 
-type BalanceClient = {
+export type BalanceClient = {
   getBalance(publicKey: PublicKey): Promise<number>;
 };
 
-type BalanceClientFactory = (rpcUrl: string) => BalanceClient;
+export type BalanceClientFactory = (rpcUrl: string) => BalanceClient;
 
 function createBalanceClient(rpcUrl: string): BalanceClient {
   const connection = new Connection(rpcUrl, BALANCE_CHECK_COMMITMENT);
@@ -92,7 +94,8 @@ export async function ensurePublicationSignerBalance(
     publicKey = new PublicKey(input.publicKey);
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
-    throw new Error(
+    throw new PublishingError(
+      "INVALID_PUBLIC_KEY",
       `Invalid signer public key for balance preflight: ${input.publicKey}. ${detail}`
     );
   }
@@ -100,7 +103,8 @@ export async function ensurePublicationSignerBalance(
   try {
     const balanceLamports = await clientFactory(rpcUrl).getBalance(publicKey);
     if (balanceLamports < MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS) {
-      throw new Error(
+      throw new PublishingError(
+        "INSUFFICIENT_BALANCE",
         buildInsufficientBalanceMessage({
           balanceLamports,
           publicKey: input.publicKey,
@@ -111,10 +115,7 @@ export async function ensurePublicationSignerBalance(
 
     return undefined;
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes("publishing needs at least")
-    ) {
+    if (error instanceof PublishingError) {
       throw error;
     }
 

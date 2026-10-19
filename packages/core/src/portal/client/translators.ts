@@ -1,12 +1,12 @@
 import type {
   PublicationBundle,
   PublicationIngestionSession,
+  PublicationInstallFile,
   PublicationSession,
   PublicationSource,
-} from '@solana-mobile/dapp-store-publishing-tools';
+} from "../types.js";
 
 import {
-  ensureHttpsUrl,
   inferFileNameFromUrl,
   inferMimeType,
 } from './files.js';
@@ -131,126 +131,6 @@ export function inferPublicationSourceKind(
   return 'portal';
 }
 
-export function buildReleaseMetadataDocument(
-  bundle: PublicationBundle,
-  sourceKind: PortalSourceKind
-): Record<string, unknown> {
-  const releaseName =
-    bundle.release.localizedName ||
-    bundle.release.releaseName ||
-    bundle.metadata.localizedName ||
-    bundle.dapp.dappName;
-  const shortDescription =
-    bundle.metadata.shortDescription || bundle.release.newInVersion || '';
-  const longDescription =
-    bundle.metadata.longDescription ||
-    shortDescription ||
-    bundle.dapp.description ||
-    '';
-  const newInVersion =
-    bundle.metadata.newInVersion || bundle.release.newInVersion || '';
-  const installFile = bundle.metadata.installFile;
-  const image =
-    bundle.dapp.dappIconUrl ||
-    bundle.dapp.featureGraphicUrl ||
-    bundle.dapp.bannerUrl;
-
-  if (!image) {
-    throw new Error(
-      'Publication bundle did not include a public app image URL.'
-    );
-  }
-
-  const publisherWebsite =
-    bundle.metadata.publisherWebsite ||
-    bundle.publisher.website ||
-    bundle.dapp.appWebsite ||
-    '';
-  const licenseUrl =
-    bundle.metadata.legal.licenseUrl || bundle.dapp.licenseUrl || '';
-  const copyrightUrl =
-    bundle.metadata.legal.copyrightUrl || bundle.dapp.copyrightUrl || '';
-  const privacyPolicyUrl =
-    bundle.metadata.legal.privacyPolicyUrl ||
-    bundle.dapp.privacyPolicyUrl ||
-    '';
-
-  return {
-    schema_version: '0.4.0',
-    name: releaseName.slice(0, 32),
-    description: shortDescription || longDescription || releaseName,
-    image,
-    properties: {
-      category: 'dApp',
-      creators: [
-        {
-          address:
-            bundle.signerAuthority.dappWalletAddress ||
-            bundle.signerAuthority.collectionAuthority,
-          share: 100,
-        },
-      ],
-    },
-    extensions: {
-      solana_dapp_store: {
-        publisher_details: {
-          name: bundle.publisher.name,
-          ...(publisherWebsite
-            ? { website: ensureHttpsUrl(publisherWebsite) }
-            : {}),
-          contact: bundle.publisher.email,
-          support_email:
-            bundle.publisher.supportEmail ||
-            bundle.metadata.supportEmail ||
-            bundle.publisher.email,
-        },
-        release_details: {
-          updated_on: new Date().toISOString(),
-          ...(licenseUrl ? { license_url: ensureHttpsUrl(licenseUrl) } : {}),
-          ...(copyrightUrl ? { copyright_url: copyrightUrl } : {}),
-          ...(privacyPolicyUrl
-            ? { privacy_policy_url: ensureHttpsUrl(privacyPolicyUrl) }
-            : {}),
-          localized_resources: {
-            short_description: '5',
-            long_description: '1',
-            new_in_version: '2',
-            name: '4',
-          },
-        },
-        media: bundle.metadata.media ?? [],
-        files: [
-          {
-            mime: installFile.mimeType || inferMimeType(installFile.fileName),
-            purpose: 'install',
-            size: installFile.size ?? 0,
-            sha256: installFile.sha256 || '',
-            uri: installFile.url,
-          },
-        ],
-        android_details: {
-          android_package: bundle.release.androidPackage,
-          version_code: bundle.release.versionCode,
-          version: bundle.release.versionName,
-          min_sdk: bundle.release.minSdkVersion ?? 1,
-          cert_fingerprint: bundle.release.certificateFingerprint || '',
-          permissions: bundle.release.permissions ?? [],
-          locales: bundle.release.locales ?? bundle.dapp.languages ?? ['en-US'],
-        },
-      },
-      i18n: {
-        'en-US': {
-          '1': longDescription,
-          '2': newInVersion,
-          '4': releaseName,
-          '5': shortDescription.slice(0, 50),
-        },
-      },
-    },
-    __origin: sourceKind,
-  };
-}
-
 export function mapBackendBundleToPublicationBundle(
   backendBundle: Record<string, unknown>,
   releaseMetadataUri: string,
@@ -363,7 +243,7 @@ export function mapBackendBundleToPublicationBundle(
         sha256: installFileDetails.sha256,
         canonicalUrl: installFileDetails.canonicalUrl,
         origin: sourceKind,
-      },
+      } as PublicationInstallFile,
       localizedStrings: [
         {
           locale: 'en-US',
@@ -430,7 +310,7 @@ export function mapBackendBundleToPublicationBundle(
         typeof release.releaseFileUrl === 'string'
           ? release.releaseFileUrl
           : installFileDetails.url
-      ),
+      ) as string | undefined,
       releaseFileName: asString(
         typeof release.releaseFileName === 'string'
           ? release.releaseFileName
