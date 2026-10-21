@@ -330,9 +330,9 @@ export async function runPublicationWorkflow(
 
   const requiredSignerAddress =
     resolvePublicationSignerAddress(normalizedBundle);
-  if (signer.publicKey !== requiredSignerAddress) {
+  if (signer.address !== requiredSignerAddress) {
     throw new Error(
-      `Publication signer mismatch. Expected ${requiredSignerAddress}; received ${signer.publicKey}.`
+      `Publication signer mismatch. Expected ${requiredSignerAddress}; received ${signer.address}.`
     );
   }
 

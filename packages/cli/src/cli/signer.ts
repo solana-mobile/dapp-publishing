@@ -5,11 +5,11 @@ import {
 
 import { showMessage } from "./messages.js";
 
-export const parseKeypair = (
+export const parseKeypair = async (
   pathToKeypairFile: string
-): PublicationSigner | undefined => {
+): Promise<PublicationSigner | undefined> => {
   try {
-    return loadKeypairSignerFromFile(pathToKeypairFile);
+    return await loadKeypairSignerFromFile(pathToKeypairFile);
   } catch {
     showMessage(
       "KeyPair Error",
