@@ -1,7 +1,6 @@
 import type {
   PublicationBundle,
   PublicationIngestionSession,
-  PublicationInstallFile,
   PublicationSession,
   PublicationSource,
 } from "../types.js";
@@ -236,6 +235,7 @@ export function mapBackendBundleToPublicationBundle(
       },
       media: [],
       installFile: {
+        uri: installFileDetails.url,
         url: installFileDetails.url,
         fileName: installFileDetails.fileName,
         mimeType: installFileDetails.mimeType,
@@ -243,7 +243,7 @@ export function mapBackendBundleToPublicationBundle(
         sha256: installFileDetails.sha256,
         canonicalUrl: installFileDetails.canonicalUrl,
         origin: sourceKind,
-      } as PublicationInstallFile,
+      },
       localizedStrings: [
         {
           locale: 'en-US',
@@ -310,7 +310,7 @@ export function mapBackendBundleToPublicationBundle(
         typeof release.releaseFileUrl === 'string'
           ? release.releaseFileUrl
           : installFileDetails.url
-      ) as string | undefined,
+      ) ?? undefined,
       releaseFileName: asString(
         typeof release.releaseFileName === 'string'
           ? release.releaseFileName
