@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
-import { PublicKey } from "@solana/web3.js";
+import { getAddressDecoder } from "@solana/kit";
 
 import {
   ensurePublicationSignerBalance,
@@ -29,7 +29,7 @@ describe("resolveFundingPreflightRpcUrl", () => {
 });
 
 describe("ensurePublicationSignerBalance", () => {
-  const publicKey = new PublicKey(new Uint8Array(32).fill(7)).toBase58();
+  const publicKey = getAddressDecoder().decode(new Uint8Array(32).fill(7));
 
   it("throws before publication when the signer balance is too low", async () => {
     await expect(
@@ -40,13 +40,13 @@ describe("ensurePublicationSignerBalance", () => {
         () => ({
           getBalance: jest
             .fn()
-            .mockResolvedValue(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS - 1),
+            .mockResolvedValue(BigInt(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS - 1)),
         })
       )
     ).rejects.toThrow("publishing needs at least");
   });
 
-  it("returns without warning when the signer balance is sufficient", async () => {
+  it("returns the balance when it is sufficient", async () => {
     const result = await ensurePublicationSignerBalance(
       {
         publicKey,
@@ -54,11 +54,24 @@ describe("ensurePublicationSignerBalance", () => {
       () => ({
         getBalance: jest
           .fn()
-          .mockResolvedValue(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS + 1),
+          .mockResolvedValue(BigInt(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS + 1)),
       })
     );
 
-    expect(result).toBeUndefined();
+    expect(result).toEqual({
+      balanceLamports: BigInt(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS + 1),
+    });
+  });
+
+  it("skips the check for a local dev portal without an RPC URL", async () => {
+    const getBalance = jest.fn();
+    const result = await ensurePublicationSignerBalance(
+      { localDev: true, publicKey },
+      () => ({ getBalance })
+    );
+
+    expect(result).toEqual({});
+    expect(getBalance).not.toHaveBeenCalled();
   });
 
   it("returns a warning when the RPC balance check fails", async () => {
@@ -71,8 +84,43 @@ describe("ensurePublicationSignerBalance", () => {
       })
     );
 
-    expect(result).toContain("Continuing without a SOL preflight check");
-    expect(result).toContain("RPC timeout");
+    expect(result.balanceLamports).toBeUndefined();
+    expect(result.warning).toContain("Continuing without a SOL preflight check");
+    expect(result.warning).toContain("RPC timeout");
+  });
+
+  it("retries the default RPC client when it is rate limited", async () => {
+    const originalFetch = globalThis.fetch;
+    const fetchMock = jest
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response("", { status: 429 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            jsonrpc: "2.0",
+            id: "0",
+            result: {
+              context: { slot: 1 },
+              value: MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS,
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } }
+        )
+      );
+    globalThis.fetch = fetchMock;
+
+    try {
+      await expect(
+        ensurePublicationSignerBalance({
+          publicKey,
+          rpcUrl: "https://rpc.example.com",
+        })
+      ).resolves.toEqual({
+        balanceLamports: BigInt(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS),
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });
-

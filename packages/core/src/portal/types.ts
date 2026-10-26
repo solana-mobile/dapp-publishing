@@ -1,4 +1,4 @@
-import type { Transaction } from '@solana/web3.js';
+import type { MessagePartialSigner, TransactionPartialSigner } from '@solana/kit';
 
 export type PublicationSource =
   | {
@@ -428,11 +428,11 @@ export type PublicationSubmitToStoreInput = {
   isResubmission?: boolean;
 };
 
-export type PublicationSigner = {
-  publicKey: string;
-  signTransaction(transaction: Transaction): Promise<Transaction>;
-  signMessage(message: Uint8Array): Promise<Uint8Array>;
-};
+/**
+ * Signs portal transactions and the attestation message. Partial signers sign the
+ * bytes they are given without modifying them; a kit `KeyPairSigner` satisfies this.
+ */
+export type PublicationSigner = TransactionPartialSigner & MessagePartialSigner;
 
 export type PublicationAttestationBlockData = {
   slot: number;

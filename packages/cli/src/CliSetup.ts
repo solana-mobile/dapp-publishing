@@ -191,9 +191,9 @@ async function runRootAction() {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = loadSigner(options.keypair);
-    const balanceWarning = await ensurePublicationSignerBalance({
-      publicKey: signer.publicKey,
+    const signer = await loadSigner(options.keypair);
+    const { warning: balanceWarning } = await ensurePublicationSignerBalance({
+      publicKey: signer.address,
       rpcUrl: options.rpcUrl,
       localDev: options.localDev,
     });
@@ -242,7 +242,7 @@ async function runResumeAction(options: ResumeCliOptions) {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = loadSigner(options.keypair);
+    const signer = await loadSigner(options.keypair);
     const clients = createPortalClients(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Resuming publication',
@@ -403,12 +403,12 @@ function resolveResumeSessionId(options: ResumeCliOptions): string | undefined {
   return options.sessionId ?? options.resumeSession;
 }
 
-function loadSigner(keypairPath?: string): PublicationSigner {
+async function loadSigner(keypairPath?: string): Promise<PublicationSigner> {
   if (!keypairPath) {
     throw new Error('`--keypair` is required.');
   }
 
-  const signer = parseKeypair(keypairPath);
+  const signer = await parseKeypair(keypairPath);
   if (!signer) {
     throw new Error('Failed to load the signer keypair.');
   }
