@@ -24,9 +24,11 @@ import type {
   PublicationSubmitSignedTransactionResult,
   PublicationSubmitToStoreInput,
   PublicationSubmitToStoreResult,
-  PublicationWorkflowClient,
-} from "@solana-mobile/dapp-store-publishing-tools";
-import { finalizeUploadedFile } from "@solana-mobile/dapp-store-publishing-tools";
+} from "../types.js";
+import {
+  finalizeUploadedFile,
+  type PublicationWorkflowClient,
+} from "../workflow.js";
 
 import { ensureApkFileName, inferFileNameFromUrl } from "./files.js";
 import {
@@ -190,6 +192,7 @@ export function createPortalWorkflowClient(
     }
 
     const releaseMetadataClient: ReleaseMetadataPortalClient = {
+      fetch: config.fetch,
       createUploadTarget,
       finalizeUpload,
       async fetchRemoteFile(input) {
@@ -205,7 +208,7 @@ export function createPortalWorkflowClient(
       releaseMetadataClient,
       bundle,
       inferPublicationSourceKind(
-        bundle.metadata.installFile.origin === "external"
+        bundle.metadata!.installFile.origin === "external"
           ? "externalUrl"
           : "portalUpload"
       )
@@ -223,7 +226,8 @@ export function createPortalWorkflowClient(
     await uploadBytes(
       uploadTarget.uploadUrl,
       metadataBytes,
-      "application/json"
+      "application/json",
+      config.fetch
     );
 
     const metadataUri = await finalizeUploadedFile(
@@ -237,6 +241,7 @@ export function createPortalWorkflowClient(
   };
 
   return {
+    fetch: config.fetch,
     async createUploadTarget(
       input: PublicationCreateUploadTargetInput
     ): Promise<PublicationCreateUploadTargetResult> {
@@ -288,7 +293,8 @@ export function createPortalWorkflowClient(
         await uploadBytes(
           uploadTarget.uploadUrl,
           source.fileBytes,
-          source.contentType
+          source.contentType,
+          config.fetch
         );
 
         const releaseFileUrl = await finalizeUploadedFile(
@@ -564,7 +570,7 @@ export function createPortalWorkflowClient(
       input: PublicationSubmitToStoreInput
     ): Promise<PublicationSubmitToStoreResult> {
       const attestation = isRecord(input.attestation)
-        ? input.attestation
+        ? (input.attestation as Record<string, unknown>)
         : undefined;
 
       const payload =

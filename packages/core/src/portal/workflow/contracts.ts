@@ -27,6 +27,8 @@ import type {
 } from "../types.js";
 
 export type PublicationWorkflowClient = {
+  // Used for presigned-URL uploads; defaults to global fetch.
+  fetch?: typeof fetch;
   createUploadTarget?(
     input: PublicationCreateUploadTargetInput
   ): Promise<PublicationCreateUploadTargetResult>;

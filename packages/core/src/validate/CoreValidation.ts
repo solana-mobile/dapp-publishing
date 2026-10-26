@@ -10,7 +10,7 @@ const appSchema = JSON.parse((await readFile(new URL("../schemas/appJsonMetadata
 const releaseSchema = JSON.parse((await readFile(new URL("../schemas/releaseJsonMetadata.json", import.meta.url))).toString());
 import { isMetaplexFile } from "@metaplex-foundation/js";
 
-export const metaplexFileReplacer = (k: any, v: any) => {
+export const metaplexFileReplacer = (_k: any, v: any) => {
   if (isMetaplexFile(v)) {
     return "https://temp-asset-path";
   }

@@ -60,7 +60,6 @@ export type App = {
   media: ReleaseJsonMetadata["extensions"]["solana_dapp_store"]["media"];
 };
 
-type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
 
 export type Release = {
   address: string;

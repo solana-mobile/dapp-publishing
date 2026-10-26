@@ -100,7 +100,7 @@ async function uploadLocalApkToPortal(
     })
   );
 
-  const uploadResponse = await fetch(uploadTarget.uploadUrl, {
+  const uploadResponse = await (client.fetch ?? fetch)(uploadTarget.uploadUrl, {
     method: "PUT",
     headers: {
       "content-type": contentType,
@@ -108,7 +108,7 @@ async function uploadLocalApkToPortal(
     },
     body: uploadBody,
     duplex: "half",
-  } as RequestInit & { duplex: "half" });
+  } as unknown as RequestInit);
 
   if (!uploadResponse.ok) {
     throw new Error(
