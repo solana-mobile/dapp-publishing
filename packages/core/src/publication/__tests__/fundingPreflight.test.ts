@@ -88,5 +88,39 @@ describe("ensurePublicationSignerBalance", () => {
     expect(result.warning).toContain("Continuing without a SOL preflight check");
     expect(result.warning).toContain("RPC timeout");
   });
-});
 
+  it("retries the default RPC client when it is rate limited", async () => {
+    const originalFetch = globalThis.fetch;
+    const fetchMock = jest
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response("", { status: 429 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            jsonrpc: "2.0",
+            id: "0",
+            result: {
+              context: { slot: 1 },
+              value: MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS,
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } }
+        )
+      );
+    globalThis.fetch = fetchMock;
+
+    try {
+      await expect(
+        ensurePublicationSignerBalance({
+          publicKey,
+          rpcUrl: "https://rpc.example.com",
+        })
+      ).resolves.toEqual({
+        balanceLamports: BigInt(MIN_PUBLICATION_SIGNER_BALANCE_LAMPORTS),
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+});

@@ -1,6 +1,8 @@
 import {
   address,
   createSolanaRpc,
+  isSolanaError,
+  SOLANA_ERROR__RPC__TRANSPORT_HTTP_ERROR,
   type Address,
   type Commitment,
 } from "@solana/kit";
@@ -10,6 +12,8 @@ import { PublishingError } from "../errors.js";
 const BALANCE_CHECK_COMMITMENT: Commitment = "confirmed";
 const LAMPORTS_PER_SOL = 1_000_000_000;
 const DEFAULT_MAINNET_RPC_URL = "https://api.mainnet-beta.solana.com";
+// web3.js retried HTTP 429 responses and kit does not; the public mainnet RPC rate-limits often.
+const RATE_LIMIT_RETRY_DELAYS_MS = [500, 1000, 2000];
 
 // Release NFT minting currently needs roughly ~0.015 SOL in rent plus fees.
 // Keep a small buffer so publishing fails before uploading the APK.
@@ -38,10 +42,24 @@ function createBalanceClient(rpcUrl: string): BalanceClient {
   const rpc = createSolanaRpc(rpcUrl);
   return {
     async getBalance(address: Address) {
-      const { value } = await rpc
-        .getBalance(address, { commitment: BALANCE_CHECK_COMMITMENT })
-        .send();
-      return value;
+      for (let attempt = 0; ; attempt++) {
+        try {
+          const { value } = await rpc
+            .getBalance(address, { commitment: BALANCE_CHECK_COMMITMENT })
+            .send();
+          return value;
+        } catch (error) {
+          const delayMs = RATE_LIMIT_RETRY_DELAYS_MS[attempt];
+          if (
+            delayMs === undefined ||
+            !isSolanaError(error, SOLANA_ERROR__RPC__TRANSPORT_HTTP_ERROR) ||
+            error.context.statusCode !== 429
+          ) {
+            throw error;
+          }
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+      }
     },
   };
 }
