@@ -1,5 +1,4 @@
 import type {
-  PublicationBundle,
   PublicationSession,
   PublicationSessionStage,
 } from "../../types.js";
@@ -19,12 +18,6 @@ export function normalizePublicationSession(
     stage,
     checkpoint,
     status: session.status ?? publicationStageToStatus(stage),
-    releaseMintAddress:
-      session.releaseMintAddress ?? session.expectedMintAddress ?? null,
-    verifyTransactionSignature:
-      session.verifyTransactionSignature ??
-      session.verificationTransactionSignature ??
-      null,
   };
 }
 
@@ -71,17 +64,4 @@ export function resolvePublicationSessionStage(
   }
 
   return "PreparedForMint";
-}
-
-export function resolveReleaseMintAddress(
-  bundle: PublicationBundle,
-  publicationSession: PublicationSession
-): string | undefined {
-  return (
-    publicationSession.releaseMintAddress ??
-    publicationSession.expectedMintAddress ??
-    bundle.release.nftMintAddress ??
-    bundle.release.releaseMintAddress ??
-    undefined
-  );
 }

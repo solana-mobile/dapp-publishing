@@ -1,5 +1,3 @@
-import type { MessagePartialSigner, TransactionPartialSigner } from '@solana/kit';
-
 export type PublicationSource =
   | {
       kind: 'portalUpload';
@@ -77,59 +75,6 @@ export type PublicationInstallFile = {
   origin?: 'portal' | 'external';
 };
 
-export type PublicationMediaAsset = {
-  purpose: 'icon' | 'screenshot' | 'banner' | 'featureGraphic';
-  uri: string;
-  mimeType?: string;
-  fileName?: string;
-  size?: number;
-  sha256?: string;
-  width?: number;
-  height?: number;
-};
-
-export type PublicationLegalBundle = {
-  licenseUrl?: string | null;
-  copyrightUrl?: string | null;
-  privacyPolicyUrl?: string | null;
-};
-
-export type PublicationLocalizedStrings = {
-  locale: string;
-  name: string;
-  shortDescription: string;
-  longDescription: string;
-  newInVersion: string;
-};
-
-export type PublicationMetadataBundle = {
-  localizedName: string;
-  shortDescription: string;
-  longDescription: string;
-  newInVersion: string;
-  publisherWebsite?: string | null;
-  supportEmail?: string | null;
-  website?: string | null;
-  locales: string[];
-  legal: PublicationLegalBundle;
-  media: PublicationMediaAsset[];
-  installFile: PublicationInstallFile;
-  localizedStrings: PublicationLocalizedStrings[];
-  releaseMetadataUri?: string | null;
-};
-
-export type PublicationSignerAuthorityBundle = {
-  dappWalletAddress: string;
-  collectionAuthority: string;
-  appMintAddress: string;
-  sameSignerRequired: boolean;
-  acceptedSignerRoles: Array<'publisher' | 'payer'>;
-  dappId?: string;
-  requiredSigner?: string;
-  mintSigner?: string | null;
-  feePayer?: string | null;
-};
-
 export type PublicationIngestionSessionStatus =
   | 'Created'
   | 'Processing'
@@ -205,22 +150,12 @@ export type PublicationSession = {
   releaseId: string;
   ingestionSessionId?: string | null;
   stage?: PublicationSessionStage;
-  expectedMintAddress?: string | null;
-  metadataUri?: string | null;
-  signerAddress?: string | null;
-  mintTransactionSignature?: string | null;
-  verificationTransactionSignature?: string | null;
-  attestationRequestUniqueId?: string | null;
   hubspotTicketId?: string | null;
   lastError?: string | null;
   created: string;
   updated: string;
   checkpoint?: PublicationCheckpoint;
   status?: PublicationSessionStatus;
-  releaseMintAddress?: string | null;
-  collectionMintAddress?: string | null;
-  verifyTransactionSignature?: string | null;
-  attestationPayload?: string | null;
   error?: string | null;
   createdAt?: string;
   updatedAt?: string;
@@ -249,7 +184,6 @@ export type PublicationBundle = {
     copyrightUrl?: string | null;
     privacyPolicyUrl?: string | null;
     walletAddress?: string | null;
-    nftMintAddress?: string | null;
     lastApprovedReleaseId?: string | null;
     website?: string | null;
   };
@@ -262,7 +196,6 @@ export type PublicationBundle = {
     supportEmail?: string | null;
   };
   installFile: PublicationInstallFile;
-  signerAuthority: PublicationSignerAuthorityBundle;
   release: {
     id?: string;
     dappId?: string;
@@ -286,13 +219,6 @@ export type PublicationBundle = {
     status?: string;
     processingError?: string | null;
     processedAt?: string | null;
-    releaseMintAddress?: string | null;
-    releaseMetadataUri?: string | null;
-    nftMintAddress?: string | null;
-    nftTransactionSignature?: string | null;
-    nftMetadataUri?: string | null;
-    nftCluster?: string | null;
-    isCollectionVerified?: boolean;
     uploadProvider?: 'Arweave' | 'S3' | 'R2' | 'IPFS' | null;
     uploadProviderId?: string | null;
     publishedAt?: string | null;
@@ -310,36 +236,6 @@ export type PublicationBundle = {
     liveVersionComparison?: string;
     releaseName?: string;
   };
-  metadata?: PublicationMetadataBundle;
-};
-
-export type PublicationPreparedReleaseTransaction = {
-  transaction: string;
-  blockhash: string;
-  lastValidBlockHeight: number;
-  mintAddress: string;
-  metadataUri: string;
-};
-
-export type PublicationPreparedVerifyCollectionTransaction = {
-  transaction: string;
-  blockhash: string;
-  lastValidBlockHeight: number;
-};
-
-export type PublicationSubmitSignedTransactionResult = {
-  transactionSignature: string;
-};
-
-export type PublicationSaveReleaseNftDataResult = {
-  success: boolean;
-  releaseId: string;
-  mintAddress: string;
-};
-
-export type PublicationMarkReleaseCollectionAsVerifiedResult = {
-  success: boolean;
-  releaseId: string;
 };
 
 export type PublicationSubmitToStoreResult = {
@@ -365,10 +261,6 @@ export type PublicationGetIngestionSessionInput =
       ingestionSessionId: string;
     };
 
-export type PublicationGetBundleInput = {
-  releaseId: string;
-};
-
 export type PublicationGetSessionInput = {
   publicationSessionId?: string;
   releaseId?: string;
@@ -385,75 +277,19 @@ export type PublicationCleanupReleaseResult = {
   message: string;
 };
 
-export type PublicationPrepareReleaseNftTransactionInput = {
-  releaseId: string;
-  releaseName: string;
-  releaseMetadataUri: string;
-  appMintAddress: string;
-  publisherAddress: string;
-  payerAddress: string;
-};
-
-export type PublicationPrepareVerifyCollectionTransactionInput = {
-  dappId: string;
-  nftMintAddress: string;
-  collectionMintAddress: string;
-  collectionAuthority: string;
-  payerAddress: string;
-};
-
-export type PublicationSaveReleaseNftDataInput = {
-  releaseId: string;
-  mintAddress: string;
-  transactionSignature: string;
-  metadataUri: string;
-  ownerAddress: string;
-  releaseName: string;
-  releaseVersion: string;
-  androidPackage: string;
-  appMintAddress: string;
-  uploadProvider?: 'Arweave' | 'S3' | 'R2' | 'IPFS';
-  uploadProviderId?: string;
-};
-
 export type PublicationSubmitToStoreInput = {
   releaseId: string;
   whatsNew?: string;
   criticalUpdate?: boolean;
   testingInstructions?: string;
-  attestation: {
-    payload: string;
-    requestUniqueId: string;
-  };
   isResubmission?: boolean;
-};
-
-/**
- * Signs portal transactions and the attestation message. Partial signers sign the
- * bytes they are given without modifying them; a kit `KeyPairSigner` satisfies this.
- */
-export type PublicationSigner = TransactionPartialSigner & MessagePartialSigner;
-
-export type PublicationAttestationBlockData = {
-  slot: number;
-  blockhash: string;
-};
-
-export type PublicationAttestationClient = {
-  getBlockData(): Promise<PublicationAttestationBlockData>;
 };
 
 export type PublicationWorkflowResult = {
   ingestionSessionId: string;
   publicationSessionId: string;
   releaseId: string;
-  releaseMintAddress: string;
-  collectionMintAddress: string;
-  releaseTransactionSignature?: string;
-  collectionTransactionSignature?: string;
-  attestationRequestUniqueId?: string;
   hubspotTicketId?: string;
-  publicationBundle: PublicationBundle;
   publicationSession: PublicationSession;
 };
 

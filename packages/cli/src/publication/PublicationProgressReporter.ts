@@ -11,9 +11,6 @@ type ProgressPhaseKey =
   | 'source'
   | 'ingestion'
   | 'context'
-  | 'mint'
-  | 'verify'
-  | 'attest'
   | 'submit';
 
 type ProgressPhaseState = 'pending' | 'active' | 'complete';
@@ -32,10 +29,7 @@ type ProgressContext = Partial<{
   releaseId: string;
   publicationSessionId: string;
   ingestionSessionId: string;
-  mintAddress: string;
-  transactionSignature: string;
   hubspotTicketId: string;
-  requestUniqueId: string;
   fileSize: number;
   bytesUploaded: number;
   bytesTotal: number;
@@ -52,9 +46,6 @@ const PHASES: Array<{ key: ProgressPhaseKey; label: string }> = [
   { key: 'source', label: 'Prepare source' },
   { key: 'ingestion', label: 'Process APK' },
   { key: 'context', label: 'Load release context' },
-  { key: 'mint', label: 'Mint release NFT' },
-  { key: 'verify', label: 'Verify collection' },
-  { key: 'attest', label: 'Create attestation' },
   { key: 'submit', label: 'Submit to review' },
 ];
 
@@ -63,31 +54,22 @@ const PHASE_WEIGHT_PROFILES: Record<
   Record<ProgressPhaseKey, number>
 > = {
   'apk-file': {
-    source: 0.42,
-    ingestion: 0.2,
-    context: 0.08,
-    mint: 0.12,
-    verify: 0.08,
-    attest: 0.04,
-    submit: 0.06,
+    source: 0.5,
+    ingestion: 0.3,
+    context: 0.1,
+    submit: 0.1,
   },
   'apk-url': {
     source: 0.05,
-    ingestion: 0.43,
-    context: 0.12,
-    mint: 0.16,
-    verify: 0.1,
-    attest: 0.05,
-    submit: 0.09,
+    ingestion: 0.65,
+    context: 0.15,
+    submit: 0.15,
   },
   resume: {
-    source: 0.42,
-    ingestion: 0.2,
-    context: 0.08,
-    mint: 0.12,
-    verify: 0.08,
-    attest: 0.04,
-    submit: 0.06,
+    source: 0.5,
+    ingestion: 0.3,
+    context: 0.1,
+    submit: 0.1,
   },
 };
 
@@ -100,14 +82,7 @@ const STEP_PROGRESS_RANGES: Record<
   'source.ready': { start: 0.2, end: 1 },
   'ingestion.create': { start: 0.05, end: 0.2 },
   'ingestion.wait': { start: 0.2, end: 1 },
-  'bundle.load': { start: 0.1, end: 0.55 },
-  'session.load': { start: 0.55, end: 1 },
-  'mint.prepare': { start: 0.05, end: 0.3 },
-  'mint.submit': { start: 0.3, end: 0.65 },
-  'mint.save': { start: 0.65, end: 1 },
-  'verify.prepare': { start: 0.05, end: 0.35 },
-  'verify.submit': { start: 0.35, end: 1 },
-  'attestation.create': { start: 0.05, end: 1 },
+  'session.load': { start: 0.1, end: 1 },
   'submit.store': { start: 0.05, end: 1 },
 };
 
@@ -119,14 +94,7 @@ const STEP_TO_PHASE: Record<string, ProgressPhaseKey> = {
   'source.ready': 'source',
   'ingestion.create': 'ingestion',
   'ingestion.wait': 'ingestion',
-  'bundle.load': 'context',
   'session.load': 'context',
-  'mint.prepare': 'mint',
-  'mint.submit': 'mint',
-  'mint.save': 'mint',
-  'verify.prepare': 'verify',
-  'verify.submit': 'verify',
-  'attestation.create': 'attest',
   'submit.store': 'submit',
 };
 
@@ -134,28 +102,7 @@ const PHASE_FINAL_STEPS: Record<ProgressPhaseKey, string[]> = {
   source: ['source.ready', 'source.upload'],
   ingestion: ['ingestion.wait'],
   context: ['session.load'],
-  mint: ['mint.save'],
-  verify: ['verify.submit'],
-  attest: ['attestation.create'],
   submit: ['submit.store'],
-};
-
-const STAGE_COMPLETED_PHASES: Record<string, ProgressPhaseKey[]> = {
-  PreparedForMint: ['source', 'ingestion', 'context'],
-  MintSubmitted: ['source', 'ingestion', 'context'],
-  MintSaved: ['source', 'ingestion', 'context', 'mint'],
-  VerificationSubmitted: ['source', 'ingestion', 'context', 'mint'],
-  Verified: ['source', 'ingestion', 'context', 'mint', 'verify'],
-  Attested: ['source', 'ingestion', 'context', 'mint', 'verify', 'attest'],
-  Submitted: [
-    'source',
-    'ingestion',
-    'context',
-    'mint',
-    'verify',
-    'attest',
-    'submit',
-  ],
 };
 
 const MAX_RECENT_EVENTS = 2;
@@ -268,17 +215,10 @@ class PublicationProgressReporter {
     this.finalState = 'complete';
     this.currentMessage = 'Publication workflow completed';
     this.updateContext({
-      androidPackage: result.publicationBundle.release.androidPackage,
-      versionName: result.publicationBundle.release.versionName,
       releaseId: result.releaseId,
       publicationSessionId: result.publicationSessionId,
       ingestionSessionId: result.ingestionSessionId,
-      mintAddress: result.releaseMintAddress,
-      transactionSignature:
-        result.collectionTransactionSignature ??
-        result.releaseTransactionSignature,
       hubspotTicketId: result.hubspotTicketId,
-      requestUniqueId: result.attestationRequestUniqueId,
     });
 
     for (const { key } of PHASES) {
@@ -412,14 +352,15 @@ class PublicationProgressReporter {
 
   private applyStageHint(metadata: ProgressMetadata) {
     const stage = this.readString(metadata, 'stage');
-    if (!stage) {
+    if (!stage || stage === 'Failed') {
       return;
     }
 
-    const completedPhases = STAGE_COMPLETED_PHASES[stage];
-    if (!completedPhases) {
-      return;
-    }
+    // A publication session exists only once the APK has been processed.
+    const completedPhases: ProgressPhaseKey[] =
+      stage === 'Submitted'
+        ? ['source', 'ingestion', 'context', 'submit']
+        : ['source', 'ingestion', 'context'];
 
     for (const phaseKey of completedPhases) {
       this.phaseStates[phaseKey] = 'complete';
@@ -481,28 +422,11 @@ class PublicationProgressReporter {
       this.context.ingestionSessionId = ingestionSessionId;
     }
 
-    const mintAddress = this.readString(metadata, 'mintAddress');
-    if (mintAddress) {
-      this.context.mintAddress = mintAddress;
-    }
-
-    const transactionSignature = this.readString(
-      metadata,
-      'transactionSignature',
-    );
-    if (transactionSignature) {
-      this.context.transactionSignature = transactionSignature;
-    }
-
     const hubspotTicketId = this.readString(metadata, 'hubspotTicketId');
     if (hubspotTicketId) {
       this.context.hubspotTicketId = hubspotTicketId;
     }
 
-    const requestUniqueId = this.readString(metadata, 'requestUniqueId');
-    if (requestUniqueId) {
-      this.context.requestUniqueId = requestUniqueId;
-    }
 
     const fileSize = this.readNumber(metadata, 'fileSize');
     if (fileSize !== undefined) {
@@ -806,7 +730,6 @@ class PublicationProgressReporter {
 
   private buildVerboseMetadataLines(metadata: ProgressMetadata): string[] {
     const lines: string[] = [];
-    const step = this.readString(metadata, 'step');
 
     this.appendVerboseField(
       lines,
@@ -826,32 +749,6 @@ class PublicationProgressReporter {
       'ingestionSessionId',
       'Ingestion session ID',
       this.readString(metadata, 'ingestionSessionId'),
-    );
-
-    const transactionSignature = this.readString(metadata, 'transactionSignature');
-    if (transactionSignature) {
-      const transactionKey =
-        step === 'verify.submit'
-          ? 'collectionTransactionSignature'
-          : 'releaseTransactionSignature';
-      const transactionLabel =
-        step === 'verify.submit'
-          ? 'Collection transaction signature'
-          : 'Release transaction signature';
-
-      this.appendVerboseField(
-        lines,
-        transactionKey,
-        transactionLabel,
-        transactionSignature,
-      );
-    }
-
-    this.appendVerboseField(
-      lines,
-      'attestationRequestUniqueId',
-      'Attestation request ID',
-      this.readString(metadata, 'requestUniqueId'),
     );
     this.appendVerboseField(
       lines,

@@ -1,33 +1,11 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { mapBackendBundleToPublicationBundle } from '../translators.js';
+import {
+  mapBackendBundleToPublicationBundle,
+  translateBackendPublicationSession,
+} from '../translators.js';
 
 describe('mapBackendBundleToPublicationBundle', () => {
-  it('keeps localized short-description fallback distinct from metadata shortDescription', () => {
-    const description = 'A'.repeat(80);
-
-    const bundle = mapBackendBundleToPublicationBundle(
-      {
-        dapp: {
-          dappName: 'Example dApp',
-          description,
-          subtitle: 'Portal subtitle',
-        },
-        release: {},
-        publisher: {},
-        installFile: {},
-        signerAuthority: {},
-      },
-      '',
-      'portal'
-    );
-
-    expect(bundle.metadata.shortDescription).toBe('Portal subtitle');
-    expect(bundle.metadata.localizedStrings[0].shortDescription).toBe(
-      description.slice(0, 50)
-    );
-  });
-
   it('preserves required release metadata fields from the backend bundle', () => {
     const bundle = mapBackendBundleToPublicationBundle(
       {
@@ -64,9 +42,7 @@ describe('mapBackendBundleToPublicationBundle', () => {
         },
         publisher: {},
         installFile: {},
-        signerAuthority: {},
       },
-      'https://example.com/metadata.json',
       'portal'
     );
 
@@ -78,5 +54,22 @@ describe('mapBackendBundleToPublicationBundle', () => {
     expect(bundle.release.permissions).toEqual(['android.permission.INTERNET']);
     expect(bundle.release.locales).toEqual(['en-US']);
     expect(bundle.release.releaseFileHash).toBe('apk-hash');
+  });
+});
+
+describe('translateBackendPublicationSession', () => {
+  it('maps the backend stage to a checkpoint and status', () => {
+    const session = translateBackendPublicationSession({
+      id: 'session-1',
+      releaseId: 'release-1',
+      stage: 'Submitted',
+      hubspotTicketId: 'ticket-1',
+      lastError: 'boom',
+    });
+
+    expect(session.checkpoint).toBe('submitted');
+    expect(session.status).toBe('completed');
+    expect(session.hubspotTicketId).toBe('ticket-1');
+    expect(session.error).toBe('boom');
   });
 });

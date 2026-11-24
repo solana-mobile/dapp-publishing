@@ -9,11 +9,7 @@ export function extractPublicationSummaryLines(result: unknown): string[] {
     return lines;
   }
 
-  const keys = [
-    ['releaseMintAddress', 'Release mint address'],
-    ['collectionMintAddress', 'Collection mint address'],
-    ['hubspotTicketId', 'Ticket ID'],
-  ] as const;
+  const keys = [['hubspotTicketId', 'Ticket ID']] as const;
 
   for (const [key, label] of keys) {
     const value = result[key];

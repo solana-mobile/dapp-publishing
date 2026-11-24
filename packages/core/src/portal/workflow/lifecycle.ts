@@ -1,7 +1,6 @@
 import { randomUUID } from "node:crypto";
 
 import type {
-  PublicationBundle,
   PublicationCleanupReleaseResult,
   PublicationGetSessionInput,
   PublicationSession,
@@ -16,12 +15,6 @@ import type {
 import { runPublicationWorkflow } from "./execution.js";
 import { waitForIngestionSessionReady } from "./ingestion.js";
 import { logWorkflowInfo } from "./logging.js";
-import {
-  hasResolvableReleaseMetadataUri,
-  normalizePublicationBundle,
-  validatePublicationBundle,
-  withPublicationBundleIdentifiers,
-} from "./state/bundle.js";
 import { normalizePublicationSession } from "./state/session.js";
 import { preparePublicationSource } from "./source/preparation.js";
 
@@ -90,57 +83,10 @@ async function loadPublicationSession(
   return publicationSession;
 }
 
-async function loadPublicationBundle(
-  client: PublicationWorkflowClient,
-  input: {
-    releaseId: string;
-    publicationSessionId?: string | null;
-    ingestionSessionId?: string | null;
-    existingBundle?: PublicationBundle | null;
-    existingSession?: PublicationSession;
-  },
-  options: PublicationWorkflowOptions
-): Promise<PublicationBundle> {
-  logWorkflowInfo(options.logger, "Loading publication bundle", {
-    step: "bundle.load",
-    status: "running",
-    releaseId: input.releaseId,
-  });
-
-  const publicationBundle =
-    input.existingBundle &&
-    hasResolvableReleaseMetadataUri(input.existingBundle, input.existingSession)
-      ? input.existingBundle
-      : withPublicationBundleIdentifiers(
-          normalizePublicationBundle(
-            await client.getPublicationBundle({
-              releaseId: input.releaseId,
-            })
-          ),
-          {
-            releaseId: input.releaseId,
-            publicationSessionId: input.publicationSessionId ?? null,
-            ingestionSessionId: input.ingestionSessionId ?? null,
-          }
-        );
-
-  validatePublicationBundle(publicationBundle);
-
-  logWorkflowInfo(options.logger, "Publication bundle loaded", {
-    step: "bundle.load",
-    status: "complete",
-    releaseId: input.releaseId,
-    androidPackage: publicationBundle.release.androidPackage,
-    versionName: publicationBundle.release.versionName,
-  });
-
-  return publicationBundle;
-}
-
 async function recoverPublicationResult(
   client: PublicationWorkflowClient,
   releaseId: string,
-  input: Pick<PublicationWorkflowInput, "signer" | "attestationClient">,
+  input: PublicationWorkflowInput,
   options: PublicationWorkflowOptions
 ) {
   logWorkflowInfo(options.logger, "Recovering final publication state", {
@@ -154,18 +100,6 @@ async function recoverPublicationResult(
       releaseId,
     })
   );
-  const publicationBundle = withPublicationBundleIdentifiers(
-    normalizePublicationBundle(
-      await client.getPublicationBundle({
-        releaseId,
-      })
-    ),
-    {
-      releaseId,
-      publicationSessionId: publicationSession.id,
-      ingestionSessionId: publicationSession.ingestionSessionId ?? null,
-    }
-  );
 
   logWorkflowInfo(options.logger, "Recovered final publication state", {
     step: "cleanup.recover",
@@ -177,10 +111,8 @@ async function recoverPublicationResult(
 
   return runPublicationWorkflow(
     client,
-    publicationBundle,
-    input.signer,
-    input.attestationClient,
     publicationSession,
+    { whatsNew: input.whatsNew },
     options.logger
   );
 }
@@ -302,29 +234,6 @@ export const createPublicationWorkflow = (
           ? normalizePublicationSession(readySession.publicationSession)
           : undefined;
 
-        const readyPublicationBundle = readySession.bundle
-          ? withPublicationBundleIdentifiers(
-              normalizePublicationBundle(readySession.bundle),
-              {
-                releaseId,
-                publicationSessionId: readySession.publicationSessionId ?? null,
-                ingestionSessionId: readySession.id,
-              }
-            )
-          : null;
-
-        const publicationBundle = await loadPublicationBundle(
-          client,
-          {
-            releaseId,
-            publicationSessionId: readySession.publicationSessionId ?? null,
-            ingestionSessionId: readySession.id,
-            existingBundle: readyPublicationBundle,
-            existingSession: readyPublicationSession,
-          },
-          options
-        );
-
         const publicationSession = await loadPublicationSession(
           client,
           {
@@ -339,10 +248,8 @@ export const createPublicationWorkflow = (
 
         return await runPublicationWorkflow(
           client,
-          publicationBundle,
-          input.signer,
-          input.attestationClient,
           publicationSession,
+          { whatsNew: input.whatsNew, ingestionSessionId: readySession.id },
           options.logger
         );
       } catch (error) {
@@ -412,22 +319,24 @@ export const createPublicationWorkflow = (
         options
       );
 
-      const publicationBundle = await loadPublicationBundle(
-        client,
-        {
+      if (publicationSession.ingestionSessionId) {
+        const ingestionSession = await client.getIngestionSession({
+          sessionId: publicationSession.ingestionSessionId,
+        });
+
+        logWorkflowInfo(options.logger, "Release details loaded", {
+          step: "session.load",
+          status: "complete",
           releaseId: publicationSession.releaseId,
-          publicationSessionId: publicationSession.id,
-          ingestionSessionId: publicationSession.ingestionSessionId ?? null,
-        },
-        options
-      );
+          androidPackage: ingestionSession.androidPackage ?? undefined,
+          versionName: ingestionSession.versionName ?? undefined,
+        });
+      }
 
       return runPublicationWorkflow(
         client,
-        publicationBundle,
-        input.signer,
-        input.attestationClient,
         publicationSession,
+        {},
         options.logger
       );
     },

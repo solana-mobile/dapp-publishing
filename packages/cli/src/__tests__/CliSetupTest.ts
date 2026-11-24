@@ -2,7 +2,14 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  jest,
+  test,
+} from "@jest/globals";
 
 import {
   mainCli,
@@ -153,13 +160,13 @@ describe("CLI surface", () => {
     ).toThrow("`--whats-new` is required.");
   });
 
-  test("new-version validation rejects missing keypair", () => {
+  test("new-version validation does not require a keypair", () => {
     expect(() =>
       validateNewVersionArgs({
         apkUrl: "https://example.com/app.apk",
         whatsNew: "Fixes",
       })
-    ).toThrow("`--keypair` is required.");
+    ).not.toThrow();
   });
 
   test("new-version validation rejects a missing local APK file", () => {
@@ -333,15 +340,54 @@ describe("CLI surface", () => {
     }
   );
 
-  test("resume still reports a keypair that was never supplied", async () => {
+  test("resume does not require a keypair", async () => {
     const options = withRootOptionFallbacks(
       await captureResumeOptions(["resume", "--release-id", "release-1"])
     );
 
     expect(options.keypair).toBeUndefined();
-    expect(() => validateResumeArgs(options)).toThrow(
-      "`--keypair` is required."
-    );
+    expect(() => validateResumeArgs(options)).not.toThrow();
+  });
+
+  test("resume accepts and ignores --keypair", async () => {
+    process.env[DEFAULT_API_KEY_ENV] = "secret";
+    const procedures: string[] = [];
+    const fetchSpy = jest
+      .spyOn(globalThis, "fetch")
+      .mockImplementation(async (url) => {
+        const procedure = String(url).match(/\/trpc\/([^?]+)/)?.[1] ?? "";
+        procedures.push(procedure);
+        const data =
+          procedure === "publication.getPublicationSession"
+            ? { id: "session-1", releaseId: "release-1", stage: "PreparedForMint" }
+            : { success: true, hubspotTicketId: "ticket-1", message: "ok" };
+        return new Response(JSON.stringify({ result: { data } }), {
+          status: 200,
+        });
+      });
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+
+    try {
+      await mainCli.parseAsync([
+        "node",
+        "dapp-store",
+        "resume",
+        "--release-id",
+        "release-1",
+        "--keypair",
+        "/nonexistent.json",
+        "--local-dev",
+      ]);
+    } finally {
+      fetchSpy.mockRestore();
+      logSpy.mockRestore();
+    }
+
+    expect(process.exitCode).toBe(0);
+    expect(procedures).toEqual([
+      "publication.getPublicationSession",
+      "publication.submitToStore",
+    ]);
   });
 
   test("portal targets default to production when unset", () => {

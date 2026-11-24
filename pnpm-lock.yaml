@@ -35,7 +35,7 @@ importers:
   packages/cli:
     specifiers:
       '@jest/globals': ^29.5.0
-      '@solana-mobile/dapp-store-publishing-tools': workspace:1.0.1
+      '@solana-mobile/dapp-store-publishing-tools': workspace:2.0.0
       '@swc/jest': ^0.2.26
       '@types/jest': ^29.5.1
       '@types/semver': ^7.3.13
@@ -66,17 +66,10 @@ importers:
   packages/core:
     specifiers:
       '@jest/globals': ^29.5.0
-      '@solana/kit': ^8.5.0
       '@swc/jest': ^0.2.26
       '@types/jest': ^29.5.1
-      get-video-dimensions: ^1.0.0
-      image-size: ^1.0.2
       jest: ^29.5.0
       shx: ^0.3.4
-    dependencies:
-      '@solana/kit': 8.5.0
-      get-video-dimensions: 1.0.0
-      image-size: 1.2.1
     devDependencies:
       '@jest/globals': 29.7.0
       '@swc/jest': 0.2.39
@@ -846,760 +839,6 @@ packages:
       '@sinonjs/commons': 3.0.1
     dev: true
 
-  /@solana/accounts/8.5.0:
-    resolution: {integrity: sha512-vwwXYCobg1oG4kFeUEsGiNORjPujI2ff3yKLp6lCa7QBIlKaD7kZ2QRI3PZFYcNrMJ6HYNwNeZXR7ixg02pWdA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/rpc-spec': 8.5.0
-      '@solana/rpc-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/addresses/8.5.0:
-    resolution: {integrity: sha512-LwTrDbDSJBng9y0vwiKqb/kSS9daspTGrSYoZPafeMWpAlpmutdD1KXPDHVTa4Xz00hcAfOJXYxRXX5VAoiOag==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/assertions': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/nominal-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/assertions/8.5.0:
-    resolution: {integrity: sha512-EZDY5rJIV8Mv9xYJ7P+jvE5pihG7pmKZ6pTqbunba/4uZSQN4Klw0FX54LDDklfDvhzmAdXN0nYAnjovTGAPEg==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/codecs-core/8.5.0:
-    resolution: {integrity: sha512-ou38qNrf9XOzCWsu/I4sTzRmnrKqhblwMVvpXwXPKAAUZwkSAKQXonwgZFY68I5HK6nkfq1NLWfZFmTEIZYLiw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/codecs-data-structures/8.5.0:
-    resolution: {integrity: sha512-CnnNriyltkgxZAKgAJoVRsRnrtdW4KCX37BUoIsquCM+AgSvhSbxaZNz0iaHjGOX7o1Z4s6+j7nAUgad0N/w5A==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/codecs-numbers/8.5.0:
-    resolution: {integrity: sha512-6Vtf52rHzjf98ykejn9bNGMaQ2k1f4UMIa+BGMbBy4mIRQ5ggdI5oCAb3sZPfJcel2JQHwDlsLHCYdpqC+n6Mg==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/codecs-strings/8.5.0:
-    resolution: {integrity: sha512-9lCSCUVkbPLb1o9PLDsaOatdVgrUqqWMrAqJvZPyyuvrC5++wPuKRIGq+5iU3lICY+AwWxrzVyiwdu4xaZVCiw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      fastestsmallesttextencoderdecoder: ^1.0.22
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      fastestsmallesttextencoderdecoder:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/codecs/8.5.0:
-    resolution: {integrity: sha512-wALOoEuL7HAaahZnrhxCwYz10p23hku/LPNfXjlvwgjVYJL08PH3uyWDFO8e9zhcNLOaR13IREE9z8zPUhJjDQ==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-data-structures': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/fixed-points': 8.5.0
-      '@solana/options': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/errors/8.5.0:
-    resolution: {integrity: sha512-y/XTiwAZsm2kHoEDJ3ac3NUq/0E4uCbOnBe2m5mmBXF3TGmF562tDKgN5pQ+thiRABvi7b2LqwTBCg4kAdtgRg==}
-    engines: {node: '>=20.18.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      chalk: 5.6.2
-      commander: 15.0.0
-    dev: false
-
-  /@solana/fast-stable-stringify/8.5.0:
-    resolution: {integrity: sha512-CTIoOwJ0NScrB8KTzr/V4PJrNHrBAz1zvamM0opgDPQZGzLrBhca1e4eQcGmF6o7Dv3Ve0HdvDJx0B2uG6YxVA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dev: false
-
-  /@solana/fixed-points/8.5.0:
-    resolution: {integrity: sha512-hkB7dUAD/oxXeNOvdMXVqfKZAvOJ1o50gBwzh8yLP1ihdSxVgssb36Vg7806C5HzmIxmTKZclJJokG0cRUXVSw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/functional/8.5.0:
-    resolution: {integrity: sha512-+8pgF1rVW78FfT0d+ceADFLKpSh/8/o9Ldx5tEkI6paiv0QeClL1rlU5nFs5tjoFkf+92x8PpiLEEGkm0CifOQ==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dev: false
-
-  /@solana/instruction-plans/8.5.0:
-    resolution: {integrity: sha512-cES8TzRGuJ5cdVn3hr6GskwwG68rLd8R0FqmzB9NeU/nzPnW/50nRrg36DYX1Nh+OwuU/ehg6zkNNu1Vo72lKQ==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/promises': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/instructions/8.5.0:
-    resolution: {integrity: sha512-LSMOQRicz8OalMM2DT60PtAaPjvkHPhIvmPEI8KpyWOuNRwABJBRAfn5ypcdSa69VVj4IdOY10tDWZzjN4dviA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/keys/8.5.0:
-    resolution: {integrity: sha512-mq6amguPYLklpAOC9A+boXQhpcHGjcn4QN40J0l1TvUkfWyFJ4HBbNb35fyWldqqDUV5ujOpaPZmmVvWJBK2Kw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/assertions': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/nominal-types': 8.5.0
-      '@solana/promises': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/kit/8.5.0:
-    resolution: {integrity: sha512-bMnXXADeyZFe3XyqzPhlQAIsmPYRiojaRO4JQxwGOmMwiQ5f13ZQodmsOqnt8W/n40P7r/+/pDqWuqG0TUv+yA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/accounts': 8.5.0
-      '@solana/addresses': 8.5.0
-      '@solana/codecs': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/instruction-plans': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/offchain-messages': 8.5.0
-      '@solana/plugin-core': 8.5.0
-      '@solana/plugin-interfaces': 8.5.0
-      '@solana/program-client-core': 8.5.0
-      '@solana/programs': 8.5.0
-      '@solana/promises': 8.5.0
-      '@solana/rpc': 8.5.0
-      '@solana/rpc-api': 8.5.0
-      '@solana/rpc-parsed-types': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      '@solana/rpc-subscriptions': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/signers': 8.5.0
-      '@solana/subscribable': 8.5.0
-      '@solana/sysvars': 8.5.0
-      '@solana/transaction-confirmation': 8.5.0
-      '@solana/transaction-introspection': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - bufferutil
-      - fastestsmallesttextencoderdecoder
-      - utf-8-validate
-    dev: false
-
-  /@solana/nominal-types/8.5.0:
-    resolution: {integrity: sha512-OfTZ+w/C59Zkp51RJ3dzn2GXUojf9p/PMmSrOpxrj+hci3bdh4e6XDGY+mvP8HGPH+m0nfKWTBCygEslfoX6bg==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dev: false
-
-  /@solana/offchain-messages/8.5.0:
-    resolution: {integrity: sha512-C7qBBD1Gfbdv99uoQnuc8XZYwttTQJOYEG2v6z7q3mAL03PN7zdItAlBa+M2tpeRKjTJObRYnUUJDfiIyyGD/Q==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-data-structures': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/nominal-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/options/8.5.0:
-    resolution: {integrity: sha512-Ron9FrWDkwxlmuI6D+NmrZZRngC1MUncglgyN77ThAoxDE1gGMOB88mQvEILeeqONeTA1rDg1uBvbewQcILp+w==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-data-structures': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/plugin-core/8.5.0:
-    resolution: {integrity: sha512-1zmh+UC47yxsZHleDpH4AEVkm9yXIATkWm8v33DJuXaqX3TQXMXuxP39cXAyObIQEpCG8DK8lyAeFTUrIFcDmA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dev: false
-
-  /@solana/plugin-interfaces/8.5.0:
-    resolution: {integrity: sha512-+s/+cCuzk23/a1ViTIugvXFYHN0txxmvqfuL4qx81NlmGawqEYws6xD+L02wNzJ5rbJeAaBhw2pUFStMfG4vYg==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/accounts': 8.5.0
-      '@solana/addresses': 8.5.0
-      '@solana/instruction-plans': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/rpc-spec': 8.5.0
-      '@solana/rpc-subscriptions-spec': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/signers': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/program-client-core/8.5.0:
-    resolution: {integrity: sha512-HJcnbuvQRcWOV3nTUjzgmQRIs0Of1973UU8uOvSEEW7rxycQwNxJ7fVgxQ5sYOCbT+7rlqqTkDeczvB7I4OwoA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/accounts': 8.5.0
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/instruction-plans': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/plugin-interfaces': 8.5.0
-      '@solana/rpc-api': 8.5.0
-      '@solana/signers': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/programs/8.5.0:
-    resolution: {integrity: sha512-8PC2E/d5rwCRw1tFwQlpG65YDN56bYmPiBl99QqCP2RzhNdFJ/52xgFumL2G0uLfD3xsuFaWuOIGNxkyfXYm/Q==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/errors': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/promises/8.5.0:
-    resolution: {integrity: sha512-qWJbU6RGuZVrtvsGZ+2F46jccaIZDX4czYRRhS3m38cCdE+wKMbqGvWND50xP7D9egOxYKHMqJAJbLQH4gspvQ==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dev: false
-
-  /@solana/rpc-api/8.5.0:
-    resolution: {integrity: sha512-qlRZ2yC8WEWNg3VX8UEqlZOitKZaeE6KWbn3A/ybtJAYz+mvr3RMDhnQ89RDqIuxPuAFZNV21BRJv3yB9xR44Q==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/rpc-parsed-types': 8.5.0
-      '@solana/rpc-spec': 8.5.0
-      '@solana/rpc-transformers': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/rpc-parsed-types/8.5.0:
-    resolution: {integrity: sha512-ktygZ019trgAyjr8y1GN1x4x6wJYw2Ola6UogAfJT5LoNs6kV3k84yCNAlGv34xRPqCVxlWo4nsIWJf8yWQQ2w==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dev: false
-
-  /@solana/rpc-spec-types/8.5.0:
-    resolution: {integrity: sha512-YUTMKWWlHCGBmA1wxhIilbxJlad5vEsvc8dDO9VWr7GVkQUlipEU79iGaKk4xQ6Oo1mZWxpGz5mAJUqGraTK4A==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-    dev: false
-
-  /@solana/rpc-spec/8.5.0:
-    resolution: {integrity: sha512-0oET5yc880zFGqBMJE2UB7sxW8sIs4hmsP4bmkR2y4ipm1aScC5U+Rd8GaIrupBOVOFj+RXIorC7kQycN/9nhw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      '@solana/subscribable': 8.5.0
-    dev: false
-
-  /@solana/rpc-subscriptions-api/8.5.0:
-    resolution: {integrity: sha512-PJaAyqZkpG8vuzdxmdWMwp1JS5pyZ6PuL8OMhx6nCt3phkseqIs1NmAf8pQc/RZjIV3hJMMVCwSDG1DE8DY64w==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/rpc-subscriptions-spec': 8.5.0
-      '@solana/rpc-transformers': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/rpc-subscriptions-channel-websocket/8.5.0:
-    resolution: {integrity: sha512-sRYYwBFg31z77zfKpJBcAO9MaUWa+bO1PlBcDiToa4luXGuR3dC8TSpi1Yip4T4NCONNzK3yhyeI6sHhGHc8Qw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/rpc-subscriptions-spec': 8.5.0
-      '@solana/subscribable': 8.5.0
-      ws: 8.22.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
-
-  /@solana/rpc-subscriptions-spec/8.5.0:
-    resolution: {integrity: sha512-YdCPLHOcQWz8JhMaT/E+YC56nFDJ6D+XOTr6qRWHGe/1PIYGQDVvaFzI7+tF0b6tuv49GoMbpGdkiTX2v6KeUw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/promises': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      '@solana/subscribable': 8.5.0
-    dev: false
-
-  /@solana/rpc-subscriptions/8.5.0:
-    resolution: {integrity: sha512-8hdWSDKKtMK3kRrR8TExwFo/bWHxVTu4zJ/JkePTQgNtm95kX25/hy+9JHKRtSsNUfXXYM60sQVE18cGgMU7dA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/fast-stable-stringify': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/promises': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      '@solana/rpc-subscriptions-api': 8.5.0
-      '@solana/rpc-subscriptions-channel-websocket': 8.5.0
-      '@solana/rpc-subscriptions-spec': 8.5.0
-      '@solana/rpc-transformers': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/subscribable': 8.5.0
-    transitivePeerDependencies:
-      - bufferutil
-      - fastestsmallesttextencoderdecoder
-      - utf-8-validate
-    dev: false
-
-  /@solana/rpc-transformers/8.5.0:
-    resolution: {integrity: sha512-JYq+EyfzJ1ksZubU9VHynQY1Z3k1tosdxG6KE4Cua/rFuXPosSn7o5h9FLLbSB5cTVcnj0lGNrBaVYW4AVK4iA==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/nominal-types': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      '@solana/rpc-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/rpc-transport-http/8.5.0:
-    resolution: {integrity: sha512-xfIFZa+oxXLgA6BXaE2bXjiy2yZM1qO1URzzF0lmTekJM/okS8EZAQwEicWpYkvfdHJZ2x/oagD3AOSBBCWrsw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/rpc-spec': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      undici-types: 8.12.2
-    dev: false
-
-  /@solana/rpc-types/8.5.0:
-    resolution: {integrity: sha512-L050pZqQ8gaFABF26NAYoatyZZeJo52AKvQQ3i58LRtUc6wcrpCF+4x4U/EDER2YVAc6Qx1xWvGnAomGhI6vzw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/fixed-points': 8.5.0
-      '@solana/nominal-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/rpc/8.5.0:
-    resolution: {integrity: sha512-7CQFNOMhXrY/LT0qdsi3h0chy4A/Ao93pyBLqFQqxzlub0st8dC5wl+MDXhkxaBos/DZOu1V4EleWv6qbLMlow==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/fast-stable-stringify': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/rpc-api': 8.5.0
-      '@solana/rpc-spec': 8.5.0
-      '@solana/rpc-spec-types': 8.5.0
-      '@solana/rpc-transformers': 8.5.0
-      '@solana/rpc-transport-http': 8.5.0
-      '@solana/rpc-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/signers/8.5.0:
-    resolution: {integrity: sha512-F9VvFsG9Av+Sbs4mQpuVlszb6msujxnqKQqa4TsRT24GOqKOFr4Xvs7HqgVJV/BPIDnz7u0omUhUILesHJDfkQ==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/nominal-types': 8.5.0
-      '@solana/offchain-messages': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/subscribable/8.5.0:
-    resolution: {integrity: sha512-v1/hL/l4kubwYVuaMNmtQcmTgDuKG6e9Hjv9fCxkYCdDIUERgmm9DX/So1386+6rkQBVRC7wTSH86Jq+RIqNGQ==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/errors': 8.5.0
-      '@solana/promises': 8.5.0
-    dev: false
-
-  /@solana/sysvars/8.5.0:
-    resolution: {integrity: sha512-vidKFEOAujEVizDUHFCmmIpHsS3Zu/fXJKcDUtbUn+bwD9Z1fRiper8rZW3Qdtgu1GmrH3O8MoyL2Nrp7k6QNw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/accounts': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-data-structures': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/rpc-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/transaction-confirmation/8.5.0:
-    resolution: {integrity: sha512-dUVHhyaJ9tt535ZJfgPAdKo6zycCAn1mqKKP/FYvCz/4FiAKnyvqj8rxd66yvvuJVhkpjbcPDDagm/P8JEYUug==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/promises': 8.5.0
-      '@solana/rpc': 8.5.0
-      '@solana/rpc-subscriptions': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - bufferutil
-      - fastestsmallesttextencoderdecoder
-      - utf-8-validate
-    dev: false
-
-  /@solana/transaction-introspection/8.5.0:
-    resolution: {integrity: sha512-VPYVLcpieu5YwwC1wmh3zZ/KHWmqJWPS7iMPVpf90L79/1Dvkg+YYQHnVeN4VQdb7VFnfpTqUnSQpfERDk0Sag==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-      '@solana/transactions': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/transaction-messages/8.5.0:
-    resolution: {integrity: sha512-8SHxirU5K0kFmOwwD6XTGI5LWP/bLvLBDbemT4xDOaL+6xkLzlTMtzlgKb/Td5UtqyYOoew0FBVLJzJx/QApOw==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-data-structures': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/nominal-types': 8.5.0
-      '@solana/rpc-types': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
-  /@solana/transactions/8.5.0:
-    resolution: {integrity: sha512-IGRWI38rq5b94gy93wn/gVSQBuwNPSUv3GnWkd6R6Tc7jLbfRlYbYHJNHH5o28Fmlr+nlEn4bgu3BiqMWxuLmg==}
-    engines: {node: '>=20.18.0'}
-    peerDependencies:
-      typescript: '>=5.4.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@solana/addresses': 8.5.0
-      '@solana/codecs-core': 8.5.0
-      '@solana/codecs-data-structures': 8.5.0
-      '@solana/codecs-numbers': 8.5.0
-      '@solana/codecs-strings': 8.5.0
-      '@solana/errors': 8.5.0
-      '@solana/functional': 8.5.0
-      '@solana/instructions': 8.5.0
-      '@solana/keys': 8.5.0
-      '@solana/nominal-types': 8.5.0
-      '@solana/rpc-types': 8.5.0
-      '@solana/transaction-messages': 8.5.0
-    transitivePeerDependencies:
-      - fastestsmallesttextencoderdecoder
-    dev: false
-
   /@swc/cli/0.1.65_@swc+core@1.12.14:
     resolution: {integrity: sha512-4NcgsvJVHhA7trDnMmkGLLvWMHu2kSy+qHx6QwRhhJhdiYdNUrhdp+ERxen73sYtaeEOYeLJcWrQ60nzKi6rpg==}
     engines: {node: '>= 12.13'}
@@ -2101,10 +1340,6 @@ packages:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
     engines: {node: '>=12'}
 
-  /any-promise/1.3.0:
-    resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
-    dev: false
-
   /anymatch/3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
@@ -2372,11 +1607,6 @@ packages:
     resolution: {integrity: sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==}
     engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
 
-  /chalk/5.6.2:
-    resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-    dev: false
-
   /char-regex/1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
     engines: {node: '>=10'}
@@ -2428,11 +1658,6 @@ packages:
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
     dev: true
-
-  /commander/15.0.0:
-    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
-    engines: {node: '>=22.12.0'}
-    dev: false
 
   /commander/7.2.0:
     resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
@@ -3044,12 +2269,6 @@ packages:
     resolution: {integrity: sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg==}
     engines: {node: '>=10'}
 
-  /get-video-dimensions/1.0.0:
-    resolution: {integrity: sha512-ceq/GQySbquAdStqoejWWWCqBk8bDejcR6/0CbFUlXNAPBrqDMDKZVmGHU0PpzsK0SPYhX2jd/8tkAsbkUF4tw==}
-    dependencies:
-      mz: 1.3.0
-    dev: false
-
   /glob-parent/5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -3201,14 +2420,6 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /image-size/1.2.1:
-    resolution: {integrity: sha512-rH+46sQJ2dlwfjfhCyNx5thzrv+dtmBIhPHk0zgRUukHzZ/kRueTJXoYYsclBaKcSMBWuGbOFXtioLpzTb5euw==}
-    engines: {node: '>=16.x'}
-    hasBin: true
-    dependencies:
-      queue: 6.0.2
-    dev: false
-
   /import-fresh/3.3.1:
     resolution: {integrity: sha512-TR3KfrTZTYLPB6jUjfx6MF9WcWrHL9su5TObK4ZkYgBdWKPOFoSoQIdEuTuR82pmtxH2spWG9h6etwfr1pLBqQ==}
     engines: {node: '>=6'}
@@ -3245,6 +2456,7 @@ packages:
 
   /inherits/2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
+    dev: true
 
   /ini/1.3.8:
     resolution: {integrity: sha512-JV/yugV2uzW5iMRSiZAyDtQd+nxtUnjeLt0acNdw98kKLrvuRVyB80tsREOE7yvGVgalhZ6RNXCmEHkUKBKxew==}
@@ -4066,19 +3278,6 @@ packages:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
     dev: true
 
-  /mz/1.3.0:
-    resolution: {integrity: sha512-x+R7YSsEySSpV5uEB+C47JTmxv+YKKNsW3W+hjvq8NbLn8ntLgYXGrR5RjQ3Fs0e7Chw8Rp/1e5eo0n5LP76cw==}
-    dependencies:
-      native-or-bluebird: 1.2.0
-      thenify: 3.3.1
-      thenify-all: 1.6.0
-    dev: false
-
-  /native-or-bluebird/1.2.0:
-    resolution: {integrity: sha512-0SH8UubxDfe382eYiwmd12qxAbiWGzlGZv6CkMA+DPojWa/Y0oH4hE0lRtFfFgJmPQFyKXeB8XxPbZz6TvvKaQ==}
-    deprecated: '''native-or-bluebird'' is deprecated. Please use ''any-promise'' instead.'
-    dev: false
-
   /natural-compare-lite/1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
     dev: true
@@ -4371,12 +3570,6 @@ packages:
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
     dev: true
-
-  /queue/6.0.2:
-    resolution: {integrity: sha512-iHZWu+q3IdFZFX36ro/lKBkSvfkztY5Y7HMiPlOUjhupPcG2JMfst2KKEpu5XndviX/3UhFbRngUPNKtgvtZiA==}
-    dependencies:
-      inherits: 2.0.4
-    dev: false
 
   /quick-lru/5.1.1:
     resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
@@ -4749,19 +3942,6 @@ packages:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
 
-  /thenify-all/1.6.0:
-    resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
-    engines: {node: '>=0.8'}
-    dependencies:
-      thenify: 3.3.1
-    dev: false
-
-  /thenify/3.3.1:
-    resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
-    dependencies:
-      any-promise: 1.3.0
-    dev: false
-
   /tmpl/1.0.5:
     resolution: {integrity: sha512-3f0uOEAQwIqGuWW2MVzYg8fV/QNnc/IpuJNG837rLuczAaLVHslWHZQj4IGiEl5Hs3kkbhwL9Ab7Hrsmuj+Smw==}
     dev: true
@@ -4852,10 +4032,6 @@ packages:
   /undici-types/7.8.0:
     resolution: {integrity: sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==}
     dev: true
-
-  /undici-types/8.12.2:
-    resolution: {integrity: sha512-VoMeD2O0KdHhcn+oPqOrpivN+7aDOklVSwOLD7JNjbzV1CboAFek9IFOXnreoufTUtAsCsOK0iETiERPNR/fDA==}
-    dev: false
 
   /unique-string/3.0.0:
     resolution: {integrity: sha512-VGXBUVwxKMBUznyffQweQABPRRW1vHZAbadFZud4pLFAqRGvv/96vafgjWFqzourzr8YonlQiPgH0YCJfawoGQ==}
@@ -4979,19 +4155,6 @@ packages:
       imurmurhash: 0.1.4
       signal-exit: 3.0.7
     dev: true
-
-  /ws/8.22.0:
-    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dev: false
 
   /xdg-basedir/5.1.0:
     resolution: {integrity: sha512-GCPAHLvrIH13+c0SuacwvRYj2SxJXQ4kaVTT5xgL3kPrz56XxkF21IGhjSE1+W0aw7gpBWRGXLCPnPby6lSpmQ==}

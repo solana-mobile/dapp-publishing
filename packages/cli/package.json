@@ -1,6 +1,6 @@
 {
   "name": "@solana-mobile/dapp-store-cli",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
@@ -42,7 +42,7 @@
     "shx": "^0.3.4"
   },
   "dependencies": {
-    "@solana-mobile/dapp-store-publishing-tools": "workspace:1.0.1",
+    "@solana-mobile/dapp-store-publishing-tools": "workspace:2.0.0",
     "@types/semver": "^7.3.13",
     "boxen": "^7.0.1",
     "commander": "^9.4.1",

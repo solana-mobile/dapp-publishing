@@ -132,7 +132,6 @@ export function inferPublicationSourceKind(
 
 export function mapBackendBundleToPublicationBundle(
   backendBundle: Record<string, unknown>,
-  releaseMetadataUri: string,
   sourceKind: PortalSourceKind
 ): PublicationBundle {
   const release = isRecord(backendBundle.release) ? backendBundle.release : {};
@@ -143,27 +142,12 @@ export function mapBackendBundleToPublicationBundle(
   const installFile = isRecord(backendBundle.installFile)
     ? backendBundle.installFile
     : {};
-  const signerAuthority = isRecord(backendBundle.signerAuthority)
-    ? backendBundle.signerAuthority
-    : {};
   const installFileDetails = buildInstallFileDetails(release, installFile);
 
   const releaseName =
     (typeof release.localizedName === 'string' && release.localizedName) ||
     (typeof dapp.dappName === 'string' && dapp.dappName) ||
     'Release update';
-  const shortDescription =
-    (typeof release.shortDescription === 'string' &&
-      release.shortDescription) ||
-    (typeof dapp.subtitle === 'string' && dapp.subtitle) ||
-    asString(dapp.description || '').slice(0, 50);
-  const localizedShortDescription =
-    (typeof release.shortDescription === 'string' &&
-      release.shortDescription) ||
-    asString(dapp.description || '').slice(0, 50);
-  const longDescription =
-    (typeof release.longDescription === 'string' && release.longDescription) ||
-    asString(dapp.description || '');
   const newInVersion =
     (typeof release.newInVersion === 'string' && release.newInVersion) || '';
 
@@ -192,7 +176,6 @@ export function mapBackendBundleToPublicationBundle(
       copyrightUrl: optionalString(dapp.copyrightUrl),
       privacyPolicyUrl: optionalString(dapp.privacyPolicyUrl),
       walletAddress: asString(dapp.walletAddress || ''),
-      nftMintAddress: asString(dapp.nftMintAddress || ''),
       lastApprovedReleaseId: optionalString(dapp.lastApprovedReleaseId),
       website: optionalString(dapp.website || dapp.appWebsite),
     },
@@ -218,90 +201,6 @@ export function mapBackendBundleToPublicationBundle(
       canonicalUrl: installFileDetails.canonicalUrl,
       url: installFileDetails.url,
       origin: sourceKind,
-    },
-    metadata: {
-      localizedName: releaseName,
-      shortDescription,
-      longDescription,
-      newInVersion,
-      publisherWebsite: optionalString(publisher.website),
-      supportEmail: optionalString(publisher.supportEmail),
-      website: optionalString(dapp.appWebsite),
-      locales: stringArray(dapp.languages),
-      legal: {
-        licenseUrl: optionalString(dapp.licenseUrl),
-        copyrightUrl: optionalString(dapp.copyrightUrl),
-        privacyPolicyUrl: optionalString(dapp.privacyPolicyUrl),
-      },
-      media: [],
-      installFile: {
-        uri: installFileDetails.url,
-        url: installFileDetails.url,
-        fileName: installFileDetails.fileName,
-        mimeType: installFileDetails.mimeType,
-        size: installFileDetails.size,
-        sha256: installFileDetails.sha256,
-        canonicalUrl: installFileDetails.canonicalUrl,
-        origin: sourceKind,
-      },
-      localizedStrings: [
-        {
-          locale: 'en-US',
-          name: releaseName,
-          shortDescription: localizedShortDescription,
-          longDescription,
-          newInVersion,
-        },
-      ],
-      releaseMetadataUri:
-        releaseMetadataUri ||
-        (typeof release.nftMetadataUri === 'string'
-          ? release.nftMetadataUri
-          : null),
-    },
-    signerAuthority: {
-      dappWalletAddress: asString(
-        signerAuthority.dappWalletAddress ||
-          signerAuthority.requiredSigner ||
-          dapp.walletAddress ||
-          ''
-      ),
-      collectionAuthority: asString(
-        signerAuthority.collectionAuthority ||
-          signerAuthority.dappWalletAddress ||
-          dapp.walletAddress ||
-          ''
-      ),
-      appMintAddress: asString(
-        signerAuthority.appMintAddress || dapp.nftMintAddress || ''
-      ),
-      sameSignerRequired:
-        typeof signerAuthority.sameSignerRequired === 'boolean'
-          ? signerAuthority.sameSignerRequired
-          : true,
-      acceptedSignerRoles: Array.isArray(signerAuthority.acceptedSignerRoles)
-        ? (signerAuthority.acceptedSignerRoles as Array<'publisher' | 'payer'>)
-        : ['publisher', 'payer'],
-      dappId: asString(dapp.id || ''),
-      requiredSigner:
-        typeof signerAuthority.requiredSigner === 'string'
-          ? signerAuthority.requiredSigner
-          : asString(
-              signerAuthority.dappWalletAddress ||
-                signerAuthority.collectionAuthority ||
-                dapp.walletAddress ||
-                ''
-            ),
-      mintSigner:
-        typeof signerAuthority.mintSigner === 'string'
-          ? signerAuthority.mintSigner
-          : asString(
-              signerAuthority.dappWalletAddress ||
-                signerAuthority.collectionAuthority ||
-                dapp.walletAddress ||
-                ''
-            ),
-      feePayer: optionalString(signerAuthority.feePayer),
     },
     release: {
       id: asString(release.id || backendBundle.releaseId || ''),
@@ -363,20 +262,6 @@ export function mapBackendBundleToPublicationBundle(
       status: typeof release.status === 'string' ? release.status : undefined,
       processingError: optionalString(release.processingError),
       processedAt: optionalString(release.processedAt),
-      releaseMintAddress: optionalString(release.nftMintAddress),
-      releaseMetadataUri:
-        releaseMetadataUri ||
-        (typeof release.nftMetadataUri === 'string'
-          ? release.nftMetadataUri
-          : null),
-      nftMintAddress: optionalString(release.nftMintAddress),
-      nftTransactionSignature: optionalString(release.nftTransactionSignature),
-      nftMetadataUri: optionalString(release.nftMetadataUri),
-      nftCluster: optionalString(release.nftCluster),
-      isCollectionVerified:
-        typeof release.isCollectionVerified === 'boolean'
-          ? release.isCollectionVerified
-          : undefined,
       uploadProvider:
         release.uploadProvider === 'Arweave' ||
         release.uploadProvider === 'S3' ||
@@ -442,19 +327,6 @@ export function translateBackendPublicationSession(
       expectedMintAddress: optionalString(backendSession.expectedMintAddress),
       metadataUri: optionalString(backendSession.metadataUri),
     }),
-    metadataUri: optionalString(backendSession.metadataUri),
-    releaseMintAddress: optionalString(backendSession.expectedMintAddress),
-    collectionMintAddress: null,
-    mintTransactionSignature: optionalString(
-      backendSession.mintTransactionSignature
-    ),
-    verifyTransactionSignature: optionalString(
-      backendSession.verificationTransactionSignature
-    ),
-    attestationRequestUniqueId: optionalString(
-      backendSession.attestationRequestUniqueId
-    ),
-    attestationPayload: null,
     hubspotTicketId: optionalString(backendSession.hubspotTicketId),
     error: optionalString(backendSession.lastError),
     created:
@@ -565,9 +437,6 @@ export function translateBackendIngestionSession(
     ? {
         ...mapBackendBundleToPublicationBundle(
           bundle,
-          firstString(publicationSession, ['metadataUri']) ||
-            firstString(bundle, ['release.nftMetadataUri']) ||
-            '',
           inferPublicationSourceKind(sourceKind)
         ),
         ingestionSessionId: asString(backendSession.id || ''),
@@ -606,6 +475,8 @@ export function translateBackendIngestionSession(
         : translatedBundle?.releaseId ??
           translatedPublicationSession?.releaseId ??
           null,
+    androidPackage: optionalString(backendSession.androidPackage),
+    versionName: optionalString(backendSession.versionName),
     processingError: optionalString(backendSession.processingError),
     processingProgress:
       typeof backendSession.processingProgress === 'number'
