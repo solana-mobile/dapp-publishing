@@ -119,7 +119,7 @@ test("createIngestionSession maps apk-url sources to the portal externalUrl API 
     idempotencyKey: "idem-1",
   });
   expect(result.source.kind).toBe("apk-url");
-  expect(result.bundle?.metadata?.installFile.origin).toBe("external");
+  expect(result.bundle?.installFile.origin).toBe("external");
   expect(result.publicationSession?.checkpoint).toBe("bundle-ready");
 });
 
@@ -243,7 +243,7 @@ test("createIngestionSession uploads local APK files before creating the ingesti
   });
 
   expect(result.source.kind).toBe("apk-file");
-  expect(result.bundle?.metadata?.installFile.origin).toBe("portal");
+  expect(result.bundle?.installFile.origin).toBe("portal");
   expect(result.releaseId).toBe("release-2");
   expect(result.publicationSessionId).toBe("session-2");
 });

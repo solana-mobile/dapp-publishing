@@ -1,6 +1,6 @@
 {
   "name": "@solana-mobile/dapp-store-publishing-tools",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
@@ -38,9 +38,5 @@
     "jest": "^29.5.0",
     "shx": "^0.3.4"
   },
-  "dependencies": {
-    "@solana/kit": "^8.5.0",
-    "get-video-dimensions": "^1.0.0",
-    "image-size": "^1.0.2"
-  }
+  "dependencies": {}
 }

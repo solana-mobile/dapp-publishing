@@ -7,9 +7,7 @@ import { Command, Option } from 'commander';
 import {
   checkForSelfUpdate,
   Constants,
-  createPortalAttestationClient,
   createPortalWorkflowClient,
-  parseKeypair,
   showMessage,
 } from './CliUtils.js';
 import {
@@ -26,10 +24,8 @@ import {
 import { createPublicationProgressReporter } from './publication/PublicationProgressReporter.js';
 import { extractPublicationSummaryLines } from './publication/publicationSummary.js';
 import {
-  ensurePublicationSignerBalance,
   runPublicationWorkflow,
   type PublicationResumeInput,
-  type PublicationSigner,
   type PublicationWorkflowInput,
 } from '@solana-mobile/dapp-store-publishing-tools';
 
@@ -42,11 +38,10 @@ mainCli
   .version(Constants.CLI_VERSION)
   .description('Portal-backed CLI for Solana Mobile dApp version publishing')
   .showHelpAfterError()
-  // `resume` redeclares options the root command also owns: --keypair,
-  // --verbose, --portal-url and the rest. Without this, the root command
-  // parses the whole argv and swallows every one of them, leaving the
-  // subcommand only the flags the root does not know about — so
-  // `dapp-store resume --keypair <path>` fails with "`--keypair` is required".
+  // `resume` redeclares options the root command also owns: --verbose,
+  // --portal-url and the rest. Without this, the root command parses the
+  // whole argv and swallows every one of them, leaving the subcommand only
+  // the flags the root does not know about.
   .enablePositionalOptions();
 
 mainCli
@@ -63,8 +58,11 @@ mainCli
     '--api-key-stdin',
     'Read the portal API key from stdin instead of an env var',
   )
-  .option('--keypair <path>', 'Path to the Solana signer keypair')
-  .addOption(new Option('--rpc-url <url>', 'Solana RPC URL').hideHelp())
+  .option(
+    '--keypair <path>',
+    'Optional and unused: publishing needs no keypair. Accepted so existing scripts keep working',
+  )
+  .addOption(new Option('--rpc-url <url>', 'Unused').hideHelp())
   .option('--local-dev', 'Allow localhost portal endpoints and skip gating')
   .option(
     '--skip-self-update',
@@ -100,8 +98,11 @@ resumeCommand
     '--api-key-stdin',
     'Read the portal API key from stdin instead of an env var',
   )
-  .option('--keypair <path>', 'Path to the Solana signer keypair')
-  .addOption(new Option('--rpc-url <url>', 'Solana RPC URL').hideHelp())
+  .option(
+    '--keypair <path>',
+    'Optional and unused: publishing needs no keypair. Accepted so existing scripts keep working',
+  )
+  .addOption(new Option('--rpc-url <url>', 'Unused').hideHelp())
   .option('--local-dev', 'Allow localhost portal endpoints and skip gating')
   .option(
     '--skip-self-update',
@@ -126,7 +127,7 @@ mainCli.addHelpText(
     '  Set DAPP_STORE_PORTAL_URL to the portal origin (for example https://staging.publish.solanamobile.com).',
     '  The CLI derives the /api endpoint from that URL for the active publication workflow.',
     `  If unset, it defaults to ${DEFAULT_PRODUCTION_PORTAL_URL}.`,
-    '  The target app must already exist in the portal and already have its App NFT.',
+    '  The target app must already exist in the portal.',
     '  The portal decides whether the submission is the first release for an existing app or a later update.',
     '',
     'Secrets:',
@@ -144,10 +145,9 @@ mainCli.addHelpText(
  *
  * `resume` redeclares options the root command also owns, and positional option
  * parsing assigns each one to whichever command it was typed after. Someone who
- * read those flags off the root help writes `dapp-store --keypair <path> resume
+ * read those flags off the root help writes `dapp-store --portal-url <url> resume
  * --release-id <id>`, which parses cleanly but leaves the subcommand without a
- * keypair — and reporting a flag as missing when it is right there in the
- * command line is worse than accepting it from either position.
+ * portal URL, so the option is accepted from either position.
  */
 export function withRootOptionFallbacks(
   options: ResumeCliOptions,
@@ -191,16 +191,7 @@ async function runRootAction() {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = await loadSigner(options.keypair);
-    const { warning: balanceWarning } = await ensurePublicationSignerBalance({
-      publicKey: signer.address,
-      rpcUrl: options.rpcUrl,
-      localDev: options.localDev,
-    });
-    if (balanceWarning) {
-      showMessage('Warning', balanceWarning, 'warning');
-    }
-    const clients = createPortalClients(targets, apiKey);
+    const workflowClient = createPortalClient(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Publishing version',
       mode: 'new-version',
@@ -215,12 +206,8 @@ async function runRootAction() {
     try {
       const result = await runPublicationWorkflow({
         mode: 'new-version',
-        client: clients.workflowClient,
-        input: buildNewVersionWorkflowInput(
-          options,
-          signer,
-          clients.attestationClient,
-        ),
+        client: workflowClient,
+        input: buildNewVersionWorkflowInput(options),
         options: {
           logger: progress.logger,
         },
@@ -242,8 +229,7 @@ async function runResumeAction(options: ResumeCliOptions) {
 
     const targets = resolvePortalTargets(options);
     const apiKey = await resolveApiKey(options);
-    const signer = await loadSigner(options.keypair);
-    const clients = createPortalClients(targets, apiKey);
+    const workflowClient = createPortalClient(targets, apiKey);
     const progress = createPublicationProgressReporter({
       title: 'Resuming publication',
       mode: 'resume',
@@ -258,12 +244,8 @@ async function runResumeAction(options: ResumeCliOptions) {
     try {
       const result = await runPublicationWorkflow({
         mode: 'resume',
-        client: clients.workflowClient,
-        input: buildResumeWorkflowInput(
-          options,
-          signer,
-          clients.attestationClient,
-        ),
+        client: workflowClient,
+        input: buildResumeWorkflowInput(options),
         options: {
           logger: progress.logger,
         },
@@ -278,46 +260,29 @@ async function runResumeAction(options: ResumeCliOptions) {
   });
 }
 
-function createPortalClients(
-  targets: ResolvedPortalTargets,
-  apiKey: string,
-) {
-  return {
-    workflowClient: createPortalWorkflowClient({
-      apiBaseUrl: targets.apiBaseUrl,
-      apiKey,
-    }),
-    attestationClient: createPortalAttestationClient({
-      apiBaseUrl: targets.apiBaseUrl,
-      apiKey,
-    }),
-  };
+function createPortalClient(targets: ResolvedPortalTargets, apiKey: string) {
+  return createPortalWorkflowClient({
+    apiBaseUrl: targets.apiBaseUrl,
+    apiKey,
+  });
 }
 
 function buildNewVersionWorkflowInput(
   options: NewVersionCliOptions,
-  signer: PublicationSigner,
-  attestationClient: PublicationWorkflowInput['attestationClient'],
 ): PublicationWorkflowInput {
   return {
     source: buildPublicationSource(options),
     whatsNew: options.whatsNew ?? '',
     idempotencyKey: options.idempotencyKey ?? randomUUID(),
-    signer,
-    attestationClient,
   };
 }
 
 function buildResumeWorkflowInput(
   options: ResumeCliOptions,
-  signer: PublicationSigner,
-  attestationClient: PublicationResumeInput['attestationClient'],
 ): PublicationResumeInput {
   return {
     publicationSessionId: resolveResumeSessionId(options),
     releaseId: resolveResumeReleaseId(options),
-    signer,
-    attestationClient,
   };
 }
 
@@ -401,19 +366,6 @@ function resolveResumeReleaseId(options: ResumeCliOptions): string | undefined {
 
 function resolveResumeSessionId(options: ResumeCliOptions): string | undefined {
   return options.sessionId ?? options.resumeSession;
-}
-
-async function loadSigner(keypairPath?: string): Promise<PublicationSigner> {
-  if (!keypairPath) {
-    throw new Error('`--keypair` is required.');
-  }
-
-  const signer = await parseKeypair(keypairPath);
-  if (!signer) {
-    throw new Error('Failed to load the signer keypair.');
-  }
-
-  return signer;
 }
 
 function hasPublicationInputs(options: NewVersionCliOptions): boolean {

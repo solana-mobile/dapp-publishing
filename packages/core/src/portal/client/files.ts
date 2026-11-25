@@ -1,21 +1,3 @@
-export function ensureHttpsUrl(url: string): string {
-  const trimmed = url.trim();
-
-  if (!trimmed) {
-    return trimmed;
-  }
-
-  if (trimmed.startsWith("https://")) {
-    return trimmed;
-  }
-
-  if (trimmed.startsWith("http://")) {
-    return trimmed.replace(/^http:\/\//, "https://");
-  }
-
-  return `https://${trimmed}`;
-}
-
 export function inferFileNameFromUrl(url: string): string {
   try {
     const pathname = new URL(url).pathname;
@@ -62,12 +44,4 @@ export function inferMimeType(fileName: string): string {
     default:
       return "application/octet-stream";
   }
-}
-
-export function toBase64(buffer: Uint8Array): string {
-  return Buffer.from(buffer).toString("base64");
-}
-
-export function fromBase64(value: string): Uint8Array {
-  return new Uint8Array(Buffer.from(value, "base64"));
 }

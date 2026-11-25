@@ -66,10 +66,6 @@ export function validateNewVersionArgs(input: NewVersionCliOptions): void {
     throw new Error("`--whats-new` is required.");
   }
 
-  if (!input.keypair || input.keypair.trim().length === 0) {
-    throw new Error("`--keypair` is required.");
-  }
-
   if (input.apkFile) {
     const apkPath = path.resolve(input.apkFile);
     if (!fs.existsSync(apkPath)) {
@@ -107,10 +103,6 @@ export function validateResumeArgs(input: ResumeCliOptions): void {
   const resumeTargetCount = (releaseId ? 1 : 0) + (sessionId ? 1 : 0);
   if (resumeTargetCount !== 1) {
     throw new Error("Specify exactly one of `--release-id` or `--session-id`.");
-  }
-
-  if (!input.keypair || input.keypair.trim().length === 0) {
-    throw new Error("`--keypair` is required.");
   }
 }
 

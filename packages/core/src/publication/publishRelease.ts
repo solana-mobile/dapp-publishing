@@ -1,9 +1,6 @@
-import { createPortalAttestationClient } from "../portal/client/attestationClient.js";
 import type { PortalClientConfig } from "../portal/client/types.js";
 import { createPortalWorkflowClient } from "../portal/client/workflowClient.js";
 import type {
-  PublicationAttestationClient,
-  PublicationSigner,
   PublicationSource,
   PublicationWorkflowLogger,
   PublicationWorkflowResult,
@@ -14,9 +11,8 @@ import {
 } from "../portal/workflow.js";
 import { resolvePortalTargets } from "./portalTargets.js";
 
-export type PortalClient = PublicationWorkflowClient & {
-  attestationClient: PublicationAttestationClient;
-};
+/** Portal client authenticated with a portal API key. */
+export type PortalClient = PublicationWorkflowClient;
 
 export type CreatePortalClientInput = {
   apiKey: string;
@@ -28,6 +24,7 @@ export type CreatePortalClientInput = {
   fetch?: typeof fetch;
 };
 
+/** Creates a portal client; throws `PublishingError` for an invalid or non-HTTPS portal URL. */
 export function createPortalClient(
   input: CreatePortalClientInput
 ): PortalClient {
@@ -38,21 +35,21 @@ export function createPortalClient(
     fetch: input.fetch,
   };
 
-  return {
-    ...createPortalWorkflowClient(config),
-    attestationClient: createPortalAttestationClient(config),
-  };
+  return createPortalWorkflowClient(config);
 }
 
 export type PublishReleaseInput = {
   client: PortalClient;
-  signer: PublicationSigner;
   source: PublicationSource;
   whatsNew: string;
   idempotencyKey?: string;
   logger?: PublicationWorkflowLogger;
 };
 
+/**
+ * Uploads the APK, waits for the portal to process it, and submits the
+ * release to the store.
+ */
 export async function publishRelease(
   input: PublishReleaseInput
 ): Promise<PublicationWorkflowResult> {
@@ -62,19 +59,17 @@ export async function publishRelease(
     source: input.source,
     whatsNew: input.whatsNew,
     idempotencyKey: input.idempotencyKey,
-    signer: input.signer,
-    attestationClient: input.client.attestationClient,
   });
 }
 
 export type ResumeReleaseInput = {
   client: PortalClient;
-  signer: PublicationSigner;
   releaseId?: string;
   sessionId?: string;
   logger?: PublicationWorkflowLogger;
 };
 
+/** Submits a release whose publication session stopped before store submission. */
 export async function resumeRelease(
   input: ResumeReleaseInput
 ): Promise<PublicationWorkflowResult> {
@@ -83,7 +78,5 @@ export async function resumeRelease(
   }).resumePublication({
     releaseId: input.releaseId,
     publicationSessionId: input.sessionId,
-    signer: input.signer,
-    attestationClient: input.client.attestationClient,
   });
 }

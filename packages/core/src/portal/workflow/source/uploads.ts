@@ -15,8 +15,7 @@ export type FinalizeUploadFn = (
  * `createUploadTarget` hands back a presigned URL that writes to `stagingKey`,
  * not to the public key the same call reports as `publicUrl`. Nothing copies
  * the object across on its own, so until the upload is finalized `publicUrl`
- * is a 404 — and anything that captured it (an ingestion source, an NFT
- * metadata URI, a media URI inside that metadata) points at nothing.
+ * is a 404, and an ingestion source that captured it points at nothing.
  *
  * A portal that presigns the public key directly returns no `stagingKey`, and
  * those uploads are already final; leaving them alone keeps this working

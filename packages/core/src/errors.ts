@@ -1,8 +1,4 @@
-export type PublishingErrorCode =
-  | "INSUFFICIENT_BALANCE"
-  | "INVALID_KEYPAIR"
-  | "INVALID_PORTAL_URL"
-  | "INVALID_PUBLIC_KEY";
+export type PublishingErrorCode = "INVALID_PORTAL_URL";
 
 export class PublishingError extends Error {
   readonly code: PublishingErrorCode;

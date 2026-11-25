@@ -49,7 +49,7 @@ test('local file upload progress materially advances the bar', () => {
     const lines = reporter.buildLines();
 
     expect(reporter.getProgressPercent()).toBeGreaterThan(0.2);
-    expect(lines[1]).toContain('23%');
+    expect(lines[1]).toContain('28%');
     expect(lines).toContain('Upload: 50 B / 100 B (50%)');
   } finally {
     logSpy.mockRestore();
@@ -92,7 +92,7 @@ test('ingestion status updates continue advancing overall progress', () => {
     const lines = reporter.buildLines();
 
     expect(reporter.getProgressPercent()).toBeGreaterThan(0.55);
-    expect(lines[1]).toContain('57%');
+    expect(lines[1]).toContain('73%');
     expect(lines).toContain('Ingestion: Extracting APK metadata (45%)');
   } finally {
     logSpy.mockRestore();
@@ -165,24 +165,6 @@ test('verbose mode prints detailed identifiers as they arrive', () => {
       publicationSessionId: 'session-789',
     });
 
-    reporter.logger.info('Release NFT transaction submitted', {
-      step: 'mint.submit',
-      status: 'complete',
-      transactionSignature: 'release-tx-sig',
-    });
-
-    reporter.logger.info('Release collection verified', {
-      step: 'verify.submit',
-      status: 'complete',
-      transactionSignature: 'collection-tx-sig',
-    });
-
-    reporter.logger.info('Attestation payload created', {
-      step: 'attestation.create',
-      status: 'complete',
-      requestUniqueId: 'attest-111',
-    });
-
     reporter.logger.info('Release submitted to store', {
       step: 'submit.store',
       status: 'complete',
@@ -194,15 +176,6 @@ test('verbose mode prints detailed identifiers as they arrive', () => {
     expect(output).toContain('Verbose: Release ID: release-123');
     expect(output).toContain('Verbose: Ingestion session ID: ingestion-456');
     expect(output).toContain('Verbose: Publication session ID: session-789');
-    expect(output).toContain(
-      'Verbose: Release transaction signature: release-tx-sig',
-    );
-    expect(output).toContain(
-      'Verbose: Collection transaction signature: collection-tx-sig',
-    );
-    expect(output).toContain(
-      'Verbose: Attestation request ID: attest-111',
-    );
     expect(output).toContain('Verbose: Ticket ID: ticket-222');
   } finally {
     logSpy.mockRestore();
